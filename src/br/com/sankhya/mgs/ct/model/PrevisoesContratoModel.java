@@ -110,8 +110,8 @@ public class PrevisoesContratoModel {
         if (postoPreechido){
             DynamicVO tgfpssVO = JapeFactory.dao("TGFPSS").findByPK(codigoTipoPosto);
             String prefixoposto = tgfpssVO.asString("PREFIXOPOSTO");
-            ArrayList<DynamicVO> vagasVO = criaVagas(prefixoposto);
-
+            ArrayList<DynamicVO> vagaVOs = criaVagas(prefixoposto);
+            criaPrevisaoVagas(vagaVOs);
         }
     }
 
@@ -124,9 +124,9 @@ public class PrevisoesContratoModel {
 
     }
 
-    private void criaPrevisaoVagas(ArrayList<DynamicVO> vagasVO) throws Exception {
+    private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
         VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
-        for(DynamicVO vagaVO:vagasVO) {
+        for(DynamicVO vagaVO:vagaVOs) {
             vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asBigDecimal("CODVAGA"));
         }
     }

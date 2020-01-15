@@ -120,6 +120,9 @@ public class PrevisoesContratoModel {
                 regraVadalicao = tipoEvento + vo.asBigDecimal("CODCONTROLE").toString();
             }
             regraVadalicao = tipoEvento;
+            if (regraVadalicao == null){
+                regraVadalicao = "";
+            }
         }
 
         return regraVadalicao;

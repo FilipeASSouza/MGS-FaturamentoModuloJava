@@ -46,10 +46,10 @@ public class ApoioVagasModel {
         ArrayList<DynamicVO> listaVagasCriadas = new ArrayList();
         for (int i = 0; i < quantidade.intValue(); i++) {
             ultimoNumeroSequencial = ultimoNumeroSequencial.add(BigDecimal.ONE);
-            String descricaoVaga = siglaTipo+ StringUtils.formatNumeric("0000000", ultimoNumeroSequencial);
+            String codVaga = siglaTipo+ StringUtils.formatNumeric("0000000", ultimoNumeroSequencial);
 
             FluidCreateVO fluidCreateVO = dao.create();
-            fluidCreateVO.set("DESCRVAGA", descricaoVaga);
+            fluidCreateVO.set("CODVAGA", codVaga);
             fluidCreateVO.set("SIGLA", siglaTipo);
             fluidCreateVO.set("NUMSEQ", ultimoNumeroSequencial);
             fluidCreateVO.set("DTCRIAO", TimeUtils.getNow());
@@ -57,10 +57,7 @@ public class ApoioVagasModel {
             DynamicVO save = fluidCreateVO.save();
             listaVagasCriadas.add(save);
         }
-
         return listaVagasCriadas;
-
-
     }
 
     private BigDecimal getUltimoNumeroSequencial(String siglaTipo) throws Exception {

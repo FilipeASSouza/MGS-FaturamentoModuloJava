@@ -240,7 +240,7 @@ public class PrevisoesContratoModel {
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
         VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
         for (DynamicVO vagaVO : vagaVOs) {
-            vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asBigDecimal("CODVAGA"));
+            vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asString("CODVAGA"));
         }
     }
 }

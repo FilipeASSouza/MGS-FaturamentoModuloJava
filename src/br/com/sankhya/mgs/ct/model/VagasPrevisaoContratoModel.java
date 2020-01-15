@@ -29,7 +29,7 @@ public class VagasPrevisaoContratoModel {
          dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
     }
 
-    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoContrato, BigDecimal codigoVaga) throws Exception {
+    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
         FluidCreateVO fluidCreateVO = dao.create();
         fluidCreateVO.set("NUCONTRPREV",numeroUnicoPrevisaoContrato);
         fluidCreateVO.set("CODVAGA",codigoVaga);

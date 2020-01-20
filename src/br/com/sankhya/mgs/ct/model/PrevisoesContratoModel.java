@@ -122,8 +122,10 @@ public class PrevisoesContratoModel {
                     ErroUtils.disparaErro("Controle deve ser preenchido para esse tipo de evento!");
                 }
                 regraVadalicao = tipoEvento + vo.asBigDecimal("CODCONTROLE").toString();
+            } else {
+                regraVadalicao = tipoEvento;
             }
-            regraVadalicao = tipoEvento;
+
             if (regraVadalicao == null){
                 regraVadalicao = "";
             }

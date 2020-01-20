@@ -185,9 +185,15 @@ public class PrevisoesContratoModel {
         nativeSqlDDecorator.setParametro("NUMODALIDADE", vo.asBigDecimal("NUMODALIDADE"));
         nativeSqlDDecorator.setParametro("CODTIPOPOSTO", vo.asBigDecimal("CODTIPOPOSTO"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
-        nativeSqlDDecorator.proximo();
-        BigDecimal numeroUnicoValoresEventos = nativeSqlDDecorator.getValorBigDecimal("NUCONTREVENTO");
-        if (numeroUnicoValoresEventos == null) {
+
+        BigDecimal numeroUnicoValoresEventos = BigDecimal.ZERO;
+        if (nativeSqlDDecorator.proximo()){
+            numeroUnicoValoresEventos = nativeSqlDDecorator.getValorBigDecimal("NUCONTREVENTO");
+            if (numeroUnicoValoresEventos == null) {
+                numeroUnicoValoresEventos = BigDecimal.ZERO;
+            }
+        }
+        if (BigDecimal.ZERO.equals(numeroUnicoValoresEventos)) {
             ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
         }
 
@@ -208,9 +214,16 @@ public class PrevisoesContratoModel {
         nativeSqlDDecorator.setParametro("NUMODALIDADE", vo.asBigDecimal("NUMODALIDADE"));
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
-        nativeSqlDDecorator.proximo();
-        BigDecimal numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
-        if (numeroUnicoValoresProdutos == null) {
+
+        BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
+        if (nativeSqlDDecorator.proximo()){
+            numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
+            if (numeroUnicoValoresProdutos == null) {
+                numeroUnicoValoresProdutos = BigDecimal.ZERO;
+            }
+        }
+
+        if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
             ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
         }
 

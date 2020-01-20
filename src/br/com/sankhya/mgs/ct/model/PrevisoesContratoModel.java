@@ -19,6 +19,7 @@ public class PrevisoesContratoModel {
     private DynamicVO vo;
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
+    private BigDecimal numeroContrato;
     private PrevisoesContratoModel() throws Exception {
         inicialzaVariaveis();
     }
@@ -31,7 +32,9 @@ public class PrevisoesContratoModel {
 
     private void inicialzaVariaveis()throws Exception {
         dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
-        codigoModelidade = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE")).asBigDecimal("CODTPN");
+        DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
+        codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
+        numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
     }
 
     public PrevisoesContratoModel validaDados() throws Exception {
@@ -173,15 +176,15 @@ public class PrevisoesContratoModel {
 
         vo.setProperty("VLRUNITARIO", valorUnitario);
         vo.setProperty("QTDCONTRATADA", quantidade);
+        vo.setProperty("NUMCONTRATO",this.numeroContrato);
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
-
     }
 
     private BigDecimal getPrecoPosto() throws Exception {
         BigDecimal valorUnitario;
         JapeWrapper mgsct_valores_eventosDAO = JapeFactory.dao("MGSCT_Valores_Eventos");
         NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoPosto.sql");
-        nativeSqlDDecorator.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
+        nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator.setParametro("CODTIPOPOSTO", vo.asBigDecimal("CODTIPOPOSTO"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
@@ -211,7 +214,7 @@ public class PrevisoesContratoModel {
 
         JapeWrapper mgsct_valores_produtosDAO = JapeFactory.dao("MGSCT_Valores_Produtos");
         NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterial.sql");
-        nativeSqlDDecorator.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
+        nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));

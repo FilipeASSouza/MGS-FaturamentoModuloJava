@@ -117,6 +117,10 @@ public class PrevisoesContratoModel {
             String tipoEvento = eventoVO.asString("TIPOEVENTO");
 
             if ("S".equals(tipoEvento)) {
+                BigDecimal codigoControle = vo.asBigDecimal("CODCONTROLE");
+                if (codigoControle == null){
+                    ErroUtils.disparaErro("Controle deve ser preenchido para esse tipo de evento!");
+                }
                 regraVadalicao = tipoEvento + vo.asBigDecimal("CODCONTROLE").toString();
             }
             regraVadalicao = tipoEvento;

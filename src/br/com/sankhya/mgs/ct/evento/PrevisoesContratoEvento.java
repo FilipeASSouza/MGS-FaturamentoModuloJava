@@ -27,12 +27,12 @@ public class PrevisoesContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-
+        new PrevisoesContratoController().afterInsert(persistenceEvent);
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-
+        new PrevisoesContratoController().afterUpdate(persistenceEvent);
     }
 
     @Override

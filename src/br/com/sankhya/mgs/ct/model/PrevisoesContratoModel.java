@@ -138,8 +138,8 @@ public class PrevisoesContratoModel {
         boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
         boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
 
-        BigDecimal valorUnitario = BigDecimal.ZERO;
-        BigDecimal quantidade = BigDecimal.ZERO;
+        BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
+        BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
 
 
         switch (getRegraValidacao()){
@@ -173,7 +173,8 @@ public class PrevisoesContratoModel {
 
         FluidUpdateVO fluidUpdateVO = dao.prepareToUpdate(vo);
         fluidUpdateVO.set("VLRUNITARIO", valorUnitario);
-        fluidUpdateVO.set("VLRCONTRATADA", valorUnitario.multiply(vo.asBigDecimal("QTDCONTRATADA")));
+        fluidUpdateVO.set("QTDCONTRATADA", quantidade);
+        fluidUpdateVO.set("VLRCONTRATADA", valorUnitario.multiply(quantidade));
         fluidUpdateVO.update();
     }
 

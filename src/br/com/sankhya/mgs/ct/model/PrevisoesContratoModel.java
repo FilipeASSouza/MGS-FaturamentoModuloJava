@@ -171,11 +171,10 @@ public class PrevisoesContratoModel {
             ErroUtils.disparaErro("Preço localizado não pode ser zero, favor verificar dados lancados!");
         }
 
-        FluidUpdateVO fluidUpdateVO = dao.prepareToUpdate(vo);
-        fluidUpdateVO.set("VLRUNITARIO", valorUnitario);
-        fluidUpdateVO.set("QTDCONTRATADA", quantidade);
-        fluidUpdateVO.set("VLRCONTRATADA", valorUnitario.multiply(quantidade));
-        fluidUpdateVO.update();
+        vo.setProperty("VLRUNITARIO", valorUnitario);
+        vo.setProperty("QTDCONTRATADA", quantidade);
+        vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
+
     }
 
     private BigDecimal getPrecoPosto() throws Exception {

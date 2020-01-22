@@ -6,6 +6,7 @@ import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 /**
  * Entidade: MGSCT_Vagas_Previsao_Contrato
@@ -35,6 +36,12 @@ public class VagasPrevisaoContratoModel {
         fluidCreateVO.set("CODVAGA",codigoVaga);
         DynamicVO save = fluidCreateVO.save();
         return save;
+    }
+
+    public BigDecimal quantidadeVagasCriadas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
+        Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ?", numeroUnicoPrevisaoContrato, codigoVaga);
+        int size = dynamicVOS.size();
+        return new BigDecimal(size);
     }
 
 }

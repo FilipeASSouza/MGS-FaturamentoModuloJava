@@ -255,7 +255,18 @@ public class PrevisoesContratoModel {
 
         BigDecimal quantidadeContratada = vo.asBigDecimal("QTDCONTRATADA");
 
-        ArrayList<DynamicVO> dynamicVOS = new ApoioVagasModel().criaVagas(quantidadeContratada, sigla);
+
+        BigDecimal quantidadeVagasCriadas = new VagasPrevisaoContratoModel().quantidadeVagasCriadas(quantidadeContratada, sigla);
+
+        if (quantidadeContratada.compareTo(quantidadeVagasCriadas)<0){
+            ErroUtils.disparaErro("A quantidade de vargas nao pode ser diminuida!");
+        }
+
+        BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasCriadas);
+
+
+        ArrayList<DynamicVO> dynamicVOS = new ApoioVagasModel().criaVagas(quantidadeCriarNovasVagas, sigla);
+
         return dynamicVOS;
 
     }
@@ -266,4 +277,5 @@ public class PrevisoesContratoModel {
             vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asString("CODVAGA"));
         }
     }
+
 }

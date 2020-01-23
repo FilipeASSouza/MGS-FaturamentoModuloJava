@@ -169,11 +169,6 @@ public class PrevisoesContratoModel {
 
         }
 
-
-        if (BigDecimal.ZERO.equals(valorUnitario)) {
-            ErroUtils.disparaErro("Preço localizado não pode ser zero, favor verificar dados lancados!");
-        }
-
         vo.setProperty("VLRUNITARIO", valorUnitario);
         vo.setProperty("QTDCONTRATADA", quantidade);
         vo.setProperty("NUMCONTRATO",this.numeroContrato);

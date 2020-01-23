@@ -1,9 +1,11 @@
 package br.com.sankhya.mgs.ct.model;
 
+import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
+import org.hibernate.loader.custom.Return;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -36,6 +38,10 @@ public class VagasPrevisaoContratoModel {
         fluidCreateVO.set("CODVAGA",codigoVaga);
         DynamicVO save = fluidCreateVO.save();
         return save;
+    }
+
+    public void validaDelete() throws Exception {
+        ErroUtils.disparaErro("Vagas não podem ser excluidas.");
     }
 
     public BigDecimal quantidadeVagasCriadas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {

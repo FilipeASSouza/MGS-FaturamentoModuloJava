@@ -3,23 +3,19 @@ package br.com.sankhya.mgs.ct.evento;
 import br.com.sankhya.extensions.eventoprogramavel.EventoProgramavelJava;
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.event.TransactionContext;
-import br.com.sankhya.mgs.ct.controller.PrevisoesContratoController;
+import br.com.sankhya.mgs.ct.controller.VagasPrevisaoContratoController;
 
-/**
- * Entidade: MGSCT_Previsoes_Contrato
- * Tabela: MGSTCTCONTRATOPREV
- */
-public class PrevisoesContratoEvento implements EventoProgramavelJava {
-    private PrevisoesContratoController previsoesContratoController = new PrevisoesContratoController();
+public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
+    private VagasPrevisaoContratoController vagasPrevisaoContratoController = new VagasPrevisaoContratoController();
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.beforeInsert(persistenceEvent);
+
     }
 
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.beforeUpdate(persistenceEvent);
+        vagasPrevisaoContratoController.beforeUpdate(persistenceEvent);
     }
 
     @Override
@@ -29,12 +25,12 @@ public class PrevisoesContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.afterInsert(persistenceEvent);
+
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.afterUpdate(persistenceEvent);
+        vagasPrevisaoContratoController.afterUpdate(persistenceEvent);
     }
 
     @Override

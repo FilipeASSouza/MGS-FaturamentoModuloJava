@@ -5,6 +5,7 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,15 +16,24 @@ import java.util.ArrayList;
  * Chave: NUCONTRPREV
  */
 public class PrevisoesContratoModel {
-    private JapeWrapper dao;
+    private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");;
     private DynamicVO vo;
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
     private BigDecimal numeroContrato;
-    private PrevisoesContratoModel() throws Exception {
+
+    public PrevisoesContratoModel()  {
+    }
+
+    public PrevisoesContratoModel(BigDecimal numeroUnico) throws Exception {//Chave: NUCONTRPREV
+        this.vo = dao.findByPK(numeroUnico);
         inicialzaVariaveis();
     }
 
+    public void setVo(DynamicVO vo) throws Exception {
+        this.vo = vo;
+        inicialzaVariaveis();
+    }
 
     public PrevisoesContratoModel(DynamicVO dynamicVO) throws Exception {
         this.vo = dynamicVO;
@@ -31,13 +41,12 @@ public class PrevisoesContratoModel {
     }
 
     private void inicialzaVariaveis()throws Exception {
-        dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
         DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
         codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
         numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
     }
 
-    public PrevisoesContratoModel validaDados() throws Exception {
+    public void validaDadosInsert() throws Exception {
         boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
         boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
         boolean quantidadePreenchido = !(vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO) || vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ONE));
@@ -111,7 +120,11 @@ public class PrevisoesContratoModel {
         if (postoPreechido && servicoMaterialPreechido) {
             ErroUtils.disparaErro("Campos Tipos do Posto e Serviço/Material não podem ser preechidos no mesmo lançamento!");
         }
-        return this;
+
+    }
+
+    private void validaDadosUndate() throws Exception {
+
     }
 
     private String getRegraValidacao() throws Exception {
@@ -249,15 +262,16 @@ public class PrevisoesContratoModel {
     private ArrayList<DynamicVO> criaVagas(String sigla) throws Exception {
 
         BigDecimal quantidadeContratada = vo.asBigDecimal("QTDCONTRATADA");
+        BigDecimal numeroUnicoPreviesoCotnrato = vo.asBigDecimal("NUCONTRPREV");
 
 
-        BigDecimal quantidadeVagasCriadas = new VagasPrevisaoContratoModel().quantidadeVagasCriadas(quantidadeContratada, sigla);
+        BigDecimal quantidadeVagasAtivas = new VagasPrevisaoContratoModel().quantidadeVagasAtivas(numeroUnicoPreviesoCotnrato, sigla);
 
-        if (quantidadeContratada.compareTo(quantidadeVagasCriadas)<0){
-            ErroUtils.disparaErro("A quantidade de vargas nao pode ser diminuida!");
+        if (quantidadeContratada.compareTo(quantidadeVagasAtivas)<0){
+            ErroUtils.disparaErro("A quantidade de vargas não pode ser diminuida!");
         }
 
-        BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasCriadas);
+        BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtivas);
 
 
         ArrayList<DynamicVO> dynamicVOS = new ApoioVagasModel().criaVagas(quantidadeCriarNovasVagas, sigla);
@@ -271,6 +285,12 @@ public class PrevisoesContratoModel {
         for (DynamicVO vagaVO : vagaVOs) {
             vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asString("CODVAGA"));
         }
+    }
+
+    public void diminuirUmQuantidadeContrata() throws Exception {
+        FluidUpdateVO fluidUpdateVO = dao.prepareToUpdate(vo);
+        fluidUpdateVO.set("QTDCONTRATADA",vo.asBigDecimal("QTDCONTRATADA").subtract(BigDecimal.ONE));
+        fluidUpdateVO.update();
     }
 
 }

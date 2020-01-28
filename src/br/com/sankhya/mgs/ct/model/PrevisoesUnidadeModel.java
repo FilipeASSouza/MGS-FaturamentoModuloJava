@@ -18,12 +18,12 @@ public class PrevisoesUnidadeModel {
     public PrevisoesUnidadeModel()  {
     }
 
-    public PrevisoesUnidadeModel(BigDecimal numeroUnico) throws Exception {//Chave: NUUNIDPREV
+    private PrevisoesUnidadeModel(BigDecimal numeroUnico) throws Exception {//Chave: NUUNIDPREV
         this.vo = dao.findByPK(numeroUnico);
         inicialzaVariaveis();
     }
 
-    public PrevisoesUnidadeModel(DynamicVO dynamicVO) throws Exception {
+    private PrevisoesUnidadeModel(DynamicVO dynamicVO) throws Exception {
         this.vo = dynamicVO;
         inicialzaVariaveis();
     }
@@ -56,11 +56,11 @@ public class PrevisoesUnidadeModel {
 
     }
 
-    public void preecheCamposCalculados() throws Exception {
+    private void preecheCamposCalculados() throws Exception {
 
     }
 
-    public void criaRegistrosDerivados() throws Exception {
+    private void criaRegistrosDerivados() throws Exception {
 
     }
 }

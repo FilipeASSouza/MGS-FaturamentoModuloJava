@@ -48,7 +48,7 @@ BEGIN
                         'RJ',
                            '<eventConfig><javaCall codModulo="'
                         || V_CODMODULO
-                        || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoModel"/></eventConfig>');
+                        || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento"/></eventConfig>');
         END IF;
 
 /*MGSCT_Previsoes_Contrato_V*/
@@ -74,7 +74,7 @@ BEGIN
                         'RJ',
                            '<eventConfig><javaCall codModulo="'
                         || V_CODMODULO
-                        || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoModel"/></eventConfig>');
+                        || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento"/></eventConfig>');
         END IF;
 
 /*MGSCT_Vagas_Previsao_Contrato*/

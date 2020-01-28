@@ -10,14 +10,16 @@ import br.com.sankhya.mgs.ct.controller.PrevisoesContratoController;
  * Tabela: MGSTCTCONTRATOPREV
  */
 public class PrevisoesContratoEvento implements EventoProgramavelJava {
+    private PrevisoesContratoController previsoesContratoController = new PrevisoesContratoController();
+
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        new PrevisoesContratoController().beforeInsert(persistenceEvent);
+        previsoesContratoController.beforeInsert(persistenceEvent);
     }
 
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        new PrevisoesContratoController().beforeUpdate(persistenceEvent);
+        previsoesContratoController.beforeUpdate(persistenceEvent);
     }
 
     @Override
@@ -27,12 +29,12 @@ public class PrevisoesContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-        new PrevisoesContratoController().afterInsert(persistenceEvent);
+        previsoesContratoController.afterInsert(persistenceEvent);
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        new PrevisoesContratoController().afterUpdate(persistenceEvent);
+        previsoesContratoController.afterUpdate(persistenceEvent);
     }
 
     @Override

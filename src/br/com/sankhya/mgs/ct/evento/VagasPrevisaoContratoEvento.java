@@ -6,6 +6,8 @@ import br.com.sankhya.jape.event.TransactionContext;
 import br.com.sankhya.mgs.ct.controller.VagasPrevisaoContratoController;
 
 public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
+    private VagasPrevisaoContratoController vagasPrevisaoContratoController = new VagasPrevisaoContratoController();
+
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
 
@@ -14,11 +16,13 @@ public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
 
+        vagasPrevisaoContratoController.beforeUpdate(persistenceEvent);
     }
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         new VagasPrevisaoContratoController().beforeDelete(persistenceEvent);
+
     }
 
     @Override
@@ -29,6 +33,7 @@ public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
 
+        vagasPrevisaoContratoController.afterUpdate(persistenceEvent);
     }
 
     @Override

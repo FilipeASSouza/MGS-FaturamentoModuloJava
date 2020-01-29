@@ -4,6 +4,8 @@ import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 
@@ -40,6 +42,10 @@ public class PrevisoesUnidadeModel {
     }
 
     public void validaDadosInsert() throws Exception {
+        PrevisaoValidator previsaoValidator = new PrevisaoValidator();
+        previsaoValidator.setVo(vo);
+        previsaoValidator.validaDadosInsert();
+
         JapeWrapper PrevisoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
         Collection<DynamicVO> dynamicVOS = PrevisoesContratoDAO.find("NVL(NUMCONTRATO,0) = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ? AND NVL(CODEVENTO,0) = ?  AND NVL(CODCONTROLE,0) =?",
                 numeroContrato,

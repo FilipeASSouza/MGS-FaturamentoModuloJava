@@ -6,6 +6,7 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
+import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 
 public class PrevisoesContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
-    ;
     private DynamicVO vo;
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
@@ -52,80 +52,9 @@ public class PrevisoesContratoModel {
     }
 
     public void validaDadosInsert() throws Exception {
-        boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
-        boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
-        boolean quantidadePreenchido = !(vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO) || vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ONE));
-        boolean valorPreechido = !(vo.asBigDecimalOrZero("VLRUNITARIO").equals(BigDecimal.ZERO));
-
-        String regraValidacao = getRegraValidacao();
-        if ("".equals(regraValidacao)) {
-            ErroUtils.disparaErro("Evento sem Tipo de Evento configurando não pode ser usado");
-        }
-        String erro = "";
-        switch (regraValidacao) {
-            case "P"://posto
-                if (!postoPreechido)
-                    erro += "Posto deve ser preenchido. ";
-                if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
-                if (!quantidadePreenchido)
-                    erro += "Quantidade deve ser preechida. ";
-                if (valorPreechido)
-                    erro += "Valor não pode ser preechido. ";
-                break;
-            case "C"://contrato
-                if (postoPreechido)
-                    erro += "Posto não deve ser preenchido. ";
-                if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
-                if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
-                if (!valorPreechido)
-                    erro += "Valor deve ser preechido. ";
-                break;
-            case "R"://rescisao
-                if (postoPreechido)
-                    erro += "Posto não deve ser preenchido. ";
-                if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
-                if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
-                if (valorPreechido)
-                    erro += "Valor não pode ser preechido. ";
-                break;
-            case "S1"://serviceo/material controle 1
-            case "S2"://serviceo/material controle 2
-                if (postoPreechido)
-                    erro += "Posto não deve ser preenchido. ";
-                if (!servicoMaterialPreechido)
-                    erro += "Serviço/Material deve ser preechido. ";
-                if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
-                if (!valorPreechido)
-                    erro += "Valor deve ser preechido. ";
-                break;
-            case "S3"://serviceo/material controle 3
-            case "S4"://serviceo/material controle 4
-                if (postoPreechido)
-                    erro += "Posto não deve ser preenchido. ";
-                if (!servicoMaterialPreechido)
-                    erro += "Serviço/Material deve ser preechido. ";
-                if (!quantidadePreenchido)
-                    erro += "Quantidade deve ser preechida. ";
-                if (valorPreechido)
-                    erro += "Valor nao pode ser preechido. ";
-                break;
-            default:
-                erro = "Regra não definida para Tipo de Evento: " + regraValidacao;
-        }
-        if (!"".equals(erro)) {
-            ErroUtils.disparaErro(erro);
-        }
-
-        if (postoPreechido && servicoMaterialPreechido) {
-            ErroUtils.disparaErro("Campos Tipos do Posto e Serviço/Material não podem ser preechidos no mesmo lançamento!");
-        }
-
+        PrevisaoValidator previsaoValidator = new PrevisaoValidator();
+        previsaoValidator.setVo(vo);
+        previsaoValidator.validaDadosInsert();
     }
 
     private void validaDadosUndate() throws Exception {

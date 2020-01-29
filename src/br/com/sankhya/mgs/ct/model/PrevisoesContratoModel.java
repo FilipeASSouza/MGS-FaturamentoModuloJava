@@ -44,6 +44,7 @@ public class PrevisoesContratoModel {
         DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
         codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
         numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
+        regraVadalicao = "";
     }
 
     public void validaDadosInsert() throws Exception {

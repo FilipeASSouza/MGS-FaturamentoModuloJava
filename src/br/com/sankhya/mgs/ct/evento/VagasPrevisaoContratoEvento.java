@@ -20,7 +20,7 @@ public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-
+        vagasPrevisaoContratoController.beforeDelete(persistenceEvent);
     }
 
     @Override

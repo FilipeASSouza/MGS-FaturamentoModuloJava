@@ -93,4 +93,7 @@ public class VagasPrevisaoContratoModel {
         }
     }
 
+    public void validaDelete() throws Exception {
+        ErroUtils.disparaErro("Vaga não pode ser deletada!");
+    }
 }

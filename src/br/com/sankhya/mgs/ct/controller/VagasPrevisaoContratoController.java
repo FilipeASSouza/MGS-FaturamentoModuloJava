@@ -11,17 +11,24 @@ public class VagasPrevisaoContratoController {
     }
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
-        vagasPrevisaoContratoModel.setVo(vo);
+        inicializaVariaveis(persistenceEvent);
         vagasPrevisaoContratoModel.validaDadosUpdate(oldVO);
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        vagasPrevisaoContratoModel.setVo(vo);
+        inicializaVariaveis(persistenceEvent);
         vagasPrevisaoContratoModel.alteraDadosDerivados();
 
     }
 
+    public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
+        inicializaVariaveis(persistenceEvent);
+        vagasPrevisaoContratoModel.validaDelete();
+    }
+
+    private void inicializaVariaveis(PersistenceEvent persistenceEvent){
+        DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
+        vagasPrevisaoContratoModel.setVo(vo);
+    }
 }

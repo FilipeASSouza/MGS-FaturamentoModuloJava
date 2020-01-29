@@ -95,7 +95,7 @@ BEGIN
                                 CONFIG)
             VALUES   (V_ULTCOD,
                       'MGSCT_Vagas_Previsao_Contrato',
-                      'MGSCT - Evento Previsoes Contrato',
+                      'MGSCT - Evento Vagas Previsao Contrato',
                       'S',
                       'RJ',
                       '<eventConfig><javaCall codModulo="'
@@ -103,6 +103,57 @@ BEGIN
                           || '" className="br.com.sankhya.mgs.ct.evento.VagasPrevisaoContratoEvento"/></eventConfig>');
         END IF;
 
+/*MGSCT_Previsoes_Unidade*/
+        SELECT   COUNT ( * )
+        INTO   V_CONTADOR
+        FROM   TSIEVP
+        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Unidade';
+
+        IF (V_CONTADOR = 0)
+        THEN
+            V_ULTCOD := V_ULTCOD + 1;
+
+            INSERT INTO TSIEVP (NUEVENTO,
+                                NOMEINSTANCIA,
+                                DESCRICAO,
+                                ATIVO,
+                                TIPO,
+                                CONFIG)
+            VALUES   (V_ULTCOD,
+                      'MGSCT_Previsoes_Unidade',
+                      'MGSCT - Evento Previsoes Unidade',
+                      'S',
+                      'RJ',
+                      '<eventConfig><javaCall codModulo="'
+                          || V_CODMODULO
+                          || '" className="br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento"/></eventConfig>');
+        END IF;
+
+        /*MGSCT_Previsoes_Unidade_Ser*/
+        SELECT   COUNT ( * )
+        INTO   V_CONTADOR
+        FROM   TSIEVP
+        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Unidade_Ser';
+
+        IF (V_CONTADOR = 0)
+        THEN
+            V_ULTCOD := V_ULTCOD + 1;
+
+            INSERT INTO TSIEVP (NUEVENTO,
+                                NOMEINSTANCIA,
+                                DESCRICAO,
+                                ATIVO,
+                                TIPO,
+                                CONFIG)
+            VALUES   (V_ULTCOD,
+                      'MGSCT_Previsoes_Unidade_Ser',
+                      'MGSCT - Evento Previsoes Unidade',
+                      'S',
+                      'RJ',
+                      '<eventConfig><javaCall codModulo="'
+                          || V_CODMODULO
+                          || '" className="br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento"/></eventConfig>');
+        END IF;
 
         /*atualizar tgfnum com o ultimo numero*/
         UPDATE   TGFNUM
@@ -111,4 +162,3 @@ BEGIN
     END IF;
     COMMIT;
 END;
-''

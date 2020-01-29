@@ -4,31 +4,37 @@ import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.mgs.ct.model.VagasPrevisaoContratoModel;
 
+/**
+ * Entidade: MGSCT_Vagas_Previsao_Contrato
+ * Tabela: MGSTCTCONTRATOVAGA
+ * Chave: NUCONTRVAGA
+ */
+
 public class VagasPrevisaoContratoController {
-    VagasPrevisaoContratoModel vagasPrevisaoContratoModel;
+    VagasPrevisaoContratoModel model;
     public VagasPrevisaoContratoController() {
-        vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
+        model = new VagasPrevisaoContratoModel();
     }
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         inicializaVariaveis(persistenceEvent);
-        vagasPrevisaoContratoModel.validaDadosUpdate(oldVO);
+        model.validaDadosUpdate(oldVO);
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        vagasPrevisaoContratoModel.alteraDadosDerivados();
+        model.alteraDadosDerivados();
 
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        vagasPrevisaoContratoModel.validaDelete();
+        model.validaDelete();
     }
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent){
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        vagasPrevisaoContratoModel.setVo(vo);
+        model.setVo(vo);
     }
 }

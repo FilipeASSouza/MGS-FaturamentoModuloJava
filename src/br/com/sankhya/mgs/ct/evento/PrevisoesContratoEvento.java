@@ -8,7 +8,9 @@ import br.com.sankhya.mgs.ct.controller.PrevisoesContratoController;
 /**
  * Entidade: MGSCT_Previsoes_Contrato
  * Tabela: MGSTCTCONTRATOPREV
+ * Chave: NUCONTRPREV
  */
+
 public class PrevisoesContratoEvento implements EventoProgramavelJava {
     private PrevisoesContratoController previsoesContratoController = new PrevisoesContratoController();
 

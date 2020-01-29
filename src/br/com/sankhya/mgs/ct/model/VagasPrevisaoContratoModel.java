@@ -16,6 +16,7 @@ import java.util.Collection;
  * Tabela: MGSTCTCONTRATOVAGA
  * Chave: NUCONTRVAGA
  */
+
 public class VagasPrevisaoContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
     private DynamicVO vo;

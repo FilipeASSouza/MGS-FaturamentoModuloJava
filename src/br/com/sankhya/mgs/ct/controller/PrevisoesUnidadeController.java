@@ -5,8 +5,9 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.mgs.ct.model.PrevisoesUnidadeModel;
 
 /**
- * Entidade: MGSCT_Previsoes_Contrato
- * Tabela: MGSTCTCONTRATOPREV
+ * Entidade: MGSCT_Previsoes_Unidade
+ * Tabela: MGSTCTUNIDADEPREV
+ * Chave: NUUNIDPREV
  */
 
 public class PrevisoesUnidadeController {

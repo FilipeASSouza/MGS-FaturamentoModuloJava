@@ -17,6 +17,7 @@ import java.util.HashMap;
  * Tabela: MGSTCTCONTRATOPREV
  * Chave: NUCONTRPREV
  */
+
 public class PrevisoesContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
     ;

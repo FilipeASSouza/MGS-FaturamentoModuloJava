@@ -5,6 +5,12 @@ import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.event.TransactionContext;
 import br.com.sankhya.mgs.ct.controller.VagasPrevisaoContratoController;
 
+/**
+ * Entidade: MGSCT_Vagas_Previsao_Contrato
+ * Tabela: MGSTCTCONTRATOVAGA
+ * Chave: NUCONTRVAGA
+ */
+
 public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
     private VagasPrevisaoContratoController vagasPrevisaoContratoController = new VagasPrevisaoContratoController();
 

@@ -5,10 +5,11 @@ import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.event.TransactionContext;
 import br.com.sankhya.mgs.ct.controller.PrevisoesUnidadeController;
 
-
-
-
-
+/**
+ * Entidade: MGSCT_Previsoes_Unidade
+ * Tabela: MGSTCTUNIDADEPREV
+ * Chave: NUUNIDPREV
+ */
 public class PrevisoesUnidadeEvento implements EventoProgramavelJava {
     private PrevisoesUnidadeController previsoesUnidadeController = new PrevisoesUnidadeController();
 

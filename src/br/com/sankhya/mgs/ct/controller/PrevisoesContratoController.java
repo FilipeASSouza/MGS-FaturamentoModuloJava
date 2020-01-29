@@ -4,39 +4,45 @@ import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.mgs.ct.model.PrevisoesContratoModel;
 
+/**
+ * Entidade: MGSCT_Previsoes_Contrato
+ * Tabela: MGSTCTCONTRATOPREV
+ * Chave: NUCONTRPREV
+ */
+
 public class PrevisoesContratoController {
-    PrevisoesContratoModel previsoesContratoModel;
+    PrevisoesContratoModel model;
     public PrevisoesContratoController() {
-        previsoesContratoModel = new PrevisoesContratoModel();
+        model = new PrevisoesContratoModel();
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
-        previsoesContratoModel.setVo(vo);
-        previsoesContratoModel.validaDadosInsert();
-        previsoesContratoModel.preecheCamposCalculados();
+        inicializaVariaveis(persistenceEvent);
+        model.validaDadosInsert();
+        model.preecheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
-        previsoesContratoModel.setVo(vo);
-        previsoesContratoModel.validaUpdate(persistenceEvent.getModifingFields());
+        inicializaVariaveis(persistenceEvent);
+        model.validaUpdate(persistenceEvent.getModifingFields());
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
-        previsoesContratoModel.setVo(vo);
-        previsoesContratoModel.criaRegistrosDerivados();
+        inicializaVariaveis(persistenceEvent);
+        model.criaRegistrosDerivados();
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
-        previsoesContratoModel.setVo(vo);
-        previsoesContratoModel.criaRegistrosDerivados();
+        inicializaVariaveis(persistenceEvent);
+        model.criaRegistrosDerivados();
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
-        previsoesContratoModel.setVo(vo);
-        previsoesContratoModel.validaDelete();
+        inicializaVariaveis(persistenceEvent);
+        model.validaDelete();
+    }
+
+    private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
+        DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
+        model.setVo(vo);
     }
 }

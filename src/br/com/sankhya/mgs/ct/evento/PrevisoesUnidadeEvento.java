@@ -16,7 +16,7 @@ public class PrevisoesUnidadeEvento implements EventoProgramavelJava {
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-
+        previsoesUnidadeController.beforeInsert(persistenceEvent);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class PrevisoesUnidadeEvento implements EventoProgramavelJava {
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-
+        previsoesUnidadeController.afterInsert(persistenceEvent);
     }
 
     @Override

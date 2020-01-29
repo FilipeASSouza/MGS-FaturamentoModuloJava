@@ -25,7 +25,7 @@ public class PrevisoesContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-
+        previsoesContratoController.beforeDelete(persistenceEvent);
     }
 
     @Override

@@ -9,6 +9,7 @@ import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Entidade: MGSCT_Previsoes_Contrato
@@ -294,4 +295,17 @@ public class PrevisoesContratoModel {
         fluidUpdateVO.update();
     }
 
+    public void validaDelete() throws Exception {
+        JapeWrapper previsoesUnidadeDAO = JapeFactory.dao("MGSCT_Previsoes_Unidade");
+        Collection<DynamicVO> dynamicVOS = previsoesUnidadeDAO.find("NUMCONTRATO = ? AND CODVENTO = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ?",
+                vo.asBigDecimal("NUMCONTRATO"),
+                vo.asBigDecimal("CODEVENTO"),
+                vo.asBigDecimalOrZero("CODTIPOPOSTO"),
+                vo.asBigDecimalOrZero("CODSERVMATERIAL")
+        );
+        if (dynamicVOS.size() > 0){
+            ErroUtils.disparaErro("Previsão do Contrato já possui Previsão na Unidade e não pode ser deletado!");
+        }
+
+    }
 }

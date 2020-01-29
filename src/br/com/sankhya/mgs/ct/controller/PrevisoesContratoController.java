@@ -34,4 +34,10 @@ public class PrevisoesContratoController {
         previsoesContratoModel.setVo(vo);
         previsoesContratoModel.criaRegistrosDerivados();
     }
+
+    public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
+        DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
+        previsoesContratoModel.setVo(vo);
+        previsoesContratoModel.validaDelete();
+    }
 }

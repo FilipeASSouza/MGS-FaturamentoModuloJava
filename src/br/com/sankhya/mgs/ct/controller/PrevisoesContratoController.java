@@ -19,8 +19,7 @@ public class PrevisoesContratoController {
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO)persistenceEvent.getVo();
         previsoesContratoModel.setVo(vo);
-        //previsoesContratoModel.validaDados();
-        //previsoesContratoModel.preecheCamposCalculados();
+        previsoesContratoModel.validaUpdate(persistenceEvent.getModifingFields());
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {

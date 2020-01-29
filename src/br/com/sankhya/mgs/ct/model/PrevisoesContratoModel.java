@@ -10,6 +10,7 @@ import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Entidade: MGSCT_Previsoes_Contrato
@@ -17,22 +18,18 @@ import java.util.Collection;
  * Chave: NUCONTRPREV
  */
 public class PrevisoesContratoModel {
-    private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");;
+    private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
+    ;
     private DynamicVO vo;
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
     private BigDecimal numeroContrato;
 
-    public PrevisoesContratoModel()  {
+    public PrevisoesContratoModel() {
     }
 
     public PrevisoesContratoModel(BigDecimal numeroUnico) throws Exception {//Chave: NUCONTRPREV
         this.vo = dao.findByPK(numeroUnico);
-        inicialzaVariaveis();
-    }
-
-    public void setVo(DynamicVO vo) throws Exception {
-        this.vo = vo;
         inicialzaVariaveis();
     }
 
@@ -41,7 +38,12 @@ public class PrevisoesContratoModel {
         inicialzaVariaveis();
     }
 
-    private void inicialzaVariaveis()throws Exception {
+    public void setVo(DynamicVO vo) throws Exception {
+        this.vo = vo;
+        inicialzaVariaveis();
+    }
+
+    private void inicialzaVariaveis() throws Exception {
         DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
         codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
         numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
@@ -136,7 +138,7 @@ public class PrevisoesContratoModel {
 
             if ("S".equals(tipoEvento)) {
                 BigDecimal codigoControle = vo.asBigDecimal("CODCONTROLE");
-                if (codigoControle == null){
+                if (codigoControle == null) {
                     ErroUtils.disparaErro("Controle deve ser preenchido para esse tipo de evento!");
                 }
                 regraVadalicao = tipoEvento + vo.asBigDecimal("CODCONTROLE").toString();
@@ -144,7 +146,7 @@ public class PrevisoesContratoModel {
                 regraVadalicao = tipoEvento;
             }
 
-            if (regraVadalicao == null){
+            if (regraVadalicao == null) {
                 regraVadalicao = "";
             }
         }
@@ -160,7 +162,7 @@ public class PrevisoesContratoModel {
         BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
 
 
-        switch (getRegraValidacao()){
+        switch (getRegraValidacao()) {
             case "P"://posto
                 valorUnitario = getPrecoPosto();
                 if (BigDecimal.ZERO.equals(valorUnitario)) {
@@ -186,7 +188,7 @@ public class PrevisoesContratoModel {
 
         vo.setProperty("VLRUNITARIO", valorUnitario);
         vo.setProperty("QTDCONTRATADA", quantidade);
-        vo.setProperty("NUMCONTRATO",this.numeroContrato);
+        vo.setProperty("NUMCONTRATO", this.numeroContrato);
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
     }
 
@@ -200,7 +202,7 @@ public class PrevisoesContratoModel {
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
 
         BigDecimal numeroUnicoValoresEventos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator.proximo()){
+        if (nativeSqlDDecorator.proximo()) {
             numeroUnicoValoresEventos = nativeSqlDDecorator.getValorBigDecimal("NUCONTREVENTO");
             if (numeroUnicoValoresEventos == null) {
                 numeroUnicoValoresEventos = BigDecimal.ZERO;
@@ -230,7 +232,7 @@ public class PrevisoesContratoModel {
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
 
         BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator.proximo()){
+        if (nativeSqlDDecorator.proximo()) {
             numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
             if (numeroUnicoValoresProdutos == null) {
                 numeroUnicoValoresProdutos = BigDecimal.ZERO;
@@ -269,7 +271,7 @@ public class PrevisoesContratoModel {
 
         BigDecimal quantidadeVagasAtivas = new VagasPrevisaoContratoModel().quantidadeVagasAtivas(numeroUnicoPreviesoCotnrato, sigla);
 
-        if (quantidadeContratada.compareTo(quantidadeVagasAtivas)<0){
+        if (quantidadeContratada.compareTo(quantidadeVagasAtivas) < 0) {
             ErroUtils.disparaErro("A quantidade de vargas não pode ser diminuida!");
         }
 
@@ -291,21 +293,44 @@ public class PrevisoesContratoModel {
 
     public void diminuirUmQuantidadeContrata() throws Exception {
         FluidUpdateVO fluidUpdateVO = dao.prepareToUpdate(vo);
-        fluidUpdateVO.set("QTDCONTRATADA",vo.asBigDecimal("QTDCONTRATADA").subtract(BigDecimal.ONE));
+        fluidUpdateVO.set("QTDCONTRATADA", vo.asBigDecimal("QTDCONTRATADA").subtract(BigDecimal.ONE));
         fluidUpdateVO.update();
     }
 
     public void validaDelete() throws Exception {
         JapeWrapper previsoesUnidadeDAO = JapeFactory.dao("MGSCT_Previsoes_Unidade");
-        Collection<DynamicVO> dynamicVOS = previsoesUnidadeDAO.find("NUMCONTRATO = ? AND CODVENTO = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ?",
+        Collection<DynamicVO> dynamicVOS = previsoesUnidadeDAO.find("NUMCONTRATO = ? AND CODEVENTO = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ?",
                 vo.asBigDecimal("NUMCONTRATO"),
                 vo.asBigDecimal("CODEVENTO"),
                 vo.asBigDecimalOrZero("CODTIPOPOSTO"),
                 vo.asBigDecimalOrZero("CODSERVMATERIAL")
         );
-        if (dynamicVOS.size() > 0){
+        if (dynamicVOS.size() > 0) {
             ErroUtils.disparaErro("Previsão do Contrato já possui Previsão na Unidade e não pode ser deletado!");
         }
 
+    }
+
+    public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
+        if (campos.size() > 0) {
+            String primeiroCampo = (String) campos.keySet().toArray()[0];
+            switch (primeiroCampo) {
+                case "VLRUNITARIO":
+                    ErroUtils.disparaErro("Campo Vlr. Unitário não pode ser modificado");
+                    break;
+                case "CODEVENTO":
+                    ErroUtils.disparaErro("Campo Evento não pode ser modificado");
+                    break;
+                case "CODSERVMATERIAL":
+                    ErroUtils.disparaErro("Campo Serviço ou Material não pode ser modificado");
+                    break;
+                case "CODCONTROLE":
+                    ErroUtils.disparaErro("Campo Controle não pode ser modificado");
+                    break;
+                case "CODTIPOPOSTO":
+                    ErroUtils.disparaErro("Campo Tipo do Posto não pode ser modificado");
+                    break;
+            }
+        }
     }
 }

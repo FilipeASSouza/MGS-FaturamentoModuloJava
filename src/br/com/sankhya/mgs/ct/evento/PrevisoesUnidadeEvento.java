@@ -11,32 +11,32 @@ import br.com.sankhya.mgs.ct.controller.PrevisoesUnidadeController;
  * Chave: NUUNIDPREV
  */
 public class PrevisoesUnidadeEvento implements EventoProgramavelJava {
-    private PrevisoesUnidadeController previsoesUnidadeController = new PrevisoesUnidadeController();
+    private PrevisoesUnidadeController controller = new PrevisoesUnidadeController();
 
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesUnidadeController.beforeInsert(persistenceEvent);
+        controller.beforeInsert(persistenceEvent);
     }
 
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesUnidadeController.beforeUpdate(persistenceEvent);
+        controller.beforeUpdate(persistenceEvent);
     }
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.beforeDelete(persistenceEvent);
     }
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesUnidadeController.afterInsert(persistenceEvent);
+        controller.afterInsert(persistenceEvent);
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.afterUpdate(persistenceEvent);
     }
 
     @Override

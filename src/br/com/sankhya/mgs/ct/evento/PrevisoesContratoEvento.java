@@ -12,32 +12,32 @@ import br.com.sankhya.mgs.ct.controller.PrevisoesContratoController;
  */
 
 public class PrevisoesContratoEvento implements EventoProgramavelJava {
-    private PrevisoesContratoController previsoesContratoController = new PrevisoesContratoController();
+    private PrevisoesContratoController controller = new PrevisoesContratoController();
 
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.beforeInsert(persistenceEvent);
+        controller.beforeInsert(persistenceEvent);
     }
 
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.beforeUpdate(persistenceEvent);
+        controller.beforeUpdate(persistenceEvent);
     }
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.beforeDelete(persistenceEvent);
+        controller.beforeDelete(persistenceEvent);
     }
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.afterInsert(persistenceEvent);
+        controller.afterInsert(persistenceEvent);
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-        previsoesContratoController.afterUpdate(persistenceEvent);
+        controller.afterUpdate(persistenceEvent);
     }
 
     @Override

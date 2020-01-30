@@ -90,7 +90,7 @@ public class PrevisaoValidator {
         }
     }
 
-    private String getRegraValidacao() throws Exception {
+    public String getRegraValidacao() throws Exception {
         if (regraVadalicao.equals("")) {
             DynamicVO eventoVO = JapeFactory.dao("TGFECUS").findByPK(vo.asBigDecimal("CODEVENTO"));
             String tipoEvento = eventoVO.asString("TIPOEVENTO");

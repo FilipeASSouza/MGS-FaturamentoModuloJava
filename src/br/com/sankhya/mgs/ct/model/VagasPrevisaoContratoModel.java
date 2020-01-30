@@ -9,6 +9,7 @@ import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -96,5 +97,16 @@ public class VagasPrevisaoContratoModel {
 
     public void validaDelete() throws Exception {
         ErroUtils.disparaErro("Vaga não pode ser deletada!");
+    }
+
+    public ArrayList<DynamicVO> getVagasLivres(BigDecimal numeroUnicoPrevisaoContrato) throws Exception {
+        ArrayList<DynamicVO> vagaVOs = (ArrayList<DynamicVO>) dao.find("NUCONTRPREV = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato);
+        ArrayList<DynamicVO> vagaLivresVOs = new ArrayList();
+        for (DynamicVO vagaVO:vagaVOs){
+            if ("N".equals(vagaVO.asString("PREVUNID"))){
+                vagaLivresVOs.add(vagaVO);
+            }
+        }
+        return  vagaLivresVOs;
     }
 }

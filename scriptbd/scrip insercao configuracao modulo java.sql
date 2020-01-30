@@ -155,6 +155,34 @@ BEGIN
                           || '" className="br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento"/></eventConfig>');
         END IF;
 
+
+        /*MGSCT_Vagas_Previsao_Unidade*/
+
+        SELECT   COUNT ( * )
+        INTO   V_CONTADOR
+        FROM   TSIEVP
+        WHERE   NOMEINSTANCIA = 'MGSCT_Vagas_Previsao_Unidade';
+
+        IF (V_CONTADOR = 0)
+        THEN
+            V_ULTCOD := V_ULTCOD + 1;
+
+            INSERT INTO TSIEVP (NUEVENTO,
+                                NOMEINSTANCIA,
+                                DESCRICAO,
+                                ATIVO,
+                                TIPO,
+                                CONFIG)
+            VALUES   (V_ULTCOD,
+                      'MGSCT_Vagas_Previsao_Unidade',
+                      'MGSCT - Evento Vagas Previsao Unidade',
+                      'S',
+                      'RJ',
+                      '<eventConfig><javaCall codModulo="'
+                          || V_CODMODULO
+                          || '" className="br.com.sankhya.mgs.ct.evento.VagasPrevisaoUnidadeEvento"/></eventConfig>');
+        END IF;
+
         /*atualizar tgfnum com o ultimo numero*/
         UPDATE   TGFNUM
         SET   ULTCOD = V_ULTCOD

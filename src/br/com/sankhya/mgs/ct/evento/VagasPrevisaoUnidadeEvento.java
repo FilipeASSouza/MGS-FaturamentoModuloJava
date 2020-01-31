@@ -3,16 +3,16 @@ package br.com.sankhya.mgs.ct.evento;
 import br.com.sankhya.extensions.eventoprogramavel.EventoProgramavelJava;
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.event.TransactionContext;
-import br.com.sankhya.mgs.ct.controller.VagasPrevisaoContratoController;
+import br.com.sankhya.mgs.ct.controller.VagasPrevisaoUnidadeController;
 
 /**
- * Entidade: MGSCT_Vagas_Previsao_Contrato
- * Tabela: MGSTCTCONTRATOVAGA
- * Chave: NUCONTRVAGA
+ * Entidade: MGSCT_Vagas_Previsao_Unidade
+ * Tabela: MGSTCTUNIDPREVVAGA
+ * Chave: NUUNIDPREVVAGA
  */
 
-public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
-    private VagasPrevisaoContratoController controller = new VagasPrevisaoContratoController();
+public class VagasPrevisaoUnidadeEvento implements EventoProgramavelJava {
+    VagasPrevisaoUnidadeController controller = new VagasPrevisaoUnidadeController();
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {

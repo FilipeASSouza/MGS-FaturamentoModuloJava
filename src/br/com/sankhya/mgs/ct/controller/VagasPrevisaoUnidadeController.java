@@ -1,27 +1,17 @@
 package br.com.sankhya.mgs.ct.controller;
 
-
-import br.com.sankhya.jape.event.PersistenceEvent;
-import br.com.sankhya.mgs.ct.model.VagasPrevisaoContratoModel;
-
-public class VagasPrevisaoContratoController {
-    public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
-        VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
-        vagasPrevisaoContratoModel.validaDelete();
-
-    }
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
-import br.com.sankhya.mgs.ct.model.VagasPrevisaoContratoModel;
+import br.com.sankhya.mgs.ct.model.VagasPrevisaoUnidadeModel;
 
 /**
- * Entidade: MGSCT_Vagas_Previsao_Contrato
- * Tabela: MGSTCTCONTRATOVAGA
- * Chave: NUCONTRVAGA
+ * Entidade: MGSCT_Vagas_Previsao_Unidade
+ * Tabela: MGSTCTUNIDPREVVAGA
+ * Chave: NUUNIDPREVVAGA
  */
 
-public class VagasPrevisaoContratoController {
-    VagasPrevisaoContratoModel model = new VagasPrevisaoContratoModel();
+public class VagasPrevisaoUnidadeController {
+    VagasPrevisaoUnidadeModel model = new VagasPrevisaoUnidadeModel();
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
@@ -40,7 +30,7 @@ public class VagasPrevisaoContratoController {
         model.validaDelete();
     }
 
-    private void inicializaVariaveis(PersistenceEvent persistenceEvent){
+    private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
         model.setVo(vo);
     }

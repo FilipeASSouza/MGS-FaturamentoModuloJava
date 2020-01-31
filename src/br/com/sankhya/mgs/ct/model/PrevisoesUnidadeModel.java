@@ -8,6 +8,7 @@ import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +19,19 @@ import java.util.ArrayList;
 public class PrevisoesUnidadeModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Unidade");;
     private DynamicVO vo;
+
+    /**
+     * Entidade: MGSCT_Unidades
+     * Tabela: MGSTCTCONTRCENT
+     * Chave: NUCONTRCENT
+     */
+    private DynamicVO mestrevo;
+
+    /**
+     * Entidade: MGSCT_Previsoes_Contrato
+     * Tabela: MGSTCTCONTRATOPREV
+     * Chave: NUCONTRPREV
+     */
     private DynamicVO previsoesContratoVO;
     private BigDecimal numeroContrato;
     private BigDecimal numeroUnicoModalidade;
@@ -52,9 +66,9 @@ public class PrevisoesUnidadeModel {
         previsaoValidator = new PrevisaoValidator();
         previsaoValidator.setVo(vo);
 
-        DynamicVO unidadeVO = JapeFactory.dao("MGSCT_Unidades").findByPK(vo.asBigDecimal("NUCONTRCENT"));
-        numeroContrato = unidadeVO.asBigDecimal("NUMCONTRATO");
-        numeroUnicoModalidade = unidadeVO.asBigDecimal("MGSCT_Local_Contrato.NUMODALIDADE");
+        mestrevo = JapeFactory.dao("MGSCT_Unidades").findByPK(vo.asBigDecimal("NUCONTRCENT"));
+        numeroContrato = mestrevo.asBigDecimal("NUMCONTRATO");
+        numeroUnicoModalidade = mestrevo.asBigDecimal("MGSCT_Local_Contrato.NUMODALIDADE");
         JapeWrapper previsoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
         previsoesContratoVO = previsoesContratoDAO.findOne("NVL(NUMCONTRATO,0) = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ? AND NVL(CODEVENTO,0) = ?  AND NVL(NUMODALIDADE,0) =?",
                 numeroContrato,
@@ -169,7 +183,14 @@ public class PrevisoesUnidadeModel {
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
         VagasPrevisaoUnidadeModel vagasPrevisaoUnidadeModel = new VagasPrevisaoUnidadeModel();
         for (DynamicVO vagaVO : vagaVOs) {
-            vagasPrevisaoUnidadeModel.criar(vo.asBigDecimal("NUUNIDPREV"), vagaVO.asString("CODVAGA"));
+            BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
+            String codigoVaga = vagaVO.asString("CODVAGA");
+            Timestamp dataInicioUnidade = mestrevo.asTimestamp("DTINICIO");
+            vagasPrevisaoUnidadeModel.criar(
+                    numeroUnicoPrevisaoUnidade,
+                    codigoVaga,
+                    dataInicioUnidade
+                    );
         }
     }
 }

@@ -37,7 +37,7 @@ public class PrevisoesUnidadeController {
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDelete();
+        model.validaDelete();
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {

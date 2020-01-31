@@ -229,4 +229,8 @@ public class PrevisoesUnidadeModel {
             ErroUtils.disparaErro(mensagemErro);
         }
     }
+
+    public void validaDelete() throws Exception {
+        ErroUtils.disparaErro("Previsão da unidade não pode ser deletada!");
+    }
 }

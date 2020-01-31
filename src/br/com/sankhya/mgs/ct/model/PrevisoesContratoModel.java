@@ -9,6 +9,7 @@ import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +23,14 @@ import java.util.HashMap;
 public class PrevisoesContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
     private DynamicVO vo;
+
+    /**
+     * Entidade: MGSCT_Modalidade_Contrato
+     * Tabela: MGSTCTMODALCONTR
+     * Chave: NUMODALIDADE
+     */
+    private DynamicVO mestrevo;
+
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
     private BigDecimal numeroContrato;
@@ -45,9 +54,9 @@ public class PrevisoesContratoModel {
     }
 
     private void inicialzaVariaveis() throws Exception {
-        DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
-        codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
-        numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
+        mestrevo = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
+        codigoModelidade = mestrevo.asBigDecimal("CODTPN");
+        numeroContrato = mestrevo.asBigDecimal("NUMCONTRATO");
         regraVadalicao = "";
     }
 
@@ -217,7 +226,14 @@ public class PrevisoesContratoModel {
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
         VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
         for (DynamicVO vagaVO : vagaVOs) {
-            vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asString("CODVAGA"));
+            BigDecimal numeroUnicoPrevisoesContrato = vo.asBigDecimal("NUCONTRPREV");
+            String codigoVaga = vagaVO.asString("CODVAGA");
+            Timestamp dataInicio = mestrevo.asTimestamp("MGSCT_Dados_Contrato.DTINICIO");
+            vagasPrevisaoContratoModel.criar(
+                    numeroUnicoPrevisoesContrato,
+                    codigoVaga,
+                    dataInicio
+                    );
         }
     }
 

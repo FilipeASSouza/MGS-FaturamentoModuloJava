@@ -39,11 +39,11 @@ public class VagasPrevisaoContratoModel {
 
     }
 
-    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
+    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga, Timestamp dataInicio) throws Exception {
         FluidCreateVO fluidCreateVO = dao.create();
         fluidCreateVO.set("NUCONTRPREV",numeroUnicoPrevisaoContrato);
         fluidCreateVO.set("CODVAGA",codigoVaga);
-        fluidCreateVO.set("DTINICIO", TimeUtils.getNow());
+        fluidCreateVO.set("DTINICIO", dataInicio);
         DynamicVO save = fluidCreateVO.save();
         return save;
     }

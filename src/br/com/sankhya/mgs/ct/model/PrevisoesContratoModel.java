@@ -233,7 +233,7 @@ public class PrevisoesContratoModel {
                     numeroUnicoPrevisoesContrato,
                     codigoVaga,
                     dataInicio
-                    );
+            );
         }
     }
 
@@ -258,25 +258,37 @@ public class PrevisoesContratoModel {
     }
 
     public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
-        if (campos.size() > 0) {
-            String primeiroCampo = (String) campos.keySet().toArray()[0];
-            switch (primeiroCampo) {
-                case "VLRUNITARIO":
-                    ErroUtils.disparaErro("Campo Vlr. Unitário não pode ser modificado");
-                    break;
-                case "CODEVENTO":
-                    ErroUtils.disparaErro("Campo Evento não pode ser modificado");
-                    break;
-                case "CODSERVMATERIAL":
-                    ErroUtils.disparaErro("Campo Serviço ou Material não pode ser modificado");
-                    break;
-                case "CODCONTROLE":
-                    ErroUtils.disparaErro("Campo Controle não pode ser modificado");
-                    break;
-                case "CODTIPOPOSTO":
-                    ErroUtils.disparaErro("Campo Tipo do Posto não pode ser modificado");
-                    break;
+        String mensagemErro = "";
+        if (vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(3)) || vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(4)))
+            if (campos.containsKey("VLRUNITARIO")) {
+                mensagemErro += "Campo Vlr. Unitário não pode ser modificado. ";
             }
+
+        if (campos.containsKey("CODEVENTO")) {
+            mensagemErro += "Campo Evento não pode ser modificado. ";
         }
+
+        if (campos.containsKey("CODSERVMATERIAL")) {
+            mensagemErro += "Campo Serviço ou Material não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODCONTROLE")) {
+            mensagemErro += "Campo Controle não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODTIPOPOSTO")) {
+            mensagemErro += "Campo Tipo do Posto não pode ser modificado. ";
+        }
+
+        if (mensagemErro != "") {
+            ErroUtils.disparaErro(mensagemErro);
+        }
+
+    }
+
+    public void recalculaCamposCalculados() {
+        BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
+        BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
+        vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
     }
 }

@@ -15,7 +15,8 @@ public class PrevisoesUnidadeController {
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaUpdate(persistenceEvent.getModifingFields());
+        model.validaUpdate(persistenceEvent.getModifingFields());
+        model.recalculaCamposCalculados();
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {

@@ -10,6 +10,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Entidade: MGSCT_Previsoes_Unidade
@@ -17,7 +18,7 @@ import java.util.ArrayList;
  * Chave: NUUNIDPREV
  */
 public class PrevisoesUnidadeModel {
-    private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Unidade");;
+    private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Unidade");
     private DynamicVO vo;
 
     /**
@@ -36,7 +37,8 @@ public class PrevisoesUnidadeModel {
     private BigDecimal numeroContrato;
     private BigDecimal numeroUnicoModalidade;
     private PrevisaoValidator previsaoValidator;
-    public PrevisoesUnidadeModel()  {
+
+    public PrevisoesUnidadeModel() {
 
     }
 
@@ -62,7 +64,7 @@ public class PrevisoesUnidadeModel {
         inicialzaVariaveis();
     }
 
-    private void inicialzaVariaveis()throws Exception {
+    private void inicialzaVariaveis() throws Exception {
         previsaoValidator = new PrevisaoValidator();
         previsaoValidator.setVo(vo);
 
@@ -84,7 +86,7 @@ public class PrevisoesUnidadeModel {
     public void validaDadosInsert() throws Exception {
         previsaoValidator.validaDadosInsert();
 
-        if (previsoesContratoVO==null){
+        if (previsoesContratoVO == null) {
             ErroUtils.disparaErro("Não foi encontrado uma provisão do contrado com os mesmos dados da previsão unidade lancada!");
         }
         //todo valida quantidade com quantidade do contrato e vagas previstas na unidade
@@ -105,7 +107,7 @@ public class PrevisoesUnidadeModel {
 
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto
-                if (previsoesContratoVO == null){
+                if (previsoesContratoVO == null) {
                     ErroUtils.disparaErro("Previsão de contrato não localizada");
                 }
                 valorUnitario = previsoesContratoVO.asBigDecimal("VLRUNITARIO");
@@ -122,7 +124,7 @@ public class PrevisoesUnidadeModel {
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4
-                if (previsoesContratoVO == null){
+                if (previsoesContratoVO == null) {
                     ErroUtils.disparaErro("Previsão de contrato não localizada");
                 }
                 valorUnitario = previsoesContratoVO.asBigDecimal("VLRUNITARIO");
@@ -138,23 +140,23 @@ public class PrevisoesUnidadeModel {
         vo.setProperty("QTDCONTRATADA", quantidade);
         vo.setProperty("NUMCONTRATO", this.numeroContrato);
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
-        if (!BigDecimal.ZERO.equals(previsoesContratoVO.asBigDecimalOrZero("CODCONTROLE"))){
+        if (!BigDecimal.ZERO.equals(previsoesContratoVO.asBigDecimalOrZero("CODCONTROLE"))) {
             vo.setProperty("CODCONTROLE", previsoesContratoVO.asBigDecimal("CODCONTROLE"));
         }
 
 
     }
+
     public void criaRegistrosDerivados() throws Exception {
         BigDecimal codigoTipoPosto = vo.asBigDecimalOrZero("CODTIPOPOSTO");
         boolean postoPreechido = !(codigoTipoPosto.equals(BigDecimal.ZERO));
         if (postoPreechido) {
 
 
-            ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV") );
+            ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
 
-            int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue()  ;
-            BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA") ;
-
+            int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
+            BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
 
 
             BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
@@ -166,13 +168,13 @@ public class PrevisoesUnidadeModel {
 
             BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
 
-            if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) <0){
+            if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
                 ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsa da unidade");
             }
 
             ArrayList<DynamicVO> vagaVOs = new ArrayList();
 
-            for (BigDecimal i = BigDecimal.ZERO; i.compareTo(quantidadeCriarNovasVagas)<0; i = i.add(BigDecimal.ONE)){
+            for (BigDecimal i = BigDecimal.ZERO; i.compareTo(quantidadeCriarNovasVagas) < 0; i = i.add(BigDecimal.ONE)) {
                 vagaVOs.add(vagaLivresVOs.remove(0));
             }
 
@@ -190,7 +192,41 @@ public class PrevisoesUnidadeModel {
                     numeroUnicoPrevisaoUnidade,
                     codigoVaga,
                     dataInicioUnidade
-                    );
+            );
+        }
+    }
+
+    public void recalculaCamposCalculados() {
+        BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
+        BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
+        vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
+    }
+
+    public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
+        String mensagemErro = "";
+        if (vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(3)) || vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(4)))
+            if (campos.containsKey("VLRUNITARIO")) {
+                mensagemErro += "Campo Vlr. Unitário não pode ser modificado. ";
+            }
+
+        if (campos.containsKey("CODEVENTO")) {
+            mensagemErro += "Campo Evento não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODSERVMATERIAL")) {
+            mensagemErro += "Campo Serviço ou Material não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODCONTROLE")) {
+            mensagemErro += "Campo Controle não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODTIPOPOSTO")) {
+            mensagemErro += "Campo Tipo do Posto não pode ser modificado. ";
+        }
+
+        if (mensagemErro != "") {
+            ErroUtils.disparaErro(mensagemErro);
         }
     }
 }

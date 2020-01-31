@@ -24,6 +24,7 @@ public class PrevisoesContratoController {
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaUpdate(persistenceEvent.getModifingFields());
+        model.recalculaCamposCalculados();
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {

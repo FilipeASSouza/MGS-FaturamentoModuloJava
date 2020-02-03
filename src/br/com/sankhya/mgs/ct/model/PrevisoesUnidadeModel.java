@@ -10,6 +10,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -83,18 +84,86 @@ public class PrevisoesUnidadeModel {
 
     }
 
+    private Collection<DynamicVO> buscaPrevisoesUnidadeDeMesmoPrevisaoContrato() throws Exception {
+        Collection<DynamicVO> dynamicVOS = dao.find("NVL(NUMCONTRATO,0) = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ? AND NVL(CODEVENTO,0) = ? AND NUCONTRCENT IN (SELECT NUCONTRCENT FROM MGSTCTCONTRCENT WHERE NULOCALCONT IN (SELECT NULOCALCONT FROM MGSTCTLOCALCONT WHERE NUMODALIDADE = ?))",
+                numeroContrato,
+                vo.asBigDecimalOrZero("CODTIPOPOSTO"),
+                vo.asBigDecimalOrZero("CODSERVMATERIAL"),
+                vo.asBigDecimalOrZero("CODEVENTO"),
+                numeroUnicoModalidade
+        );
+        return dynamicVOS;
+    }
+
     public void validaDadosInsert() throws Exception {
+        if (!BigDecimal.ZERO.equals(previsoesContratoVO.asBigDecimalOrZero("CODCONTROLE"))) {
+            vo.setProperty("CODCONTROLE", previsoesContratoVO.asBigDecimal("CODCONTROLE"));
+        }
         previsaoValidator.validaDadosInsert();
 
         if (previsoesContratoVO == null) {
             ErroUtils.disparaErro("Não foi encontrado uma provisão do contrado com os mesmos dados da previsão unidade lancada!");
         }
-        //todo valida quantidade com quantidade do contrato e vagas previstas na unidade
+
+        switch (previsaoValidator.getRegraValidacao()) {
+            case "P"://posto
+            case "S3"://serviceo/material controle 3
+            case "S4"://serviceo/material controle 4
+                //todo valida quantidade total da unidade com cotnrato
+                if (!validaQuantidadeTotalUnidadesPeloContrato()) {
+                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+
+            case "C"://contrato
+            case "S1"://servico/material controle 1
+            case "S2"://servico/material controle 2
+                if (vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO)){
+                    vo.setProperty("QTDCONTRATADA",BigDecimal.ONE);
+                }
+
+                //todo valida valor total da unidade com contrato
+                if (!validaValorTotalUnidadesPeloContrato()) {
+                    ErroUtils.disparaErro("Valor total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+            case "R"://rescisao
+            default:
+        }
     }
 
-    public void validaDadosUpdate() throws Exception {
+    private boolean validaQuantidadeTotalUnidadesPeloContrato() throws Exception {
+        Collection<DynamicVO> previsaoUndadeVOS = buscaPrevisoesUnidadeDeMesmoPrevisaoContrato();
+        BigDecimal quantidadeContratadaOutrasUnidades = BigDecimal.ZERO;
+        for (DynamicVO previsaoUnidadeVO : previsaoUndadeVOS) {
+            BigDecimal qtdcontratada = previsaoUnidadeVO.asBigDecimalOrZero("QTDCONTRATADA");
+            quantidadeContratadaOutrasUnidades = quantidadeContratadaOutrasUnidades.add(qtdcontratada);
+        }
 
+        BigDecimal quantidadeContratadaUnidadesTotal = quantidadeContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA"));
+        BigDecimal quantidadePrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA");
+
+        Boolean validado = quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
+
+        return validado;
     }
+
+    private boolean validaValorTotalUnidadesPeloContrato() throws Exception {
+        Collection<DynamicVO> previsaoUndadeVOS = buscaPrevisoesUnidadeDeMesmoPrevisaoContrato();
+        BigDecimal valorContratadaOutrasUnidades = BigDecimal.ZERO;
+        for (DynamicVO previsaoUnidadeVO : previsaoUndadeVOS) {
+            BigDecimal qtdcontratada = previsaoUnidadeVO.asBigDecimalOrZero("QTDCONTRATADA").multiply(previsaoUnidadeVO.asBigDecimalOrZero("VLRUNITARIO"));
+            valorContratadaOutrasUnidades = valorContratadaOutrasUnidades.add(qtdcontratada);
+        }
+
+        BigDecimal valorContratadaUnidadesTotal = valorContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA").multiply(vo.asBigDecimalOrZero("VLRUNITARIO")));
+        BigDecimal valorPrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA").multiply(previsoesContratoVO.asBigDecimalOrZero("VLRUNITARIO"));
+
+        Boolean validado = valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
+
+        return validado;
+    }
+
 
     public void preecheCamposCalculados() throws Exception {
 
@@ -118,8 +187,8 @@ public class PrevisoesUnidadeModel {
                 break;
             case "C"://contrato
             case "R"://rescisao
-            case "S1"://serviceo/material controle 1
-            case "S2"://serviceo/material controle 2
+            case "S1"://servico/material controle 1
+            case "S2"://servico/material controle 2
                 quantidade = BigDecimal.ONE;
                 break;
             case "S3"://serviceo/material controle 3

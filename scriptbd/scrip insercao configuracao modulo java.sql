@@ -67,8 +67,18 @@ BEGIN
             FROM DUAL
             UNION ALL
             SELECT 'MGSCT_Tributos_Contrato' AS NOMEINSTANCIA,
-                   'MGSCT - Evento Tributos_Contrato' AS DESCRICAO,
+                   'MGSCT - Evento Tributos Contrato' AS DESCRICAO,
                    'br.com.sankhya.mgs.ct.evento.TributosContratoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Alocacoes_PS' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Alocacoes Posto' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.AlocacoesPostoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Alocacoes_Servicos' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Alocacoes Servicos' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.AlocacoesServicosEvento' AS CLASSNAME
             FROM DUAL
         ) LOOP
 

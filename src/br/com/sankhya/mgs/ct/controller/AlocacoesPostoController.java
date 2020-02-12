@@ -14,12 +14,14 @@ public class AlocacoesPostoController {
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDadosInsert();
+        model.validaDadosInsert();
         //model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
+        model.validaDadosUpdate();
+        //DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         //model.validaDadosUpdate(oldVO);
         //model.recalculaCamposCalculados();
 

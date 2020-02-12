@@ -15,12 +15,12 @@ public class AlocacoesPostoEvento implements EventoProgramavelJava {
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.beforeInsert(persistenceEvent);
     }
 
     @Override
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.beforeUpdate(persistenceEvent);
     }
 
     @Override
@@ -30,12 +30,12 @@ public class AlocacoesPostoEvento implements EventoProgramavelJava {
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.afterInsert(persistenceEvent);
     }
 
     @Override
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
-
+        controller.afterUpdate(persistenceEvent);
     }
 
     @Override

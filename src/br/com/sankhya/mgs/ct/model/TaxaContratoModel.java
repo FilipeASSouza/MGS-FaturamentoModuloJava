@@ -45,7 +45,7 @@ public class TaxaContratoModel {
 
     }
 
-    private void preecheCamposCalculados() throws Exception {
+    private void preencheCamposCalculados() throws Exception {
 
     }
 

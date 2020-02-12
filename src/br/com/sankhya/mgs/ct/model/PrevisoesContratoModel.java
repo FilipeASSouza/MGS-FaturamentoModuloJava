@@ -93,7 +93,7 @@ public class PrevisoesContratoModel {
         return regraVadalicao;
     }
 
-    public void preecheCamposCalculados() throws Exception {
+    public void preencheCamposCalculados() throws Exception {
         boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
         boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
 

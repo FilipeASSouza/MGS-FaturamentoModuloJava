@@ -21,7 +21,7 @@ public class TaxaContratoController {
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaDadosInsert();
-        //model.preecheCamposCalculados();
+        //model.preencheCamposCalculados();
     }
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {

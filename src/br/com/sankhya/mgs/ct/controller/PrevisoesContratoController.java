@@ -19,7 +19,7 @@ public class PrevisoesContratoController {
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaDadosInsert();
-        model.preecheCamposCalculados();
+        model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);

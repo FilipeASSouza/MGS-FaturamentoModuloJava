@@ -69,7 +69,7 @@ public class VagasPrevisaoUnidadeModel {
         }
     }
 
-    private void preecheCamposCalculados() throws Exception {
+    private void preencheCamposCalculados() throws Exception {
 
     }
 

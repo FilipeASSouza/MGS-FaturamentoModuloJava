@@ -46,7 +46,7 @@ public class LocalTipoFaturaModel {
 
     }
 
-    private void preecheCamposCalculados() throws Exception {
+    private void preencheCamposCalculados() throws Exception {
 
     }
 

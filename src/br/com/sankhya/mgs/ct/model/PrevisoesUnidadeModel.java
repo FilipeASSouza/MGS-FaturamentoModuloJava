@@ -271,7 +271,7 @@ public class PrevisoesUnidadeModel {
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
     }
 
-    public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
+    public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
         if (vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(3)) || vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(4)))
             if (campos.containsKey("VLRUNITARIO")) {

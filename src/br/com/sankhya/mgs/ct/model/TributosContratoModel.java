@@ -54,7 +54,7 @@ import java.util.Collection;
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Registor não pode excluido!");
+        ErroUtils.disparaErro("Registro não pode excluido!");
     }
 
     public Collection<DynamicVO> buscarRegistraPorNumeroUnicolocaltipofatura(BigDecimal numeroUnico) throws Exception {

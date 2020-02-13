@@ -112,7 +112,9 @@ public class PrevisoesContratoModel {
             case "R"://rescisao
             case "S1"://serviceo/material controle 1
             case "S2"://serviceo/material controle 2
-                quantidade = BigDecimal.ONE;
+                if (quantidade.equals(BigDecimal.ZERO)) {
+                    quantidade = BigDecimal.ONE;
+                }
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4

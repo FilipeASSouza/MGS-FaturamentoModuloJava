@@ -189,7 +189,9 @@ public class PrevisoesUnidadeModel {
             case "R"://rescisao
             case "S1"://servico/material controle 1
             case "S2"://servico/material controle 2
-                quantidade = BigDecimal.ONE;
+                if (quantidade.equals(BigDecimal.ZERO)) {
+                    quantidade = BigDecimal.ONE;
+                }
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4

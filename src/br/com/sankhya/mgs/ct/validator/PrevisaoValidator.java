@@ -62,8 +62,6 @@ public class PrevisaoValidator {
                     erro += "Posto não deve ser preenchido. ";
                 if (!servicoMaterialPreechido)
                     erro += "Serviço/Material deve ser preechido. ";
-                if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
                 if (!valorPreechido)
                     erro += "Valor deve ser preechido. ";
                 break;

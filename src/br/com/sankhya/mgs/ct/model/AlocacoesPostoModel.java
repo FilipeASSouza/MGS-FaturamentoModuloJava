@@ -5,9 +5,9 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -22,7 +22,7 @@ public class AlocacoesPostoModel {
     private String codigoVaga;
     private Timestamp dataInicio;
     private Timestamp dataFim;
-    private String matricula;
+    private BigDecimal matricula;
     private String tipoPosto;
     private BigDecimal numeroUnico;
 
@@ -48,7 +48,7 @@ public class AlocacoesPostoModel {
         codigoVaga = vo.asString("CODVAGA");
         dataInicio = vo.asTimestamp("DTINICIO");
         dataFim = vo.asTimestamp("DTFIM");
-        matricula = vo.asString("MATRICULA");
+        matricula = vo.asBigDecimalOrZero("MATRICULA");
         tipoPosto = JapeFactory.dao("TGFECUS")
                 .findByPK(vo.asBigDecimalOrZero("CODEVENTO"))
                 .asString("TIPOPOSTO");
@@ -60,11 +60,13 @@ public class AlocacoesPostoModel {
     public void validaDadosInsert() throws Exception {
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
+        validaStatusContratacaoVaga();
     }
 
     public void validaDadosUpdate() throws Exception {
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
+        validaStatusContratacaoVaga();
     }
 
     private void validaDadosUpdate(DynamicVO oldvo) throws Exception {
@@ -129,26 +131,25 @@ public class AlocacoesPostoModel {
 
     private void validaEncavalamentoPeriodosVaga() throws Exception {
 
+        String consulta = "BuscaEncavalamentoPeriodosVagaComDataFim.sql";
+        if (dataFim == null) {
+            consulta = "BuscaEncavalamentoPeriodosVagaSemDataFim.sql";
+        }
 
-        String filtro = " NUALOCAPS <> ? AND CODVAGA = ?  " +
-                "AND  " +
-                "(TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                "OR " +
-                "TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                "OR " +
-                "TRUNC(DTINICIO) BETWEEN TRUNC(?) AND TRUNC(?) " +
-                "OR " +
-                "TRUNC(DTFIM) BETWEEN TRUNC(?) AND TRUNC(?))";
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this,"sql/"+consulta);
 
 
-        Collection<DynamicVO> dynamicVOS = dao.find(filtro,
-                numeroUnico,
-                codigoVaga,
-                dataInicio, dataFim,
-                dataInicio, dataFim,
-                dataInicio, dataFim);
+        nativeSqlDecorator.setParametro("NUALOCAPS",numeroUnico);
+        nativeSqlDecorator.setParametro("CODVAGA",codigoVaga);
+        nativeSqlDecorator.setParametro("DTI",dataInicio);
+        if (dataFim != null) {
+            nativeSqlDecorator.setParametro("DTF", dataFim);
+        }
 
-        if (dynamicVOS.size() > 0) {
+        nativeSqlDecorator.proximo();
+
+
+        if (nativeSqlDecorator.getValorInt("QTD") > 0) {
             ErroUtils.disparaErro("Existe conflito de periodo para essa vaga em outra alocação, favor corrigir periodo!");
         }
 
@@ -157,27 +158,26 @@ public class AlocacoesPostoModel {
     private void validaEncavalamentoPeriodosMatricula() throws Exception {
 
 
-        String filtro = " NUALOCAPS <> ? AND MATRICULA = ?  " +
-                "AND CODEVENTO IN (SELECT CODEVENTO FROM AD_TGFECUS WHERE TIPOPOSTO = ?)" +
-                "AND  " +
-                "(TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                "OR " +
-                "TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                "OR " +
-                "TRUNC(DTINICIO) BETWEEN TRUNC(?) AND TRUNC(?) " +
-                "OR " +
-                "TRUNC(DTFIM) BETWEEN TRUNC(?) AND TRUNC(?))";
+        String consulta = "BuscaEncavalamentoPeriodosMatriculaComDataFim.sql";
+        if (dataFim == null) {
+            consulta = "BuscaEncavalamentoPeriodosMatriculaSemDataFim.sql";
+        }
+
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this,"sql/"+consulta);
 
 
-        Collection<DynamicVO> dynamicVOS = dao.find(filtro,
-                numeroUnico,
-                matricula,
-                tipoPosto,
-                dataInicio, dataFim,
-                dataInicio, dataFim,
-                dataInicio, dataFim);
+        nativeSqlDecorator.setParametro("NUALOCAPS",numeroUnico);
+        nativeSqlDecorator.setParametro("TIPOPOSTO",tipoPosto);
+        nativeSqlDecorator.setParametro("MATRICULA",matricula);
+        nativeSqlDecorator.setParametro("DTI",dataInicio);
+        if (dataFim != null) {
+            nativeSqlDecorator.setParametro("DTF", dataFim);
+        }
 
-        if (dynamicVOS.size() > 0) {
+        nativeSqlDecorator.proximo();
+
+
+        if (nativeSqlDecorator.getValorInt("QTD") > 0) {
             ErroUtils.disparaErro("Existe conflito de periodo para essa matricula em outra alocação, favor corrigir periodo!");
         }
 
@@ -188,34 +188,30 @@ public class AlocacoesPostoModel {
         final String funscaoGratificada = "FG";
 
         if (tipoPosto.equals(insalubridade) || tipoPosto.equals(funscaoGratificada)) {
-            String filtro = "  MATRICULA = ?  " +
-                    "AND CODEVENTO IN (SELECT CODEVENTO FROM AD_TGFECUS WHERE TIPOPOSTO = 'PS')" +
-                    "AND  " +
-                    "(TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                    "OR " +
-                    "TRUNC(?) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM) " +
-                    "OR " +
-                    "TRUNC(DTINICIO) BETWEEN TRUNC(?) AND TRUNC(?) " +
-                    "OR " +
-                    "TRUNC(DTFIM) BETWEEN TRUNC(?) AND TRUNC(?))";
-
-
-            DynamicVO alocacaoPricipalVO = dao.findOne(filtro,
-                    matricula,
-                    tipoPosto,
-                    dataInicio, dataFim,
-                    dataInicio, dataFim,
-                    dataInicio, dataFim);
-
-            if (alocacaoPricipalVO != null) {
-                vo.setProperty("NUALOCAPSPRINC", alocacaoPricipalVO.asBigDecimal("NUALOCAPS"));
+            String consulta = "BuscaAlocacaoPrincipalComDataFim.sql";
+            if (dataFim == null) {
+                consulta = "BuscaAlocacaoPrincipalSemDataFim.sql";
             }
 
+            NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
+
+
+            nativeSqlDecorator.setParametro("MATRICULA", matricula);
+            nativeSqlDecorator.setParametro("DTI", dataInicio);
+            if (dataFim != null) {
+                nativeSqlDecorator.setParametro("DTF", dataFim);
+            }
+
+            if (nativeSqlDecorator.proximo()) {
+                vo.setProperty("NUALOCAPSPRINC", nativeSqlDecorator.getValorBigDecimal("NUALOCAPS"));
+            } else {
+                ErroUtils.disparaErro("Aloção deve possui alocação principal e a mesma não foi localizada, favor varficar!");
+            }
         }
     }
 
     private void validaStatusContratacaoVaga() throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAOIN (2,3) AND COD_VAGA = :CODVAGA");
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA");
         nativeSqlDecorator.setParametro("CODVAGA",codigoVaga);
         nativeSqlDecorator.proximo();
         Boolean vagaLivre  = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);

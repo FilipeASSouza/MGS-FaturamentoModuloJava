@@ -2,44 +2,42 @@ package br.com.sankhya.mgs.ct.controller;
 
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
-import br.com.sankhya.mgs.ct.model.PrevisoesContratoModel;
+import br.com.sankhya.mgs.ct.model.AlocacoesServicosModel;
 
 /**
- * Entidade: MGSCT_Previsoes_Contrato
- * Tabela: MGSTCTCONTRATOPREV
- * Chave: NUCONTRPREV
+ * Entidade: MGSCT_Alocacoes_Servicos
+ * Tabela: MGSTCTALOCACAOSERV
+ * Chave: NUALOCASERV
  */
-
-public class PrevisoesContratoController {
-    PrevisoesContratoModel model;
-    public PrevisoesContratoController() {
-        model = new PrevisoesContratoModel();
-    }
+public class AlocacoesServicosController {
+    AlocacoesServicosModel model = new AlocacoesServicosModel();
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.validaDadosInsert();
-        model.preencheCamposCalculados();
+        //model.validaDadosInsert();
+        //model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.recalculaCamposCalculados();
+        //model.validaDadosUpdate(oldVO);
+        //model.recalculaCamposCalculados();
+
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.criaRegistrosDerivados();
+        //model.criaRegistrosDerivados();
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.criaRegistrosDerivados();
+        //model.criaRegistrosDerivados();
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.validaDelete();
+        //model.validaDelete();
     }
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {

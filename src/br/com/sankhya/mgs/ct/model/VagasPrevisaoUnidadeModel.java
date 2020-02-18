@@ -69,7 +69,7 @@ public class VagasPrevisaoUnidadeModel {
         }
     }
 
-    private void preecheCamposCalculados() throws Exception {
+    private void preencheCamposCalculados() throws Exception {
 
     }
 
@@ -81,11 +81,11 @@ public class VagasPrevisaoUnidadeModel {
         ErroUtils.disparaErro("Vaga não pode ser deletada!");
     }
 
-    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoUnidade, String codigoVaga) throws Exception {
+    public DynamicVO criar(BigDecimal numeroUnicoPrevisaoUnidade, String codigoVaga, Timestamp dataInicio) throws Exception {
         FluidCreateVO fluidCreateVO = dao.create();
         fluidCreateVO.set("NUUNIDPREV", numeroUnicoPrevisaoUnidade);
         fluidCreateVO.set("CODVAGA",codigoVaga);
-        fluidCreateVO.set("DTINICIO", TimeUtils.getNow());
+        fluidCreateVO.set("DTINICIO", dataInicio);
         DynamicVO save = fluidCreateVO.save();
         return save;
     }

@@ -9,6 +9,7 @@ import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +23,14 @@ import java.util.HashMap;
 public class PrevisoesContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Contrato");
     private DynamicVO vo;
+
+    /**
+     * Entidade: MGSCT_Modalidade_Contrato
+     * Tabela: MGSTCTMODALCONTR
+     * Chave: NUMODALIDADE
+     */
+    private DynamicVO mestrevo;
+
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
     private BigDecimal numeroContrato;
@@ -45,9 +54,9 @@ public class PrevisoesContratoModel {
     }
 
     private void inicialzaVariaveis() throws Exception {
-        DynamicVO modalidadeContratoVO = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
-        codigoModelidade = modalidadeContratoVO.asBigDecimal("CODTPN");
-        numeroContrato = modalidadeContratoVO.asBigDecimal("NUMCONTRATO");
+        mestrevo = JapeFactory.dao("MGSCT_Modalidade_Contrato").findByPK(vo.asBigDecimal("NUMODALIDADE"));
+        codigoModelidade = mestrevo.asBigDecimal("CODTPN");
+        numeroContrato = mestrevo.asBigDecimal("NUMCONTRATO");
         regraVadalicao = "";
     }
 
@@ -84,7 +93,7 @@ public class PrevisoesContratoModel {
         return regraVadalicao;
     }
 
-    public void preecheCamposCalculados() throws Exception {
+    public void preencheCamposCalculados() throws Exception {
         boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
         boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
 
@@ -103,7 +112,9 @@ public class PrevisoesContratoModel {
             case "R"://rescisao
             case "S1"://serviceo/material controle 1
             case "S2"://serviceo/material controle 2
-                quantidade = BigDecimal.ONE;
+                if (quantidade.equals(BigDecimal.ZERO)) {
+                    quantidade = BigDecimal.ONE;
+                }
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4
@@ -217,7 +228,14 @@ public class PrevisoesContratoModel {
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
         VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
         for (DynamicVO vagaVO : vagaVOs) {
-            vagasPrevisaoContratoModel.criar(vo.asBigDecimal("NUCONTRPREV"), vagaVO.asString("CODVAGA"));
+            BigDecimal numeroUnicoPrevisoesContrato = vo.asBigDecimal("NUCONTRPREV");
+            String codigoVaga = vagaVO.asString("CODVAGA");
+            Timestamp dataInicio = mestrevo.asTimestamp("MGSCT_Dados_Contrato.DTINICIO");
+            vagasPrevisaoContratoModel.criar(
+                    numeroUnicoPrevisoesContrato,
+                    codigoVaga,
+                    dataInicio
+            );
         }
     }
 
@@ -241,26 +259,38 @@ public class PrevisoesContratoModel {
 
     }
 
-    public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
-        if (campos.size() > 0) {
-            String primeiroCampo = (String) campos.keySet().toArray()[0];
-            switch (primeiroCampo) {
-                case "VLRUNITARIO":
-                    ErroUtils.disparaErro("Campo Vlr. Unitário não pode ser modificado");
-                    break;
-                case "CODEVENTO":
-                    ErroUtils.disparaErro("Campo Evento não pode ser modificado");
-                    break;
-                case "CODSERVMATERIAL":
-                    ErroUtils.disparaErro("Campo Serviço ou Material não pode ser modificado");
-                    break;
-                case "CODCONTROLE":
-                    ErroUtils.disparaErro("Campo Controle não pode ser modificado");
-                    break;
-                case "CODTIPOPOSTO":
-                    ErroUtils.disparaErro("Campo Tipo do Posto não pode ser modificado");
-                    break;
+    public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
+        String mensagemErro = "";
+        if (vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(3)) || vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(4)))
+            if (campos.containsKey("VLRUNITARIO")) {
+                mensagemErro += "Campo Vlr. Unitário não pode ser modificado. ";
             }
+
+        if (campos.containsKey("CODEVENTO")) {
+            mensagemErro += "Campo Evento não pode ser modificado. ";
         }
+
+        if (campos.containsKey("CODSERVMATERIAL")) {
+            mensagemErro += "Campo Serviço ou Material não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODCONTROLE")) {
+            mensagemErro += "Campo Controle não pode ser modificado. ";
+        }
+
+        if (campos.containsKey("CODTIPOPOSTO")) {
+            mensagemErro += "Campo Tipo do Posto não pode ser modificado. ";
+        }
+
+        if (mensagemErro != "") {
+            ErroUtils.disparaErro(mensagemErro);
+        }
+
+    }
+
+    public void recalculaCamposCalculados() {
+        BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
+        BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
+        vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
     }
 }

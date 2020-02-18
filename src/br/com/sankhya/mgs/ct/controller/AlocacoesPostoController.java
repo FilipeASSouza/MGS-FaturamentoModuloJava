@@ -2,19 +2,15 @@ package br.com.sankhya.mgs.ct.controller;
 
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
-import br.com.sankhya.mgs.ct.model.PrevisoesContratoModel;
+import br.com.sankhya.mgs.ct.model.AlocacoesPostoModel;
 
 /**
- * Entidade: MGSCT_Previsoes_Contrato
- * Tabela: MGSTCTCONTRATOPREV
- * Chave: NUCONTRPREV
+ * Entidade: MGSCT_Alocacoes_PS
+ * Tabela: MGSTCTALOCACAOPS
+ * Chave: NUALOCAPS
  */
-
-public class PrevisoesContratoController {
-    PrevisoesContratoModel model;
-    public PrevisoesContratoController() {
-        model = new PrevisoesContratoModel();
-    }
+public class AlocacoesPostoController {
+    AlocacoesPostoModel model = new AlocacoesPostoModel();
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -24,17 +20,21 @@ public class PrevisoesContratoController {
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.recalculaCamposCalculados();
+        model.validaDadosUpdate();
+        //DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
+        //model.validaDadosUpdate(oldVO);
+        //model.recalculaCamposCalculados();
+
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.criaRegistrosDerivados();
+        //model.criaRegistrosDerivados();
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.criaRegistrosDerivados();
+        //model.criaRegistrosDerivados();
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {

@@ -25,162 +25,91 @@ BEGIN
         WHERE   LOWER (RESOURCEID) = 'br.com.sankhya.mgs.ct';
 
 
-        /*Evento MGSCT_Previsoes_Contrato*/
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Contrato';
+        for dados in  (
+            SELECT 'MGSCT_Previsoes_Contrato' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Previsoes Contrato' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento' AS CLASSNAME
+                   FROM DUAL
+                   UNION ALL
+            SELECT 'MGSCT_Previsoes_Contrato_V' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Previsoes Contrato' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Vagas_Previsao_Contrato' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Vagas Previsao Contrato' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.VagasPrevisaoContratoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Previsoes_Unidade' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Previsoes Unidade' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Previsoes_Unidade_Ser' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Previsoes Unidade' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Vagas_Previsao_Unidade' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Vagas Previsao Unidade' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.VagasPrevisaoUnidadeEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Local_Tipo_Fatura' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Local Tipo Fatura' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.LocalTipoFaturaEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Taxa_Contrato' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Taxa Contrato' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.TaxaContratoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Tributos_Contrato' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Tributos Contrato' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.TributosContratoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Alocacoes_PS' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Alocacoes Posto' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.AlocacoesPostoEvento' AS CLASSNAME
+            FROM DUAL
+            UNION ALL
+            SELECT 'MGSCT_Alocacoes_Servicos' AS NOMEINSTANCIA,
+                   'MGSCT - Evento Alocacoes Servicos' AS DESCRICAO,
+                   'br.com.sankhya.mgs.ct.evento.AlocacoesServicosEvento' AS CLASSNAME
+            FROM DUAL
+        ) LOOP
 
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
+            SELECT   COUNT ( * )
+            INTO   V_CONTADOR
+            FROM   TSIEVP
+            WHERE   NOMEINSTANCIA = dados.NOMEINSTANCIA;
 
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Previsoes_Contrato',
-                      'MGSCT - Evento Previsoes Contrato',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento"/></eventConfig>');
-        END IF;
+            IF (V_CONTADOR = 0)
+            THEN
+                V_ULTCOD := V_ULTCOD + 1;
 
-/*MGSCT_Previsoes_Contrato_V*/
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Contrato_V';
+                INSERT INTO TSIEVP (NUEVENTO,
+                                    NOMEINSTANCIA,
+                                    DESCRICAO,
+                                    ATIVO,
+                                    TIPO,
+                                    CONFIG)
+                VALUES   (V_ULTCOD,
+                          dados.NOMEINSTANCIA,
+                          dados.DESCRICAO,
+                          'S',
+                          'RJ',
+                          '<eventConfig>
+      <javaCall codModulo="'|| V_CODMODULO||'" className="'||dados.CLASSNAME||'"/>
+</eventConfig>');
+            END IF;
 
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
-
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Previsoes_Contrato_V',
-                      'MGSCT - Evento Previsoes Contrato',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.model.PrevisoesContratoEvento"/></eventConfig>');
-        END IF;
-
-/*MGSCT_Vagas_Previsao_Contrato*/
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Vagas_Previsao_Contrato';
-
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
-
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Vagas_Previsao_Contrato',
-                      'MGSCT - Evento Vagas Previsao Contrato',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.evento.VagasPrevisaoContratoEvento"/></eventConfig>');
-        END IF;
-
-/*MGSCT_Previsoes_Unidade*/
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Unidade';
-
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
-
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Previsoes_Unidade',
-                      'MGSCT - Evento Previsoes Unidade',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento"/></eventConfig>');
-        END IF;
-
-        /*MGSCT_Previsoes_Unidade_Ser*/
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Previsoes_Unidade_Ser';
-
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
-
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Previsoes_Unidade_Ser',
-                      'MGSCT - Evento Previsoes Unidade',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.evento.PrevisoesUnidadeEvento"/></eventConfig>');
-        END IF;
+        end loop;
 
 
-        /*MGSCT_Vagas_Previsao_Unidade*/
-
-        SELECT   COUNT ( * )
-        INTO   V_CONTADOR
-        FROM   TSIEVP
-        WHERE   NOMEINSTANCIA = 'MGSCT_Vagas_Previsao_Unidade';
-
-        IF (V_CONTADOR = 0)
-        THEN
-            V_ULTCOD := V_ULTCOD + 1;
-
-            INSERT INTO TSIEVP (NUEVENTO,
-                                NOMEINSTANCIA,
-                                DESCRICAO,
-                                ATIVO,
-                                TIPO,
-                                CONFIG)
-            VALUES   (V_ULTCOD,
-                      'MGSCT_Vagas_Previsao_Unidade',
-                      'MGSCT - Evento Vagas Previsao Unidade',
-                      'S',
-                      'RJ',
-                      '<eventConfig><javaCall codModulo="'
-                          || V_CODMODULO
-                          || '" className="br.com.sankhya.mgs.ct.evento.VagasPrevisaoUnidadeEvento"/></eventConfig>');
         END IF;
 
         /*atualizar tgfnum com o ultimo numero*/

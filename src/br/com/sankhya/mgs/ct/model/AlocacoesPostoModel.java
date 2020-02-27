@@ -212,7 +212,7 @@ public class AlocacoesPostoModel {
             if (nativeSqlDecorator.proximo()) {
                 vo.setProperty("NUALOCAPSPRINC", nativeSqlDecorator.getValorBigDecimal("NUALOCAPS"));
             } else {
-                ErroUtils.disparaErro("Aloção deve possui alocação principal e a mesma não foi localizada, favor varficar!");
+                ErroUtils.disparaErro("Não é possível alocar! Necessário vinculação a posto de serviço regular. Favor verificar!");
             }
         }
     }

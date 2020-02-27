@@ -1,4 +1,4 @@
-package br.com.sankhya.mgs.ct.agenda;
+package br.com.sankhya.mgs.ct.processamento;
 
 import org.cuckoo.core.ScheduledAction;
 import org.cuckoo.core.ScheduledActionContext;

@@ -1,4 +1,4 @@
-package br.com.sankhya.mgs.ct.agenda.processamentomodel;
+package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
 import java.math.BigDecimal;
 

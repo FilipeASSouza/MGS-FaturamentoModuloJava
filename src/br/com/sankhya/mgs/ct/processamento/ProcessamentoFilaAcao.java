@@ -1,4 +1,4 @@
-package br.com.sankhya.mgs.ct.agenda;
+package br.com.sankhya.mgs.ct.processamento;
 
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;

@@ -65,15 +65,26 @@ public class AlocacoesPostoModel {
     }
 
     public void validaDadosInsert() throws Exception {
+        validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
         validaStatusContratacaoVaga();
     }
 
     public void validaDadosUpdate() throws Exception {
+        validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
         validaStatusContratacaoVaga();
+    }
+
+    private void validaDataFinalMenorQueInicial() throws Exception {
+        Boolean dataFimPreenchido = vo.asTimestamp("DTFIM") != null;
+        if (dataFimPreenchido){
+            if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
+                ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
+            }
+        }
     }
 
     private void validaDadosUpdate(DynamicVO oldvo) throws Exception {

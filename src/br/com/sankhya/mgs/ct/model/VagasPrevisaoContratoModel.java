@@ -62,6 +62,12 @@ public class VagasPrevisaoContratoModel {
        Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
        Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
 
+        if (dataFimNovoPreenchido){
+            if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
+                ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
+            }
+        }
+
        if (dataFimAntigoPreenchido && !dataFimNovoPreenchido){
            ErroUtils.disparaErro("Vaga não pode ser reativada!");
        }

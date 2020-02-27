@@ -17,7 +17,7 @@ public class PrevisaoValidator {
     public void validaDadosInsert() throws Exception {
         boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
         boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
-        boolean quantidadePreenchido = !(vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO) || vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ONE));
+        boolean quantidadePreenchido = !(vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO));
         boolean valorPreechido = !(vo.asBigDecimalOrZero("VLRUNITARIO").equals(BigDecimal.ZERO));
 
         String regraValidacao = getRegraValidacao();

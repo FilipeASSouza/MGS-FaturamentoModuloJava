@@ -1,9 +1,9 @@
-package br.com.sankhya.mgs.ct.agenda;
+package br.com.sankhya.mgs.ct.processamento;
 
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.agenda.processamentomodel.Processar;
-import br.com.sankhya.mgs.ct.agenda.processamentomodel.prcContrInsCargaEvtM001;
+import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
+import br.com.sankhya.mgs.ct.processamento.processamentomodel.prcContrInsCargaEvtM001;
 
 import java.math.BigDecimal;
 

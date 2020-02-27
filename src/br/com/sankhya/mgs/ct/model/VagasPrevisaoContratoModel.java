@@ -49,11 +49,9 @@ public class VagasPrevisaoContratoModel {
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Vagas não podem ser excluidas.");
+        ErroUtils.disparaErro("Vagas não podem ser excluidas!");
     }
 
-    public BigDecimal quantidadeVagasCriadas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
-        Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ?", numeroUnicoPrevisaoContrato, codigoVaga);
     public BigDecimal quantidadeVagasAtivas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
         Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato, codigoVaga);
         int size = dynamicVOS.size();
@@ -99,10 +97,6 @@ public class VagasPrevisaoContratoModel {
             previsoesContratoModel.diminuirUmQuantidadeContrata();
             subtrairVagaPrevisaoContrato = false;
         }
-    }
-
-    public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Vaga não pode ser deletada!");
     }
 
     public ArrayList<DynamicVO> getVagasLivres(BigDecimal numeroUnicoPrevisaoContrato) throws Exception {

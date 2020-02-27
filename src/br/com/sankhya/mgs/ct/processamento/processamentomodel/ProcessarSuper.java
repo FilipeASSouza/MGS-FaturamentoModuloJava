@@ -1,16 +1,17 @@
-package br.com.sankhya.mgs.ct.agenda.processamentomodel;
+package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.agenda.ProcessamentoFilaDAO;
+import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaDAO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessarSuper implements Processar{
+public class ProcessarSuper implements Processar {
     protected ProcessamentoFilaDAO.RegistroFila registroFila;
     protected BigDecimal numeroUnicoFilaProcessamento;
+    protected BigDecimal numeroUnicoIntegracao;
 
     protected ProcessarSuper() {
 
@@ -37,13 +38,13 @@ public class ProcessarSuper implements Processar{
         this.numeroUnicoFilaProcessamento = numeroUnicoFilaProcessamento;
     }
 
-    protected Map<String,String> getParametrosExecutacao(){
-        Map<String,String> mapParametros = new HashMap<String,String>();
+    protected Map<String, String> getParametrosExecutacao() {
+        Map<String, String> mapParametros = new HashMap<String, String>();
         String[] parametrosLista = registroFila.getCHAVE().split(";");
 
-        for (String parametro : parametrosLista){
+        for (String parametro : parametrosLista) {
             String[] chaveValor = parametro.split("=");
-            mapParametros.put(chaveValor[0],chaveValor[1]);
+            mapParametros.put(chaveValor[0], chaveValor[1]);
         }
         return mapParametros;
 
@@ -52,6 +53,10 @@ public class ProcessarSuper implements Processar{
     protected String getLogin() throws Exception {
         DynamicVO vo = JapeFactory.dao("Usuario").findByPK(registroFila.getCODUSU());
         return vo.asString("NOMEUSU");
+    }
+
+    protected void geraIntegrcaoDetalheCusto() {
+
     }
 
 }

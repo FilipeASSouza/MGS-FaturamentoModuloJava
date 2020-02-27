@@ -1,4 +1,4 @@
-package br.com.sankhya.mgs.ct.agenda;
+package br.com.sankhya.mgs.ct.processamento;
 
 
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
@@ -7,7 +7,7 @@ import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
-import br.com.sankhya.mgs.ct.agenda.processamentomodel.Processar;
+import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;

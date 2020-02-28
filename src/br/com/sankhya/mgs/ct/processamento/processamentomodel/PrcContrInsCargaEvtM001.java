@@ -10,10 +10,10 @@ import br.com.sankhya.modelcore.util.ProcedureCaller;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class prcContrInsCargaEvtM001 extends ProcessarSuper implements Processar {
+public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar {
     private String mensagem;
 
-    public prcContrInsCargaEvtM001() {
+    public PrcContrInsCargaEvtM001() {
         super();
     }
 

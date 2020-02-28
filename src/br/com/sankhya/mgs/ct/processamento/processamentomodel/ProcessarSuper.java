@@ -2,14 +2,14 @@ package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaDAO;
+import br.com.sankhya.mgs.ct.dao.FilaDAO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessarSuper implements Processar {
-    protected ProcessamentoFilaDAO.RegistroFila registroFila;
+    protected FilaDAO.RegistroFila registroFila;
     protected BigDecimal numeroUnicoFilaProcessamento;
     protected BigDecimal numeroUnicoIntegracao;
 
@@ -20,7 +20,7 @@ public class ProcessarSuper implements Processar {
     @Override
     public boolean executar() throws Exception {
         try {
-            this.registroFila = new ProcessamentoFilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
+            this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
 
         } catch (Exception e) {
             e.printStackTrace();

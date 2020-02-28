@@ -7,6 +7,7 @@ import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.mgs.ct.dao.FilaDAO;
 import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
@@ -59,7 +60,7 @@ public class ProcessamentoFilaModel implements Runnable {
                 jdbc = dwfFacade.getJdbcWrapper();
                 jdbc.openSession();
 
-                ProcessamentoFilaDAO processamentoFilaDAO = new ProcessamentoFilaDAO();
+                FilaDAO filaDAO = new FilaDAO();
                 try {
                     while (consultaFila.proximo()) {
                         possuiRegistros = true;
@@ -73,16 +74,16 @@ public class ProcessamentoFilaModel implements Runnable {
 
                             boolean executado = processamento.executar();
                             if (executado){
-                                processamentoFilaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento);
+                                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento);
                             } else {
-                                processamentoFilaDAO.atualizaFilaErro(
+                                filaDAO.atualizaFilaErro(
                                         numeroUnicoFilaProcessamento,
                                         "Erro ao executar processamento: " + processamento.getMensagem());
                             }
 
 
                         } catch (Exception e) {
-                            processamentoFilaDAO.atualizaFilaErro(
+                            filaDAO.atualizaFilaErro(
                                     numeroUnicoFilaProcessamento,
                                     "Erro ao executar processamento: " + e);
                         }

@@ -10,5 +10,5 @@ public interface GeraFila {
     public void setNumeroUnidadeFaturamento(BigDecimal numeroUnidadeFaturamento);
     public void setDataReferencia(Timestamp dataReferencia);
     public void setNomeProcessamento(String nomeProcessamento);
-    public void setNumeroProcontrato(BigDecimal numeroContrato);
+    public void setNumeroContrato(BigDecimal numeroContrato);
 }

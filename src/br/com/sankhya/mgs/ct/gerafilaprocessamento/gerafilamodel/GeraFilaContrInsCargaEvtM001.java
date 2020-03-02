@@ -20,11 +20,8 @@ public class GeraFilaContrInsCargaEvtM001 extends GeraFilaSuper implements GeraF
 
         FilaDAO filaDAO = new FilaDAO();
 
-
-
         BigDecimal defasagem = (BigDecimal) parametrosMetrica.get("DEFASAGEM");
         Timestamp dataReferenciaCarga = new Timestamp(TimeUtils.add(dataReferencia.getTime(), defasagem.intValue(), Calendar.MONTH));
-
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
 

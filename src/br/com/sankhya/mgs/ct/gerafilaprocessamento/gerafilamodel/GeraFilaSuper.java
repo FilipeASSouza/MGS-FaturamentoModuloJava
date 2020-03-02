@@ -19,6 +19,7 @@ public class GeraFilaSuper implements GeraFila {
 
     @Override
     public boolean executar() throws Exception {
+        getParametrosMetricas();
         return false;
     }
 
@@ -50,7 +51,7 @@ public class GeraFilaSuper implements GeraFila {
     }
 
     @Override
-    public void setNumeroProcontrato(BigDecimal numeroContrato) {
+    public void setNumeroContrato(BigDecimal numeroContrato) {
         this.numeroContrato = numeroContrato;
     }
 
@@ -80,11 +81,11 @@ public class GeraFilaSuper implements GeraFila {
                 return null;
 
             case "F"://Número Decimal
-                return new BigDecimal(tipo);
+                return new BigDecimal(valor);
             case "H"://Data e Hora
                 return null;
             case "I"://Número Inteiro
-                return new BigDecimal(tipo);
+                return new BigDecimal(valor);
             case "S"://Texto
                 return valor;
             case "T"://Hora

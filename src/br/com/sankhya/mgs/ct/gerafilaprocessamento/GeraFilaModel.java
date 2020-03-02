@@ -66,6 +66,8 @@ public class GeraFilaModel {
             if (geraFila != null) {
                 geraFila.setNumeroUnicoMetrica(metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
                 geraFila.setNumeroUnidadeFaturamento(unidadeFaturamento);
+                geraFila.setDataReferencia(dataReferencia);
+                geraFila.setNumeroContrato(numeroContrato);
                 geraFila.executar();
             }
         }

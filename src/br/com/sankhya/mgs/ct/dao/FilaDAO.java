@@ -54,7 +54,7 @@ public class FilaDAO {
 
     public void salva(RegistroFila registroFila) throws Exception {
         FluidCreateVO fluidCreateVO = dao.create();
-        fluidCreateVO.set("NUFILAPROC",registroFila.NUFILAPROC);
+        fluidCreateVO.set("NUTIPOPROC",registroFila.NUTIPOPROC);
         fluidCreateVO.set("CHAVE",registroFila.CHAVE);
         fluidCreateVO.set("STATUS",registroFila.STATUS);
         fluidCreateVO.set("DHINC",registroFila.DHINC);

@@ -68,7 +68,7 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
         caller.addInputParameter(parametrosExecutacao.get("V_TP_APONTAMENTO"));//V_TP_APONTAMENTO IN VARCHAR2,
         caller.addInputParameter(parametrosExecutacao.get("MES_CARGA"));//MES_CARGA        IN NUMBER,
         caller.addInputParameter(parametrosExecutacao.get("MES_FAT"));//MES_FAT          IN NUMBER,
-        caller.addInputParameter("1");//COD_INTEG        IN NUMBER,
+        caller.addInputParameter(numeroUnicoIntegracao);//COD_INTEG        IN NUMBER,
         caller.addInputParameter(getLogin());//LOGIN            IN VARCHAR2,
         caller.addInputParameter(parametrosExecutacao.get("UP"));//UP_INI           IN NUMBER,
         caller.addInputParameter(parametrosExecutacao.get("UP"));//UP_FIM           IN NUMBER,

@@ -89,7 +89,7 @@ public class FilaDAO {
             filaEnvioConsulta.setParametro("LOGEXEC", log);
             filaEnvioConsulta.setParametro("STATUS", status);
 
-            filaEnvioConsulta.atualziar();
+            filaEnvioConsulta.atualizar();
         } catch (Exception e) {
             System.out.println("Atualização Fila Erro: " + e);
         }

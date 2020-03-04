@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 
 /*
 * Desenvolvido por Fernando Lopes Sankhya Unidade BH
-* Versao 1.4
+* Versao 1.5
 * */
 public class NativeSqlDecorator {
     private NativeSql nativeSql;
@@ -93,7 +93,7 @@ public class NativeSqlDecorator {
         }
     }
 
-    public void atualziar() throws Exception {
+    public void atualizar() throws Exception {
         nativeSql.executeUpdate();
 
     }

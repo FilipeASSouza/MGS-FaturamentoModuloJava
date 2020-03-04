@@ -1,10 +1,14 @@
 package br.com.sankhya.mgs.ct.processamento.controleintegracao;
 
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.EntityFacade;
+import br.com.sankhya.jape.core.JapeSession;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
-import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
-import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
+import br.com.sankhya.modelcore.util.ProcedureCaller;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
@@ -13,12 +17,19 @@ public class IntegracaoDetalhaCustoModel {
     static private JapeWrapper integracaoDetalhaCustoDAO = JapeFactory.dao("MGSCT_Integr_Detalha_Custo");
     private BigDecimal numeroUnicoIntegracao;
 
-    public BigDecimal getNumeroUnicoIntegracao() {
-        return numeroUnicoIntegracao;
-    }
-
     public IntegracaoDetalhaCustoModel() {
 
+    }
+
+    static public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRADC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRADC = :NUINTEGRADC");
+        nativeSqlDecorator.setParametro("NUINTEGRADC",numeroUnicoIntegracao);
+        nativeSqlDecorator.setParametro("COMPLEMENTO",complemento);
+        nativeSqlDecorator.atualizar();
+    }
+
+    public BigDecimal getNumeroUnicoIntegracao() {
+        return numeroUnicoIntegracao;
     }
 
     public IntegracaoDetalhaCustoPOJO getPojo() {
@@ -39,24 +50,44 @@ public class IntegracaoDetalhaCustoModel {
             this.numeroUnicoIntegracao = dynamicVO.asBigDecimal("NUINTEGRADC");
             return false;
         } else {
-            FluidCreateVO fluidCreateVO = integracaoDetalhaCustoDAO.create();
-            fluidCreateVO.set("NUMCONTRATO", i.getNumeroContrato());
-            fluidCreateVO.set("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
-            fluidCreateVO.set("INTPERIODO", i.getCodigoPeriodo());
-            fluidCreateVO.set("INTCOMPETENCIA", i.getCodigoCompetencia());
-            fluidCreateVO.set("CODORIGEM", i.getCodigoOrigem());
-            fluidCreateVO.set("DHINS", TimeUtils.getNow());
-            fluidCreateVO.set("USUINS", i.getCodigoUsuarioInsercao());
-            DynamicVO save = fluidCreateVO.save();
-            this.numeroUnicoIntegracao = save.asBigDecimal("NUINTEGRADC");
+            JdbcWrapper jdbc = null;
+            JapeSession.SessionHandle hnd = null;
+            try {
+                hnd = JapeSession.open();
+                final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+                jdbc = dwfFacade.getJdbcWrapper();
+                jdbc.openSession();
+
+                ProcedureCaller caller = new ProcedureCaller("STP_KEYGEN_TGFNUM");
+                caller.addInputParameter("MGSTCTINTEGRADC");//P_ARQUIVO IN VARCHAR,
+                caller.addInputParameter("1");//P_CODEMP IN INT,
+                caller.addInputParameter("MGSTCTINTEGRADC");//P_TABELA IN VARCHAR,
+                caller.addInputParameter("NUINTEGRADC");//P_CAMPO IN VARCHAR,
+                caller.addInputParameter("0");//P_DSYNC IN INT,
+                caller.addOutputParameter(2,"P_ULTCOD");//P_ULTCOD OUT NUMBER
+
+                caller.execute(jdbc.getConnection());
+
+                this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
+
+                NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql");
+
+                nativeSqlDecorator.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
+                nativeSqlDecorator.setParametro("NUMCONTRATO", i.getNumeroContrato());
+                nativeSqlDecorator.setParametro("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
+                nativeSqlDecorator.setParametro("INTPERIODO", i.getCodigoPeriodo());
+                nativeSqlDecorator.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
+                nativeSqlDecorator.setParametro("CODORIGEM", i.getCodigoOrigem());
+                nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
+                nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
+                nativeSqlDecorator.atualizar();
+
+            } finally {
+                //JapeSession.close(hnd);
+                //JdbcWrapper.closeSession(jdbc);
+            }
             return true;
         }
-    }
-
-    static public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
-        FluidUpdateVO fluidUpdateVO = integracaoDetalhaCustoDAO.prepareToUpdateByPK(numeroUnicoIntegracao);
-        fluidUpdateVO.set("COMPLEMENTO",complemento);
-        fluidUpdateVO.update();
     }
 
     public class IntegracaoDetalhaCustoPOJO {

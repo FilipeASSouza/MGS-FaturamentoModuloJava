@@ -2,8 +2,9 @@ package br.com.sankhya.mgs.ct.processamento;
 
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
 import br.com.sankhya.mgs.ct.processamento.processamentomodel.PrcContrInsCargaEvtM001;
+import br.com.sankhya.mgs.ct.processamento.processamentomodel.PrcContrInsCargaEvtM004;
+import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
 
 import java.math.BigDecimal;
 
@@ -18,6 +19,8 @@ public class ProcessamentoFilaFactory {
         switch(nome){
             case "CONTR_INS_CARGA_EVT_M_001":
                 return new PrcContrInsCargaEvtM001();
+            case "CONTR_INS_CARGA_EVT_M_004":
+                return new PrcContrInsCargaEvtM004();
         }
 
 

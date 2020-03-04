@@ -1,8 +1,12 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.sankhya.jape.EntityFacade;
+import br.com.sankhya.jape.core.JapeSession;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -12,7 +16,8 @@ public class ProcessarSuper implements Processar {
     protected FilaDAO.RegistroFila registroFila;
     protected BigDecimal numeroUnicoFilaProcessamento;
     protected BigDecimal numeroUnicoIntegracao;
-
+    protected JapeSession.SessionHandle hnd = null;
+    protected JdbcWrapper jdbc = null;
     protected ProcessarSuper() {
 
     }
@@ -21,6 +26,11 @@ public class ProcessarSuper implements Processar {
     public boolean executar() throws Exception {
         try {
             this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
+
+            hnd = JapeSession.open();
+            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+            jdbc = dwfFacade.getJdbcWrapper();
+            jdbc.openSession();
 
         } catch (Exception e) {
             e.printStackTrace();

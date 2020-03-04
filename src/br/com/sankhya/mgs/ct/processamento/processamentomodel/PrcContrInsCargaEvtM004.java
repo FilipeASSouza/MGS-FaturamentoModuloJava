@@ -7,10 +7,10 @@ import br.com.sankhya.modelcore.util.ProcedureCaller;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar {
+public class PrcContrInsCargaEvtM004 extends ProcessarSuper implements Processar {
     private String mensagem;
 
-    public PrcContrInsCargaEvtM001() {
+    public PrcContrInsCargaEvtM004() {
         super();
     }
 
@@ -33,6 +33,7 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
                 executado = true;
                 mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
+
                 String log = "";
                 BigDecimal sucesso = null;
 
@@ -62,7 +63,7 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
     }
 
     private ProcedureCaller getProcedureCaller(JdbcWrapper jdbc, Map<String, String> parametrosExecutacao) throws Exception {
-        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_CARGA_EVT_M_001");
+        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_CARGA_EVT_M_004");
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO       IN NUMBER,
         caller.addInputParameter(null);//VTP_VAGA         IN VARCHAR2,
         caller.addInputParameter(parametrosExecutacao.get("V_TP_APONTAMENTO"));//V_TP_APONTAMENTO IN VARCHAR2,

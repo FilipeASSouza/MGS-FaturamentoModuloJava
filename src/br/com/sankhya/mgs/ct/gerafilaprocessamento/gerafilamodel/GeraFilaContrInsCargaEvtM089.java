@@ -9,8 +9,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GeraFilaContrInsCargaEvtM009 extends GeraFilaSuper implements GeraFila {
-    public  GeraFilaContrInsCargaEvtM009() {
+public class GeraFilaContrInsCargaEvtM089 extends GeraFilaSuper implements GeraFila {
+    public GeraFilaContrInsCargaEvtM089() {
         super();
     }
     @Override

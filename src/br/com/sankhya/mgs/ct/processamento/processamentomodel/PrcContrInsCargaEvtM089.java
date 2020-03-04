@@ -11,10 +11,10 @@ import br.com.sankhya.modelcore.util.ProcedureCaller;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class PrcContrInsCargaEvtM009 extends ProcessarSuper implements Processar {
+public class PrcContrInsCargaEvtM089 extends ProcessarSuper implements Processar {
     private String mensagem;
 
-    public PrcContrInsCargaEvtM009() {
+    public PrcContrInsCargaEvtM089() {
         super();
     }
 
@@ -67,7 +67,7 @@ public class PrcContrInsCargaEvtM009 extends ProcessarSuper implements Processar
     }
 
     private ProcedureCaller getProcedureCaller(JdbcWrapper jdbc, Map<String, String> parametrosExecutacao) throws Exception {
-        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_CARGA_EVT_M_009");
+        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_CARGA_EVT_M_089");
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO       IN NUMBER,
         caller.addInputParameter(null);//VTP_VAGA         IN VARCHAR2,
         caller.addInputParameter(parametrosExecutacao.get("V_TP_APONTAMENTO"));//V_TP_APONTAMENTO IN VARCHAR2,

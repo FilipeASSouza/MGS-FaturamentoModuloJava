@@ -38,11 +38,8 @@ public class GeraFilaFactory {
             case "CONTR_INS_CARGA_EVT_M_007":
                 geraFila = new GeraFilaContrInsCargaEvtM007();
                 break;
-            case "CONTR_INS_CARGA_EVT_M_008":
-                geraFila = new GeraFilaContrInsCargaEvtM008();
-                break;
-            case "CONTR_INS_CARGA_EVT_M_009":
-                geraFila = new GeraFilaContrInsCargaEvtM009();
+            case "CONTR_INS_CARGA_EVT_M_089":
+                geraFila = new GeraFilaContrInsCargaEvtM089();
                 break;
             case "CONTR_INS_CARGA_EVT_M_010":
                 geraFila = new GeraFilaContrInsCargaEvtM010();

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 
 public class IntegracaoDetalhaCustoModel {
     static private JapeWrapper integracaoDetalhaCustoDAO = JapeFactory.dao("MGSCT_Integr_Detalha_Custo");
-    private BigDecimal numeroUnicoIntegracao;
+    private BigDecimal numeroUnicoIntegracao = BigDecimal.ZERO;
 
     public IntegracaoDetalhaCustoModel() {
 
@@ -48,8 +48,12 @@ public class IntegracaoDetalhaCustoModel {
 
         if (dynamicVO != null) {
             this.numeroUnicoIntegracao = dynamicVO.asBigDecimal("NUINTEGRADC");
-            return false;
-        } else {
+            if("S".equals(dynamicVO.asString("COMPLEMENTO"))){
+                return false;
+            }
+        }
+
+
             JdbcWrapper jdbc = null;
             JapeSession.SessionHandle hnd = null;
             try {
@@ -58,18 +62,17 @@ public class IntegracaoDetalhaCustoModel {
                 jdbc = dwfFacade.getJdbcWrapper();
                 jdbc.openSession();
 
-                ProcedureCaller caller = new ProcedureCaller("STP_KEYGEN_TGFNUM");
-                caller.addInputParameter("MGSTCTINTEGRADC");//P_ARQUIVO IN VARCHAR,
-                caller.addInputParameter("1");//P_CODEMP IN INT,
-                caller.addInputParameter("MGSTCTINTEGRADC");//P_TABELA IN VARCHAR,
-                caller.addInputParameter("NUINTEGRADC");//P_CAMPO IN VARCHAR,
-                caller.addInputParameter("0");//P_DSYNC IN INT,
-                caller.addOutputParameter(2,"P_ULTCOD");//P_ULTCOD OUT NUMBER
-
-                caller.execute(jdbc.getConnection());
-
-                this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
-
+                if (BigDecimal.ZERO.equals(this.numeroUnicoIntegracao)) {
+                    ProcedureCaller caller = new ProcedureCaller("STP_KEYGEN_TGFNUM");
+                    caller.addInputParameter("MGSTCTINTEGRADC");//P_ARQUIVO IN VARCHAR,
+                    caller.addInputParameter("1");//P_CODEMP IN INT,
+                    caller.addInputParameter("MGSTCTINTEGRADC");//P_TABELA IN VARCHAR,
+                    caller.addInputParameter("NUINTEGRADC");//P_CAMPO IN VARCHAR,
+                    caller.addInputParameter("0");//P_DSYNC IN INT,
+                    caller.addOutputParameter(2, "P_ULTCOD");//P_ULTCOD OUT NUMBER
+                    caller.execute(jdbc.getConnection());
+                    this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
+                }
                 NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql");
 
                 nativeSqlDecorator.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
@@ -87,7 +90,7 @@ public class IntegracaoDetalhaCustoModel {
                 //JdbcWrapper.closeSession(jdbc);
             }
             return true;
-        }
+
     }
 
     public class IntegracaoDetalhaCustoPOJO {

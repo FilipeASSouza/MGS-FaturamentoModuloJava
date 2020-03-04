@@ -84,7 +84,7 @@ public class FilaDAO {
     private void atualizaFila(BigDecimal numeroUnico, String log, String status) throws Exception {
         try {
 
-              NativeSqlDecorator filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql");
+            NativeSqlDecorator filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql");
             filaEnvioConsulta.setParametro("NUFILAPROC", numeroUnico);
             filaEnvioConsulta.setParametro("LOGEXEC", log);
             filaEnvioConsulta.setParametro("STATUS", status);

@@ -64,10 +64,10 @@ public class GeraFilaModel {
         for (DynamicVO metricasContratoVO : metricasContratoVOS){
             GeraFila geraFila = geraFilaFactory.getGeraFila(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"));
             if (geraFila != null) {
-                geraFila.setNumeroUnicoMetrica(metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
-                geraFila.setNumeroUnidadeFaturamento(unidadeFaturamento);
-                geraFila.setDataReferencia(dataReferencia);
-                geraFila.setNumeroContrato(numeroContrato);
+                geraFila.setParametroExecucao("NumeroUnicoMetrica",metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
+                geraFila.setParametroExecucao("NumeroUnidadeFaturamento",unidadeFaturamento);
+                geraFila.setParametroExecucao("DataReferencia",dataReferencia);
+                geraFila.setParametroExecucao("NumeroContrato",numeroContrato);
                 geraFila.executar();
             }
         }

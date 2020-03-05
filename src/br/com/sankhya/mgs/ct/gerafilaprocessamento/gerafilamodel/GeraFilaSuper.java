@@ -10,12 +10,14 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class GeraFilaSuper implements GeraFila {
-    protected BigDecimal numeroUnicoMetrica;
+/*    protected BigDecimal numeroUnicoMetrica;
     protected BigDecimal numeroUnidadeFaturamento;
-    protected Map<String, Object> parametrosMetrica;
+
     protected Timestamp dataReferencia;
     protected String nomeProcessamento;
-    protected BigDecimal numeroContrato;
+    protected BigDecimal numeroContrato;*/
+    protected Map<String, Object> parametrosMetrica;
+    protected Map<String, Object> parametrosExecucao = new HashMap<String, Object>();
 
     @Override
     public boolean executar() throws Exception {
@@ -23,40 +25,55 @@ public class GeraFilaSuper implements GeraFila {
         return false;
     }
 
+
+
     @Override
     public String getMensagem() {
         return null;
     }
 
     @Override
+    public void setParametroExecucao(String nome, Object parametro) {
+        if (nome == "dataReferencia") {
+            Timestamp dataReferencia = (Timestamp) parametro;
+            int ajustar = dataReferencia.getDate() - 1;
+            Timestamp timestamp = new Timestamp(TimeUtils.add(dataReferencia.getTime(), -ajustar, Calendar.DATE));
+            dataReferencia = timestamp;
+            parametrosExecucao.put(nome, dataReferencia);
+        } else {
+            parametrosExecucao.put(nome, parametro);
+        }
+    }
+
+/*    @Override
     public void setNumeroUnicoMetrica(BigDecimal numeroUnicoMetrica) {
         this.numeroUnicoMetrica = numeroUnicoMetrica;
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void setNumeroUnidadeFaturamento(BigDecimal numeroUnidadeFaturamento) {
         this.numeroUnidadeFaturamento = numeroUnidadeFaturamento;
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void setDataReferencia(Timestamp dataReferencia) {
         int ajustar = dataReferencia.getDate()-1;
         Timestamp timestamp = new Timestamp(TimeUtils.add(dataReferencia.getTime(), -ajustar, Calendar.DATE));
         this.dataReferencia = timestamp;
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void setNomeProcessamento(String nomeProcessamento) {
         this.nomeProcessamento = nomeProcessamento;
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void setNumeroContrato(BigDecimal numeroContrato) {
         this.numeroContrato = numeroContrato;
-    }
+    }*/
 
     protected void getParametrosMetricas() throws Exception {
-        Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", numeroUnicoMetrica);
+        Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", getParametroBigDecimal("numeroUnicoMetrica"));
 
 
         parametrosMetrica = new HashMap<String, Object>();
@@ -68,8 +85,6 @@ public class GeraFilaSuper implements GeraFila {
 
             Object valorConvertido = converteParametro(valor, tipo);
             parametrosMetrica.put(descricaoParametro,valorConvertido);
-
-
 
 
         }
@@ -102,5 +117,17 @@ public class GeraFilaSuper implements GeraFila {
             listaParametros.add(key + "=" + value);
         }
         return StringUtils.join(listaParametros, ";");
+    }
+
+    protected BigDecimal getParametroBigDecimal(String nome){
+        return (BigDecimal)parametrosExecucao.get(nome);
+    }
+
+    protected Timestamp getParametroTimestamp(String nome){
+        return (Timestamp)parametrosExecucao.get(nome);
+    }
+
+    protected String getParametroString(String nome){
+        return (String)parametrosExecucao.get(nome);
     }
 }

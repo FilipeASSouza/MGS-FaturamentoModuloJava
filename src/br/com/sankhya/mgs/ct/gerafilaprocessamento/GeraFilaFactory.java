@@ -7,7 +7,7 @@ import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.*;
 import java.math.BigDecimal;
 
 public class GeraFilaFactory {
-    public GeraFila getGeraFila(BigDecimal numeroUnicoTipoMetrica) throws Exception {
+    public GeraFila getGeraFilaContaCorrente(BigDecimal numeroUnicoTipoMetrica) throws Exception {
         DynamicVO mgsct_apoio_metrica = JapeFactory.dao("MGSCT_Apoio_Metrica").findByPK(numeroUnicoTipoMetrica);
 
         //Object o = Class.forName("pacote.pacote1.nomeDaClasse").newIstance();
@@ -19,10 +19,14 @@ public class GeraFilaFactory {
         }
 
 
-        String nome = mgsct_apoio_metrica.asString("TEXTOCHAVE");
+        String textochave = mgsct_apoio_metrica.asString("TEXTOCHAVE");
 
+        return getGeraFila(textochave);
+    }
+
+    public GeraFila getGeraFila(String textoChave) {
         GeraFila geraFila = null;
-        switch (nome) {
+        switch (textoChave) {
             case "CONTR_INS_CARGA_EVT_M_001":
                 geraFila = new GeraFilaContrInsCargaEvtM001();
                 break;
@@ -56,12 +60,14 @@ public class GeraFilaFactory {
             case "CONTR_INS_CARGA_EVT_M_022":
                 geraFila = new GeraFilaContrInsCargaEvtM022();
                 break;
+            case "CONTR_INS_LANC_CUSTO_UP":
+                geraFila = new GeraFilaContrInsLancCustoUP();
             default:
                 geraFila = null;
         }
 
         if (geraFila!= null ){
-            geraFila.setNomeProcessamento(nome);
+            geraFila.setParametroExecucao("NomeProcessamento",textoChave);
         }
         return geraFila;
     }

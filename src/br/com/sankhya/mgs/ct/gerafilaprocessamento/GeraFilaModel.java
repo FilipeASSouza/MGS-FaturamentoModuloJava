@@ -62,7 +62,7 @@ public class GeraFilaModel {
     private void gerarFilaPorUnidadeFaturamento(BigDecimal unidadeFaturamento) throws Exception {
         Collection<DynamicVO> metricasContratoVOS = JapeFactory.dao("MGSCT_Metricas").find("NUMCONTRATO = ?", numeroContrato);
         for (DynamicVO metricasContratoVO : metricasContratoVOS){
-            GeraFila geraFila = geraFilaFactory.getGeraFila(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"));
+            GeraFila geraFila = geraFilaFactory.getGeraFilaContaCorrente(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"));
             if (geraFila != null) {
                 geraFila.setParametroExecucao("NumeroUnicoMetrica",metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
                 geraFila.setParametroExecucao("NumeroUnidadeFaturamento",unidadeFaturamento);

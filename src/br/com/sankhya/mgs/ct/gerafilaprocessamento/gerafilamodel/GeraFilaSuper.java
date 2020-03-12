@@ -73,20 +73,19 @@ public class GeraFilaSuper implements GeraFila {
     }*/
 
     protected void getParametrosMetricas() throws Exception {
-        Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", getParametroBigDecimal("numeroUnicoMetrica"));
+        BigDecimal numeroUnicoMetrica = getParametroBigDecimal("numeroUnicoMetrica");
+        if (numeroUnicoMetrica != null) {
+            Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", numeroUnicoMetrica);
 
+            parametrosMetrica = new HashMap<String, Object>();
 
-        parametrosMetrica = new HashMap<String, Object>();
-
-        for (DynamicVO parametroMetricaVO:parametroMetricaVOS){
-            String tipo = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.TIPO");
-            String descricaoParametro = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.DESCRPARAM");
-            String valor = parametroMetricaVO.asString("VALOR");
-
-            Object valorConvertido = converteParametro(valor, tipo);
-            parametrosMetrica.put(descricaoParametro,valorConvertido);
-
-
+            for (DynamicVO parametroMetricaVO : parametroMetricaVOS) {
+                String tipo = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.TIPO");
+                String descricaoParametro = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.DESCRPARAM");
+                String valor = parametroMetricaVO.asString("VALOR");
+                Object valorConvertido = converteParametro(valor, tipo);
+                parametrosMetrica.put(descricaoParametro, valorConvertido);
+            }
         }
     }
 

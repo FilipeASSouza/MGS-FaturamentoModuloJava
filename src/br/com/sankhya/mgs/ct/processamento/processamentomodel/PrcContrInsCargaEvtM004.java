@@ -8,14 +8,9 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class PrcContrInsCargaEvtM004 extends ProcessarSuper implements Processar {
-    private String mensagem;
 
     public PrcContrInsCargaEvtM004() {
         super();
-    }
-
-    public String getMensagem() {
-        return mensagem;
     }
 
     @Override

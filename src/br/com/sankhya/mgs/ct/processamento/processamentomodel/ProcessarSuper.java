@@ -18,6 +18,7 @@ public class ProcessarSuper implements Processar {
     protected BigDecimal numeroUnicoIntegracao;
     protected JapeSession.SessionHandle hnd = null;
     protected JdbcWrapper jdbc = null;
+    protected String mensagem;
     protected ProcessarSuper() {
 
     }
@@ -40,7 +41,7 @@ public class ProcessarSuper implements Processar {
 
     @Override
     public String getMensagem() {
-        return null;
+        return mensagem;
     }
 
     @Override

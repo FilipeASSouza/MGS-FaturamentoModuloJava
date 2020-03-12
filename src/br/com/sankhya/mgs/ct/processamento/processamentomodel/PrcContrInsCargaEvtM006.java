@@ -12,14 +12,9 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class PrcContrInsCargaEvtM006 extends ProcessarSuper implements Processar {
-    private String mensagem;
 
     public PrcContrInsCargaEvtM006() {
         super();
-    }
-
-    public String getMensagem() {
-        return mensagem;
     }
 
     @Override

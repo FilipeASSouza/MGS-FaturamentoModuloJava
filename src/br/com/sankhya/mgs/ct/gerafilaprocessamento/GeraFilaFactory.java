@@ -67,7 +67,7 @@ public class GeraFilaFactory {
         }
 
         if (geraFila!= null ){
-            geraFila.setParametroExecucao("NomeProcessamento",textoChave);
+            geraFila.setParametroExecucao("nomeProcessamento",textoChave);
         }
         return geraFila;
     }

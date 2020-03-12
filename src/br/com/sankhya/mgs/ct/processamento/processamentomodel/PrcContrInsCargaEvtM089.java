@@ -47,14 +47,14 @@ public class PrcContrInsCargaEvtM089 extends ProcessarSuper implements Processar
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
                 } else {
                     executado = false;
-                    mensagem = "Erro prcContrInsCargaEvtM001: " + log;
+                    mensagem = "Erro prcContrInsCargaEvtM089: " + log;
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
 
 
         } catch (Exception e) {
-            throw new Exception("Erro ao executar procedure prcContrInsCargaEvtM001: " + e);
+            throw new Exception("Erro ao executar procedure prcContrInsCargaEvtM089: " + e);
         } finally {
 
         }

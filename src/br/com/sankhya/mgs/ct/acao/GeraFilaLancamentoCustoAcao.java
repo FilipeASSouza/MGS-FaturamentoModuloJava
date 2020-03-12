@@ -46,7 +46,7 @@ public class GeraFilaLancamentoCustoAcao implements AcaoRotinaJava {
 
                 GeraFilaLancamentoCustoModel geraFilaLancamentoCustoModel = new GeraFilaLancamentoCustoModel();
                 geraFilaLancamentoCustoModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
-                geraFilaLancamentoCustoModel.setNumeroModalidade((BigDecimal)linha.getCampo("CODTPN"));
+                geraFilaLancamentoCustoModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
                 geraFilaLancamentoCustoModel.setDataReferencia(dataReferencia);
                 geraFilaLancamentoCustoModel.setDataCusto(dataCusto);
                 geraFilaLancamentoCustoModel.setCodigoTipoFatura(codigoTipoFatura);

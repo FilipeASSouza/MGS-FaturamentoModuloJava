@@ -12,7 +12,7 @@ public class GeraFilaLancamentoCustoModel {
     private BigDecimal unidadeFaturamentoInicial;
     private BigDecimal unidadeFaturamentoFinal;
     private BigDecimal numeroContrato;
-    private BigDecimal numeroModalidade;
+    private BigDecimal numeroUnicoModalidade;
     private BigDecimal codigoTipoFatura;
     private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
 
@@ -49,8 +49,8 @@ public class GeraFilaLancamentoCustoModel {
         this.numeroContrato = numeroContrato;
     }
 
-    public void setNumeroModalidade(BigDecimal numeroModalidade) {
-        this.numeroModalidade = numeroModalidade;
+    public void setNumeroUnicoModalidade(BigDecimal numeroUnicoModalidade) {
+        this.numeroUnicoModalidade = numeroUnicoModalidade;
     }
 
     public void gerarFila() throws Exception {
@@ -75,8 +75,7 @@ public class GeraFilaLancamentoCustoModel {
             geraFila.setParametroExecucao("dataReferencia", dataReferencia);
             geraFila.setParametroExecucao("dataCusto", dataCusto);
             geraFila.setParametroExecucao("numeroContrato", numeroContrato);
-            geraFila.setParametroExecucao("numeroModalidade", numeroModalidade);
-            geraFila.setParametroExecucao("numeroModalidade", numeroModalidade);
+            geraFila.setParametroExecucao("numeroUnicoModalidade", numeroUnicoModalidade);
             geraFila.setParametroExecucao("codigoTipoFatura", codigoTipoFatura);
             geraFila.executar();
         }

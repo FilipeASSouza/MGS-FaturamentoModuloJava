@@ -1,13 +1,14 @@
-package br.com.sankhya.mgs.ct.gerafilaprocessamento;
+package br.com.sankhya.mgs.ct.acao;
 
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.mgs.ct.gerafilaprocessamento.GeraFilaContaCorrenteModel;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class GeraFilaAcao implements AcaoRotinaJava {
+public class GeraFilaContaCorrenteAcao implements AcaoRotinaJava {
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
         Registro[] linhas = contextoAcao.getLinhas();
@@ -21,11 +22,11 @@ public class GeraFilaAcao implements AcaoRotinaJava {
             } else {
                 codigoUnidadeFaturamentoInicial = BigDecimal.ZERO;
             }
-            BigDecimal codigounidadeFaturamentoFinal = null;
+            BigDecimal codigoUnidadeFaturamentoFinal = null;
             if (contextoAcao.getParam("CODSITEF") != null) {
-                codigounidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
+                codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
             } else {
-                codigounidadeFaturamentoFinal = BigDecimal.ZERO;
+                codigoUnidadeFaturamentoFinal = BigDecimal.ZERO;
             }
 
             for (Registro linha : linhas) {
@@ -35,7 +36,8 @@ public class GeraFilaAcao implements AcaoRotinaJava {
                 geraFilaContaCorrenteModel.setDataReferencia(dataReferencia);
                 geraFilaContaCorrenteModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaContaCorrenteModel.setUnidadeFaturamentoInicial(codigoUnidadeFaturamentoInicial);
-                geraFilaContaCorrenteModel.setUnidadeFaturamentoFinal(codigounidadeFaturamentoFinal);
+                geraFilaContaCorrenteModel.setUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
+                
                 geraFilaContaCorrenteModel.gerarFila();
             }
         }

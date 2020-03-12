@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-public class GeraFilaModel {
+public class GeraFilaContaCorrenteModel {
     private Timestamp dataReferencia;
     private BigDecimal unidadeFaturamentoInicial;
     private BigDecimal unidadeFaturamentoFinal;

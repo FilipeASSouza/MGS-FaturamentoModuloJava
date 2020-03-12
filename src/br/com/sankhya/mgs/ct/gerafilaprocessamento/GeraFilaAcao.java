@@ -31,12 +31,12 @@ public class GeraFilaAcao implements AcaoRotinaJava {
             for (Registro linha : linhas) {
 
 
-                GeraFilaModel geraFilaModel = new GeraFilaModel();
-                geraFilaModel.setDataReferencia(dataReferencia);
-                geraFilaModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
-                geraFilaModel.setUnidadeFaturamentoInicial(codigoUnidadeFaturamentoInicial);
-                geraFilaModel.setUnidadeFaturamentoFinal(codigounidadeFaturamentoFinal);
-                geraFilaModel.gerarFila();
+                GeraFilaContaCorrenteModel geraFilaContaCorrenteModel = new GeraFilaContaCorrenteModel();
+                geraFilaContaCorrenteModel.setDataReferencia(dataReferencia);
+                geraFilaContaCorrenteModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
+                geraFilaContaCorrenteModel.setUnidadeFaturamentoInicial(codigoUnidadeFaturamentoInicial);
+                geraFilaContaCorrenteModel.setUnidadeFaturamentoFinal(codigounidadeFaturamentoFinal);
+                geraFilaContaCorrenteModel.gerarFila();
             }
         }
     }

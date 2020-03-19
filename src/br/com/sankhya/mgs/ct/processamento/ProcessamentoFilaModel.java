@@ -74,7 +74,8 @@ public class ProcessamentoFilaModel implements Runnable {
 
                             boolean executado = processamento.executar();
                             if (executado){
-                                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento);
+                                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
+                                        "OK. " + processamento.getMensagem());
                             } else {
                                 filaDAO.atualizaFilaErro(
                                         numeroUnicoFilaProcessamento,

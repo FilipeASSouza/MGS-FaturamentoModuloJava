@@ -40,10 +40,13 @@ public class PrcContrInsCargaEvtM005 extends ProcessarSuper implements Processar
                 ProcedureCaller caller = getProcedureCaller(jdbc, parametrosExecutacao);
 
                 log = caller.resultAsString("LOG");
+                if (log == "null"){
+                    log = "";
+                }
                 sucesso = caller.resultAsBigDecimal("SUCESSO");
                 if (BigDecimal.ONE.equals(sucesso)) {
                     executado = true;
-                    mensagem = "OK";
+                    mensagem = log;
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
                 } else {
                     executado = false;

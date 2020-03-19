@@ -48,6 +48,10 @@ public class FilaDAO {
         return vo;
     }
 
+    public void setComControleTransacao(Boolean comControleTransacao) {
+        this.comControleTransacao = comControleTransacao;
+    }
+
     public RegistroFila getRegistroFila(BigDecimal numeroUnicoFilaProcessamento) throws Exception {
         buscaRegistroFilaProcessamento(numeroUnicoFilaProcessamento);
         RegistroFila registroFila = new RegistroFila();

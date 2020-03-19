@@ -27,7 +27,7 @@ public class GeraFilaContrInsCargaEvtM012 extends GeraFilaSuper implements GeraF
         mapParametrosChave.put("V_CONTRATO", getParametroBigDecimal("numeroContrato").toString());
         mapParametrosChave.put("V_TP_APONTAMENTO", "PDS");
         mapParametrosChave.put("MES_CARGA", TimeUtils.getYearMonth(dataReferenciaCarga).toString());
-        mapParametrosChave.put("MES_FAT", getParametroTimestamp("dataReferencia").toString());
+        mapParametrosChave.put("MES_FAT", TimeUtils.getYearMonth(getParametroTimestamp("dataReferencia")).toString());
         mapParametrosChave.put("UP", getParametroBigDecimal("numeroUnidadeFaturamento").toString());
 
         String chave = geraChave(mapParametrosChave);

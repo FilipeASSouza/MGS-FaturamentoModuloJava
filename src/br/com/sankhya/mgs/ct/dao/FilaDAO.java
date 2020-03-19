@@ -1,12 +1,17 @@
 package br.com.sankhya.mgs.ct.dao;
 
+import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.EntityFacade;
+import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -19,13 +24,19 @@ import java.sql.Timestamp;
 public class FilaDAO {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Fila_Processamento");
     private DynamicVO vo;
+    private BigDecimal codigoUsuario;
+    private Boolean comControleTransacao = false;
+
+    public void setCodigoUsuario(BigDecimal codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
+    }
 
     public void atualizaFilaErro(BigDecimal numeroUnico, String log) throws Exception {
         atualizaFila(numeroUnico, log, "E");
     }
 
-    public void atualizaFilaProcessado(BigDecimal numeroUnico) throws Exception {
-        atualizaFila(numeroUnico, "OK", "P");
+    public void atualizaFilaProcessado(BigDecimal numeroUnico, String log) throws Exception {
+        atualizaFila(numeroUnico, log, "P");
     }
 
 
@@ -54,30 +65,62 @@ public class FilaDAO {
 
     public void salva(RegistroFila registroFila) throws Exception {
         FluidCreateVO fluidCreateVO = dao.create();
-        fluidCreateVO.set("NUTIPOPROC",registroFila.NUTIPOPROC);
-        fluidCreateVO.set("CHAVE",registroFila.CHAVE);
-        fluidCreateVO.set("STATUS",registroFila.STATUS);
-        fluidCreateVO.set("DHINC",registroFila.DHINC);
-        fluidCreateVO.set("DHPROC",registroFila.DHPROC);
-        fluidCreateVO.set("LOGEXEC",registroFila.LOGEXEC);
-        fluidCreateVO.set("CODUSU",registroFila.CODUSU);
+        fluidCreateVO.set("NUTIPOPROC", registroFila.NUTIPOPROC);
+        fluidCreateVO.set("CHAVE", registroFila.CHAVE);
+        fluidCreateVO.set("STATUS", registroFila.STATUS);
+        fluidCreateVO.set("DHINC", registroFila.DHINC);
+        fluidCreateVO.set("DHPROC", registroFila.DHPROC);
+        fluidCreateVO.set("LOGEXEC", registroFila.LOGEXEC);
+        fluidCreateVO.set("CODUSU", registroFila.CODUSU);
         fluidCreateVO.save();
+    }
+
+
+    public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
+        JapeSession.SessionHandle hnd = JapeSession.open();
+        final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+        JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
+        jdbc.openSession();
+
+
+        hnd.execWithTX(new JapeSession.TXBlock() {
+            public void doWithTx() throws Exception {
+                salva(registroFila);
+            }
+        });
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
+
     }
 
     public void incializaFila(String chave, String nomeProcessamento) throws Exception {
         RegistroFila registroFila = new RegistroFila();
-        BigDecimal numeroUnicoTipoProcessamento = JapeFactory
+        DynamicVO tipoProcessamentoVO = JapeFactory
                 .dao("MGSCT_Tipo_Processamento")
-                .findOne("NOME = ?", nomeProcessamento)
-                .asBigDecimal("NUTIPOPROC");
+                .findOne("NOME = ?", nomeProcessamento);
+
+        if (tipoProcessamentoVO == null) {
+            ErroUtils.disparaErro("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
+        }
+
+        BigDecimal numeroUnicoTipoProcessamento = tipoProcessamentoVO.asBigDecimal("NUTIPOPROC");
+
         registroFila.NUTIPOPROC = numeroUnicoTipoProcessamento;
         registroFila.CHAVE = chave;
         registroFila.STATUS = "I";
         registroFila.DHINC = TimeUtils.getNow();
         registroFila.DHPROC = null;
         registroFila.LOGEXEC = null;
-        registroFila.CODUSU = AuthenticationInfo.getCurrent().getUserID();
-        salva(registroFila);
+        if (codigoUsuario == null) {
+            registroFila.CODUSU = AuthenticationInfo.getCurrent().getUserID();
+        } else {
+            registroFila.CODUSU = codigoUsuario;
+        }
+        if(comControleTransacao){
+            salvaComControleTransacao(registroFila);
+        } else {
+            salva(registroFila);
+        }
     }
 
 

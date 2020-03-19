@@ -72,19 +72,19 @@ public class IntegracaoDetalhaCustoModel {
                     caller.addOutputParameter(2, "P_ULTCOD");//P_ULTCOD OUT NUMBER
                     caller.execute(jdbc.getConnection());
                     this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
+
+                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql");
+
+                    nativeSqlDecorator.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
+                    nativeSqlDecorator.setParametro("NUMCONTRATO", i.getNumeroContrato());
+                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
+                    nativeSqlDecorator.setParametro("INTPERIODO", i.getCodigoPeriodo());
+                    nativeSqlDecorator.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
+                    nativeSqlDecorator.setParametro("CODORIGEM", i.getCodigoOrigem());
+                    nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
+                    nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
+                    nativeSqlDecorator.atualizar();
                 }
-                NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql");
-
-                nativeSqlDecorator.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
-                nativeSqlDecorator.setParametro("NUMCONTRATO", i.getNumeroContrato());
-                nativeSqlDecorator.setParametro("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
-                nativeSqlDecorator.setParametro("INTPERIODO", i.getCodigoPeriodo());
-                nativeSqlDecorator.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
-                nativeSqlDecorator.setParametro("CODORIGEM", i.getCodigoOrigem());
-                nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
-                nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
-                nativeSqlDecorator.atualizar();
-
             } finally {
                 //JapeSession.close(hnd);
                 //JdbcWrapper.closeSession(jdbc);

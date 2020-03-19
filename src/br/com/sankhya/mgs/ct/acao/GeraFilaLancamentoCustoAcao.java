@@ -23,7 +23,7 @@ public class GeraFilaLancamentoCustoAcao implements AcaoRotinaJava {
 
             BigDecimal codigoUnidadeFaturamentoInicial = null;
             if (contextoAcao.getParam("CODSITEI") != null) {
-                codigoUnidadeFaturamentoInicial = new BigDecimal(contextoAcao.getParam("COD").toString());
+                codigoUnidadeFaturamentoInicial = new BigDecimal(contextoAcao.getParam("CODSITEI").toString());
             } else {
                 codigoUnidadeFaturamentoInicial = BigDecimal.ZERO;
             }

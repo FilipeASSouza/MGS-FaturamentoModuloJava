@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Processar {
-    public RtnContrInsLancCustoUPAnexo() {
+public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements Processar {
+    public RtnContrInsLancCustoUPGestorAnexo() {
         super();
     }
 
@@ -54,7 +54,7 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
             parametrosRelatorio.put("P_NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
             parametrosRelatorio.put("P_CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
             parametrosRelatorio.put("P_CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-            parametrosRelatorio.put("P_FISCGEST", "F");
+            parametrosRelatorio.put("P_FISCGEST", "G");
             parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpressão);
 
             jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
@@ -68,7 +68,7 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
             fluidCreateVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
             fluidCreateVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
             fluidCreateVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
-            fluidCreateVO.set("TIPGESTOR", "F");
+            fluidCreateVO.set("TIPGESTOR", "G");
             fluidCreateVO.set("DTRLTANEXO", TimeUtils.getNow());
             fluidCreateVO.set("DHINS", TimeUtils.getNow());
             fluidCreateVO.set("USUINS", getLogin());

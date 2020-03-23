@@ -6,10 +6,10 @@ import com.sankhya.util.TimeUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GeraFilaContrInsLancCustoUPAnexo extends GeraFilaSuper implements GeraFila {
+public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implements GeraFila {
     public boolean executar() throws Exception {
         super.executar();
-        setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPAnexo");
+        setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPGestorAnexo");
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
         mapParametrosChave.put("NUMCONTRATO", getParametroBigDecimal("numeroContrato").toString());

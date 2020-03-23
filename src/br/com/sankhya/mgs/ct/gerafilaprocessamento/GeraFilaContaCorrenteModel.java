@@ -26,7 +26,6 @@ public class GeraFilaContaCorrenteModel {
         } else {
             this.unidadeFaturamentoInicial = unidadeFaturamentoInicial;
         }
-
     }
 
     public void setUnidadeFaturamentoFinal(BigDecimal unidadeFaturamentoFinal) {
@@ -52,11 +51,6 @@ public class GeraFilaContaCorrenteModel {
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODSITE");
             gerarFilaPorUnidadeFaturamento(codigoUnidadeFaturamento);
         }
-
-
-
-
-
     }
 
     private void gerarFilaPorUnidadeFaturamento(BigDecimal unidadeFaturamento) throws Exception {

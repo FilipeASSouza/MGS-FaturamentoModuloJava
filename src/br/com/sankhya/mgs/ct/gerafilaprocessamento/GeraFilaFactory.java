@@ -66,6 +66,12 @@ public class GeraFilaFactory {
             case "RtnContrInsLancCustoUPAnexo":
                 geraFila = new GeraFilaContrInsLancCustoUPAnexo();
                 break;
+            case "CONTR_INS_LANC_CUSTO_UP_GESTOR":
+                geraFila = new GeraFilaContrInsLancCustoUPGestor();
+                break;
+            case "RtnContrInsLancCustoUPGestorAnexo":
+                geraFila = new GeraFilaContrInsLancCustoUPGestorAnexo();
+                break;
             default:
                 geraFila = null;
         }

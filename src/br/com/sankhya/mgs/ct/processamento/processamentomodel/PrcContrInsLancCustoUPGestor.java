@@ -61,10 +61,10 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
     }
 
     private ProcedureCaller getProcedureCaller(JdbcWrapper jdbc, Map<String, String> parametrosExecutacao) throws Exception {
-        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_LANC_CUSTO_UP");
+        ProcedureCaller caller = new ProcedureCaller("CONTR_INS_LANC_CUSTO_UP_GESTOR");
 
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO        IN NUMBER,
-        caller.addInputParameter(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));//V_DTLCCUSTO       IN DATE,
+        caller.addInputParameter(TimeUtils.getYearMonth(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd")));//V_DTLCCUSTO       IN DATE,
         caller.addInputParameter(parametrosExecutacao.get("V_UNIDADEFAT"));//V_UNIDADEFAT      IN NUMBER,
         caller.addInputParameter(parametrosExecutacao.get("V_TIPOFATU"));//V_TIPOFATU        IN NUMBER,
         caller.addInputParameter(numeroUnicoIntegracao);//V_CODINTLC        IN NUMBER,
@@ -79,6 +79,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         IntegracaoLancamentoCustoGestorModel integracaoLancamentoCustoGestorModel = new IntegracaoLancamentoCustoGestorModel();
         IntegracaoLancamentoCustoGestorModel.IntegracaoDetalhaCustoPOJO dadosIntegracao = integracaoLancamentoCustoGestorModel.getPojo();
         dadosIntegracao.setNumeroContrato(new BigDecimal(parametrosExecutacao.get("V_CONTRATO")));
+        dadosIntegracao.setCodigoCompetencia(new BigDecimal(parametrosExecutacao.get("V_DTLCCUSTO").substring(0,6)));
+        dadosIntegracao.setCodigoPeriodo(new BigDecimal(parametrosExecutacao.get("V_DTLCCUSTO").substring(0,6)));
         dadosIntegracao.setCodigoUnidadeFaturamento(new BigDecimal(parametrosExecutacao.get("V_UNIDADEFAT")));
         dadosIntegracao.setCodigoTipoFatura(new BigDecimal(parametrosExecutacao.get("V_TIPOFATU")));
         dadosIntegracao.setDataCusto(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));

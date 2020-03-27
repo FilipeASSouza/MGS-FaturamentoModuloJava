@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
@@ -29,7 +30,7 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
         try {
             super.executar();
 
-            Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
+            final Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
             //relVO = (DynamicVO) this.dwfEntityFacade.findEntityByPrimaryKeyAsVO("Relatorio", new Object[]{17});
 
@@ -83,7 +84,16 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
 
             hnd.execWithTX(new JapeSession.TXBlock() {
                 public void doWithTx() throws Exception {
-                    fluidCreateVO.save();
+                    DynamicVO save = fluidCreateVO.save();
+                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
+                    nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
+                    nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                    nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                    nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                    nativeSqlDecorator.setParametro("TIPGESTOR", "G");
+
+                    nativeSqlDecorator.atualizar();
                 }
             });
             JapeSession.close(hnd);

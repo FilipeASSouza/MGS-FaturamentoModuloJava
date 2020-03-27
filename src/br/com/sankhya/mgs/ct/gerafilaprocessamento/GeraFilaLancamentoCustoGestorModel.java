@@ -40,7 +40,7 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         gerarTabelaTemporaria();
 
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator("SELECT MESRELATORIO, CODUNIDADEFATUR, CODTIPOFATURA FROM MGSTCTRLTANEXOCAD");
+        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
         while (consultaListaCodigoSites.proximo()) {
             Timestamp dataCusto = consultaListaCodigoSites.getValorTimestamp("MESRELATORIO");
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODUNIDADEFATUR");
@@ -80,13 +80,19 @@ public class GeraFilaLancamentoCustoGestorModel {
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_ANEXO_CAD");
 
         caller.addInputParameter(numeroContrato);//V_CONTRATO         IN     NUMBER,
-        caller.addInputParameter(dataCusto);//V_MESFATURAMENTO   IN     NUMBER,
+        caller.addInputParameter(TimeUtils.getYearMonth(dataCusto));//V_MESFATURAMENTO   IN     NUMBER,
         caller.addInputParameter(codigoUnidadeFaturamento);//V_UNIDADEFAT_PAI   IN     NUMBER,
         caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO             OUT NUMBER
         
         caller.execute(jdbc.getConnection());
 
+        String log = "";
+        BigDecimal sucesso = null;
+
+        log = caller.resultAsString("LOG");
+
+        sucesso = caller.resultAsBigDecimal("SUCESSO");
 
     }
 }

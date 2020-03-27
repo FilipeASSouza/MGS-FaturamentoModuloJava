@@ -39,8 +39,7 @@ public class IntegracaoLancamentoCustoGestorModel {
     }
 
     public boolean salvarIntegracao(IntegracaoDetalhaCustoPOJO i) throws Exception {
-        DynamicVO dynamicVO = integracaoLancamentoCustoDAO.findOne("NUMODALIDADE = ? AND NUMCONTRATO = ? AND CODTIPOFATURA = ? AND CODUNIDADEFATUR = ? AND DTLANCCUSTO = ? AND INTPERIODO = ? AND INTCOMPETENCIA = ? AND TIPGESTOR = 'G' AND DHDESFAZER IS NULL",
-                i.getNumeroUnicoModalidade(),//NUMODALIDADE
+        DynamicVO dynamicVO = integracaoLancamentoCustoDAO.findOne("NUMCONTRATO = ? AND CODTIPOFATURA = ? AND CODUNIDADEFATUR = ? AND DTLANCCUSTO = ? AND INTPERIODO = ? AND INTCOMPETENCIA = ? AND TIPGESTOR = 'G' AND DHDESFAZER IS NULL",
                 i.getNumeroContrato(),//NUMCONTRATO
                 i.getCodigoTipoFatura(),//CODTIPOFATURA
                 i.getCodigoUnidadeFaturamento(),//CODUNIDADEFATUR
@@ -86,7 +85,7 @@ public class IntegracaoLancamentoCustoGestorModel {
                     nativeSqlDecorator.setParametro("NUMODALIDADE", i.getNumeroUnicoModalidade());
                     nativeSqlDecorator.setParametro("CODTIPOFATURA", i.codigoTipoFatura);
                     nativeSqlDecorator.setParametro("DTLANCCUSTO", i.getDataCusto());
-                    nativeSqlDecorator.setParametro("TIPGESTOR", "F");
+                    nativeSqlDecorator.setParametro("TIPGESTOR", "G");
                     nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
                     nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
                     nativeSqlDecorator.atualizar();

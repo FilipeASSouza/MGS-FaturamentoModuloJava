@@ -41,10 +41,20 @@ public class ProcessamentoFilaFactory {
                 return new PrcContrInsLancCustoUP();
             case "RtnContrInsLancCustoUPAnexo":
                 return new RtnContrInsLancCustoUPAnexo();
-            case "CONTR_INS_LANC_CUSTO_UPGestor":
+            case "CONTR_INS_LANC_CUSTO_UP_GESTOR":
                 return new PrcContrInsLancCustoUPGestor();
             case "RtnContrInsLancCustoUPGestorAnexo":
                 return new RtnContrInsLancCustoUPGestorAnexo();
+            case "CONTR_INS_CARGA_EVT_CCT":
+                return new PrcContrInsCargaEvtCCT();
+            case "CONTR_INS_CARGA_EVT_DV":
+                return new PrcContrInsCargaEvtDV();
+            case "CONTR_INS_CARGA_EVT_DV_SUB":
+                return new PrcContrInsCargaEvtDVSub();
+            case "CONTR_INS_CARGA_EVT_M_GAD":
+                return new PrcContrInsCargaEvtMGAD();
+            case "CONTR_INS_LANC_FATURA":
+                return new PrcContrInsLancFatura();
         }
         return null;
     }

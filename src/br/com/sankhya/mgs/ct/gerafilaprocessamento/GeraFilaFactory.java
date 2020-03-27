@@ -72,6 +72,21 @@ public class GeraFilaFactory {
             case "RtnContrInsLancCustoUPGestorAnexo":
                 geraFila = new GeraFilaContrInsLancCustoUPGestorAnexo();
                 break;
+            case "CONTR_INS_CARGA_EVT_CCT":
+                geraFila = new GeraFilaContrInsCargaEvtCCT();
+                break;
+            case "CONTR_INS_CARGA_EVT_DV":
+                geraFila = new GeraFilaContrInsCargaEvtDV();
+                break;
+            case "CONTR_INS_CARGA_EVT_DV_SUB":
+                geraFila = new GeraFilaContrInsCargaEvtDVSub();
+                break;
+            case "CONTR_INS_CARGA_EVT_M_GAD":
+                geraFila = new GeraFilaContrInsCargaEvtMGAD();
+                break;
+            case "CONTR_INS_LANC_FATURA":
+                geraFila = new GeraFilaContrInsLancFatura();
+                break;
             default:
                 geraFila = null;
         }

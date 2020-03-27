@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
@@ -29,50 +30,56 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
         try {
             super.executar();
 
-            Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
+            final Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
-            //relVO = (DynamicVO) this.dwfEntityFacade.findEntityByPrimaryKeyAsVO("Relatorio", new Object[]{17});
+            byte[] arquivoBytes = null;
+            try {
+                JapeWrapper relatorioDAO = JapeFactory.dao("Relatorio");
 
-            JapeWrapper relatorioDAO = JapeFactory.dao("Relatorio");
+                BigDecimal codigoRelatorioPlanilhaCusto = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'AD_MGSCTREPLCUS' AND CODUSU = 0").asBigDecimal("INTEIRO");
 
-            BigDecimal codigoRelatorioPlanilhaCusto = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'AD_MGSCTREPLCUS' AND CODUSU = 0").asBigDecimal("INTEIRO");
+                DynamicVO relVO = relatorioDAO.findByPK(codigoRelatorioPlanilhaCusto);
 
-            DynamicVO relVO = relatorioDAO.findByPK(codigoRelatorioPlanilhaCusto);
+                Report modeloImpressao = null;
 
-            Report modeloImpressao = null;
+                modeloImpressao = ReportManager.getInstance().getReport(relVO.asBigDecimal("NURFE"), EntityFacadeFactory.getDWFFacade());
 
-            modeloImpressao = ReportManager.getInstance().getReport(relVO.asBigDecimal("NURFE"), EntityFacadeFactory.getDWFFacade());
+                JasperPrint jasperPrint = null;
 
-            JasperPrint jasperPrint = null;
+                HashMap<String, Object> parametrosRelatorio = new HashMap<String, Object>();
 
-            HashMap<String, Object> parametrosRelatorio = new HashMap<String, Object>();
+                String pastaDeModelosParaImpressão = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
 
-            String pastaDeModelosParaImpressão = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
+                parametrosRelatorio.put("P_DTLANCUSTOINI", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                parametrosRelatorio.put("P_DTLANCUSTOFIN", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                parametrosRelatorio.put("P_NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                parametrosRelatorio.put("P_CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                parametrosRelatorio.put("P_CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                parametrosRelatorio.put("P_FISCGEST", "F");
+                parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpressão);
 
-            parametrosRelatorio.put("P_DTLANCUSTOINI", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
-            parametrosRelatorio.put("P_DTLANCUSTOFIN", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
-            parametrosRelatorio.put("P_NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-            parametrosRelatorio.put("P_CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-            parametrosRelatorio.put("P_CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-            parametrosRelatorio.put("P_FISCGEST", "F");
-            parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpressão);
+                jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
+                arquivoBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
-            jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
+            } catch (Exception e) {
+                throw new Exception("Erro ao proecessar relatorio: " + e);
+            }
 
-            byte[] arquivoBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+
+
 
             JapeWrapper dao = JapeFactory.dao("MGSCT_Relatorio_Anexo");
-            final FluidCreateVO fluidCreateVO = dao.create();
+            final FluidCreateVO relatorioAnexoFCVO = dao.create();
 
-            fluidCreateVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-            fluidCreateVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-            fluidCreateVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-            fluidCreateVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
-            fluidCreateVO.set("TIPGESTOR", "F");
-            fluidCreateVO.set("DTRLTANEXO", TimeUtils.getNow());
-            fluidCreateVO.set("DHINS", TimeUtils.getNow());
-            fluidCreateVO.set("USUINS", getLogin());
-            fluidCreateVO.set("ANEXO", arquivoBytes);
+            relatorioAnexoFCVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+            relatorioAnexoFCVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+            relatorioAnexoFCVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+            relatorioAnexoFCVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+            relatorioAnexoFCVO.set("TIPGESTOR", "F");
+            relatorioAnexoFCVO.set("DTRLTANEXO", TimeUtils.getNow());
+            relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
+            relatorioAnexoFCVO.set("USUINS", getLogin());
+            relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
 
 
             JapeSession.SessionHandle hnd = JapeSession.open();
@@ -80,14 +87,27 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
             JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
             jdbc.openSession();
 
+            final BigDecimal numeroUnicoRelatorioAnexo = BigDecimal.ZERO;
 
             hnd.execWithTX(new JapeSession.TXBlock() {
                 public void doWithTx() throws Exception {
-                    fluidCreateVO.save();
+                    DynamicVO save = relatorioAnexoFCVO.save();
+
+                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
+                    nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
+                    nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                    nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                    nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                    nativeSqlDecorator.setParametro("TIPGESTOR", "F");
+
+                    nativeSqlDecorator.atualizar();
+
                 }
             });
             JapeSession.close(hnd);
             JdbcWrapper.closeSession(jdbc);
+
 
             executado = true;
         } catch (Exception e) {

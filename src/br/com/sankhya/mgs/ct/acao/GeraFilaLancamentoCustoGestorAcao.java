@@ -33,7 +33,9 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
             BigDecimal numeroCotrato = null;
             numeroCotrato = new BigDecimal(contextoAcao.getParam("NUMCONTRATO").toString());
 
-
+            if(codigoUnidadeFaturamento == null){
+                codigoUnidadeFaturamento = BigDecimal.ZERO;
+            }
 
 
             for (Registro linha : linhas) {

@@ -2,7 +2,6 @@ package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.GeraFilaContrInsLancCustoUPAnexo;
-import br.com.sankhya.mgs.ct.processamento.controleintegracao.IntegracaoDetalhaCustoModel;
 import br.com.sankhya.mgs.ct.processamento.controleintegracao.IntegracaoLancamentoCustoModel;
 import br.com.sankhya.modelcore.util.ProcedureCaller;
 import com.sankhya.util.TimeUtils;
@@ -26,7 +25,7 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
 
             if (!integracaoSalva) {
-                //IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");
+                IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
                 mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
@@ -44,12 +43,12 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
                 if (BigDecimal.ONE.equals(sucesso)) {
                     executado = true;
                     mensagem = "OK";
-                    IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
+                    IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
                     geraFilaAnexo(parametrosExecutacao);
                 } else {
                     executado = false;
                     mensagem = "Erro PrcContrInsLancCustoUP: " + log;
-                    IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
+                    IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
         } catch (Exception e) {

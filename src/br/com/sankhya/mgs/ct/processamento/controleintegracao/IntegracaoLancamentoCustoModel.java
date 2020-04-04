@@ -23,7 +23,7 @@ public class IntegracaoLancamentoCustoModel {
     }
 
     static public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRADC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRADC = :NUINTEGRADC");
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRALC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRALC = :NUINTEGRALC");
         nativeSqlDecorator.setParametro("NUINTEGRALC",numeroUnicoIntegracao);
         nativeSqlDecorator.setParametro("COMPLEMENTO",complemento);
         nativeSqlDecorator.atualizar();

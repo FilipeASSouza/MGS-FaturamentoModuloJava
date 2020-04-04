@@ -84,6 +84,9 @@ public class GeraFilaFactory {
             case "CONTR_INS_CARGA_EVT_M_GAD":
                 geraFila = new GeraFilaContrInsCargaEvtMGAD();
                 break;
+            case "CONTR_INS_CARGA_EVT_M_MT2":
+                geraFila = new GeraFilaContrInsCargaEvtMMT2();
+                break;
             case "CONTR_INS_LANC_FATURA":
                 geraFila = new GeraFilaContrInsLancFatura();
                 break;

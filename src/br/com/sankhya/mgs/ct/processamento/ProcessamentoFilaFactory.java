@@ -53,6 +53,8 @@ public class ProcessamentoFilaFactory {
                 return new PrcContrInsCargaEvtDVSub();
             case "CONTR_INS_CARGA_EVT_M_GAD":
                 return new PrcContrInsCargaEvtMGAD();
+            case "CONTR_INS_CARGA_EVT_M_MT2":
+                return new PrcContrInsCargaEvtMMT2();
             case "CONTR_INS_LANC_FATURA":
                 return new PrcContrInsLancFatura();
         }

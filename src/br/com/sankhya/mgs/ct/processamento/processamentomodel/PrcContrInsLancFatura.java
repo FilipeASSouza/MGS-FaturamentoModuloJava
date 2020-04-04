@@ -57,8 +57,8 @@ public class PrcContrInsLancFatura extends ProcessarSuper implements Processar {
         caller.addInputParameter(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DATAVENCIMENTO"),"yyyyMMdd"));
         caller.addInputParameter(parametrosExecutacao.get("V_APROVADAS"));
         caller.addInputParameter(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));
-        caller.addInputParameter(parametrosExecutacao.get("V_CODTIPOFATURA"));
-        caller.addInputParameter(parametrosExecutacao.get("V_CODUNIDADEFATURA"));
+        caller.addInputParameter(new BigDecimal(parametrosExecutacao.get("V_CODTIPOFATURA")));
+        caller.addInputParameter(new BigDecimal(parametrosExecutacao.get("V_CODUNIDADEFATURA")));
         caller.addInputParameter(getLogin());//V_LOGIN           IN VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO        OUT NUMBER
         caller.execute(jdbc.getConnection());

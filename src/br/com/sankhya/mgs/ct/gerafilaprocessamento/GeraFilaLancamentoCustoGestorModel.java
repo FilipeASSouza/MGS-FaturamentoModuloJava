@@ -41,6 +41,7 @@ public class GeraFilaLancamentoCustoGestorModel {
         gerarTabelaTemporaria();
 
         NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
+        consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
         while (consultaListaCodigoSites.proximo()) {
             Timestamp dataCusto = consultaListaCodigoSites.getValorTimestamp("MESRELATORIO");
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODUNIDADEFATUR");

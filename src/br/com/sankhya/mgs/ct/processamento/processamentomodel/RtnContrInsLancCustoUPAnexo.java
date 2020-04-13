@@ -27,6 +27,7 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
     @Override
     public boolean executar() throws Exception {
         Boolean executado = false;//todo refatorar pra super
+        int numeroPaginasGerado;
         try {
             super.executar();
 
@@ -59,6 +60,11 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
                 parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpressão);
 
                 jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
+
+                numeroPaginasGerado = jasperPrint.getPages().size();
+
+                mensagem = "Numero de paginas gerado: " + numeroPaginasGerado;
+
                 arquivoBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             } catch (Exception e) {
@@ -66,49 +72,49 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
             }
 
 
+            if (numeroPaginasGerado > 0) {
+
+                JapeWrapper dao = JapeFactory.dao("MGSCT_Relatorio_Anexo");
+                final FluidCreateVO relatorioAnexoFCVO = dao.create();
+
+                relatorioAnexoFCVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                relatorioAnexoFCVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                relatorioAnexoFCVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                relatorioAnexoFCVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                relatorioAnexoFCVO.set("TIPGESTOR", "F");
+                relatorioAnexoFCVO.set("DTRLTANEXO", TimeUtils.getNow());
+                relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
+                relatorioAnexoFCVO.set("USUINS", getLogin());
+                relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
 
 
-            JapeWrapper dao = JapeFactory.dao("MGSCT_Relatorio_Anexo");
-            final FluidCreateVO relatorioAnexoFCVO = dao.create();
+                JapeSession.SessionHandle hnd = JapeSession.open();
+                final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+                JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
+                jdbc.openSession();
 
-            relatorioAnexoFCVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-            relatorioAnexoFCVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-            relatorioAnexoFCVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-            relatorioAnexoFCVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
-            relatorioAnexoFCVO.set("TIPGESTOR", "F");
-            relatorioAnexoFCVO.set("DTRLTANEXO", TimeUtils.getNow());
-            relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
-            relatorioAnexoFCVO.set("USUINS", getLogin());
-            relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
+                final BigDecimal numeroUnicoRelatorioAnexo = BigDecimal.ZERO;
 
+                hnd.execWithTX(new JapeSession.TXBlock() {
+                    public void doWithTx() throws Exception {
+                        DynamicVO save = relatorioAnexoFCVO.save();
 
-            JapeSession.SessionHandle hnd = JapeSession.open();
-            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-            JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
-            jdbc.openSession();
+                        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
+                        nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
+                        nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                        nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                        nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                        nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                        nativeSqlDecorator.setParametro("TIPGESTOR", "F");
 
-            final BigDecimal numeroUnicoRelatorioAnexo = BigDecimal.ZERO;
+                        nativeSqlDecorator.atualizar();
 
-            hnd.execWithTX(new JapeSession.TXBlock() {
-                public void doWithTx() throws Exception {
-                    DynamicVO save = relatorioAnexoFCVO.save();
+                    }
+                });
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
 
-                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
-                    nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
-                    nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-                    nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-                    nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
-                    nativeSqlDecorator.setParametro("TIPGESTOR", "F");
-
-                    nativeSqlDecorator.atualizar();
-
-                }
-            });
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
-
-
+            }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);

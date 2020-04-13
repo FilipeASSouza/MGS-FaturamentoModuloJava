@@ -27,6 +27,7 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
     @Override
     public boolean executar() throws Exception {
         Boolean executado = false;//todo refatorar pra super
+        int numeroPaginasGerado;
         try {
             super.executar();
 
@@ -60,45 +61,52 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
 
             jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
 
+            numeroPaginasGerado = jasperPrint.getPages().size();
+
+            mensagem = "Numero de paginas gerado: " + numeroPaginasGerado;
+
             byte[] arquivoBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
-            JapeWrapper dao = JapeFactory.dao("MGSCT_Relatorio_Anexo");
-            final FluidCreateVO fluidCreateVO = dao.create();
+            if (numeroPaginasGerado > 0) {
 
-            fluidCreateVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-            fluidCreateVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-            fluidCreateVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-            fluidCreateVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
-            fluidCreateVO.set("TIPGESTOR", "G");
-            fluidCreateVO.set("DTRLTANEXO", TimeUtils.getNow());
-            fluidCreateVO.set("DHINS", TimeUtils.getNow());
-            fluidCreateVO.set("USUINS", getLogin());
-            fluidCreateVO.set("ANEXO", arquivoBytes);
+                JapeWrapper dao = JapeFactory.dao("MGSCT_Relatorio_Anexo");
+                final FluidCreateVO fluidCreateVO = dao.create();
 
-
-            JapeSession.SessionHandle hnd = JapeSession.open();
-            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-            JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
-            jdbc.openSession();
+                fluidCreateVO.set("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                fluidCreateVO.set("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                fluidCreateVO.set("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                fluidCreateVO.set("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                fluidCreateVO.set("TIPGESTOR", "G");
+                fluidCreateVO.set("DTRLTANEXO", TimeUtils.getNow());
+                fluidCreateVO.set("DHINS", TimeUtils.getNow());
+                fluidCreateVO.set("USUINS", getLogin());
+                fluidCreateVO.set("ANEXO", arquivoBytes);
 
 
-            hnd.execWithTX(new JapeSession.TXBlock() {
-                public void doWithTx() throws Exception {
-                    DynamicVO save = fluidCreateVO.save();
-                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
-                    nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
-                    nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
-                    nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
-                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
-                    nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
-                    nativeSqlDecorator.setParametro("TIPGESTOR", "G");
+                JapeSession.SessionHandle hnd = JapeSession.open();
+                final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+                JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
+                jdbc.openSession();
 
-                    nativeSqlDecorator.atualizar();
-                }
-            });
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
 
+                hnd.execWithTX(new JapeSession.TXBlock() {
+                    public void doWithTx() throws Exception {
+                        DynamicVO save = fluidCreateVO.save();
+                        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
+                        nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
+                        nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
+                        nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
+                        nativeSqlDecorator.setParametro("CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
+                        nativeSqlDecorator.setParametro("DTLANCCUSTO", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"), "yyyyMMdd"));
+                        nativeSqlDecorator.setParametro("TIPGESTOR", "G");
+
+                        nativeSqlDecorator.atualizar();
+                    }
+                });
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
+
+            }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);

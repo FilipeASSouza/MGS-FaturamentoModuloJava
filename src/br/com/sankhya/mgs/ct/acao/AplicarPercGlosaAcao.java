@@ -14,14 +14,33 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
     public void doAction(ContextoAcao contextoAcao) throws Exception {
         BigDecimal competencia = TimeUtils.getYearMonth(Timestamp.valueOf(contextoAcao.getParam("DTCOMPETENCIA").toString()));
         Timestamp dataLancamentoCusto = Timestamp.valueOf(contextoAcao.getParam("DTLCCUSTO").toString());
-        BigDecimal codigoTipoPosto = new BigDecimal(contextoAcao.getParam("CODTIPOPOSTO").toString());
-        BigDecimal codigoServicosMaterial = new BigDecimal(contextoAcao.getParam("CODSERVMATERIAL").toString());
-        BigDecimal codigoEvento = new BigDecimal(contextoAcao.getParam("CODEVENTO").toString());
-        BigDecimal percTotEvento = new BigDecimal(contextoAcao.getParam("PERCTOTEVENTO").toString());
-        BigDecimal percTxAdm = new BigDecimal(contextoAcao.getParam(" PERCTXADM").toString());
+        BigDecimal codigoTipoPosto = null;
+        if (contextoAcao.getParam("CODTIPOPOSTO") != null) {
+            codigoTipoPosto = new BigDecimal(contextoAcao.getParam("CODTIPOPOSTO").toString());
+        }
+
+        BigDecimal codigoServicosMaterial = null;
+        if (contextoAcao.getParam("CODSERVMATERIAL") != null) {
+            codigoServicosMaterial = new BigDecimal(contextoAcao.getParam("CODSERVMATERIAL").toString());
+        }
+
+        BigDecimal codigoEvento = null;
+        if (contextoAcao.getParam("CODEVENTO") != null) {
+            codigoEvento = new BigDecimal(contextoAcao.getParam("CODEVENTO").toString());
+        }
+
+        BigDecimal percTotEvento = null;
+        if (contextoAcao.getParam("PERCTOTEVENTO") != null) {
+            percTotEvento = new BigDecimal(contextoAcao.getParam("PERCTOTEVENTO").toString());
+        }
+
+        BigDecimal percTxAdm = null;
+        if (contextoAcao.getParam(" PERCTXADM") != null) {
+            percTxAdm = new BigDecimal(contextoAcao.getParam(" PERCTXADM").toString());
+        }
 
         Registro[] linhas = contextoAcao.getLinhas();
-        if (linhas.length == 0){
+        if (linhas.length == 0) {
             contextoAcao.setMensagemRetorno("Favor seleciona pelo menos um contrato");
         } else {
             for (Registro linha : linhas) {

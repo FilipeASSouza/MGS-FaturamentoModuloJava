@@ -48,6 +48,8 @@ private BigDecimal numeroUnicoEventoMensal;
         caller.addInputParameter(nomeusu);//V_LOGIN           IN VARCHAR2,
         caller.addOutputParameter(2, "RET");//RET OUT NUMBER
 
+        caller.execute(jdbc.getConnection());
+
         BigDecimal retorno = null;
         retorno = caller.resultAsBigDecimal("RET");
 

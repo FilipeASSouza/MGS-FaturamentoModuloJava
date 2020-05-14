@@ -29,6 +29,13 @@ public class GeraFilaContaCorrenteAcao implements AcaoRotinaJava {
                 codigoUnidadeFaturamentoFinal = BigDecimal.ZERO;
             }
 
+            BigDecimal tipoDeProcessamento = null;
+            if (contextoAcao.getParam("NUTIPOPROC") != null) {
+                tipoDeProcessamento = new BigDecimal(contextoAcao.getParam("NUTIPOPROC").toString());
+            } else {
+                tipoDeProcessamento = BigDecimal.ZERO;
+            }
+
             for (Registro linha : linhas) {
 
 
@@ -37,7 +44,8 @@ public class GeraFilaContaCorrenteAcao implements AcaoRotinaJava {
                 geraFilaContaCorrenteModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaContaCorrenteModel.setUnidadeFaturamentoInicial(codigoUnidadeFaturamentoInicial);
                 geraFilaContaCorrenteModel.setUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
-                
+                geraFilaContaCorrenteModel.setTipoDeProcessamento(tipoDeProcessamento);
+
                 geraFilaContaCorrenteModel.gerarFila();
             }
         }

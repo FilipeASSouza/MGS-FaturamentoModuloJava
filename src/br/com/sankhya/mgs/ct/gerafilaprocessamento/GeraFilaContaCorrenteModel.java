@@ -13,6 +13,7 @@ public class GeraFilaContaCorrenteModel {
     private Timestamp dataReferencia;
     private BigDecimal unidadeFaturamentoInicial;
     private BigDecimal unidadeFaturamentoFinal;
+    private BigDecimal tipoDeProcessamento;
     private BigDecimal numeroContrato;
     private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
 
@@ -36,6 +37,14 @@ public class GeraFilaContaCorrenteModel {
         }
     }
 
+    public void setTipoDeProcessamento(BigDecimal tipoDeProcessamento) {
+        if (tipoDeProcessamento == null){
+            this.tipoDeProcessamento = BigDecimal.ZERO;
+        } else {
+            this.tipoDeProcessamento = tipoDeProcessamento;
+        }
+    }
+
     public void setNumeroContrato(BigDecimal numeroContrato) {
         this.numeroContrato = numeroContrato;
     }
@@ -56,7 +65,7 @@ public class GeraFilaContaCorrenteModel {
     private void gerarFilaPorUnidadeFaturamento(BigDecimal unidadeFaturamento) throws Exception {
         Collection<DynamicVO> metricasContratoVOS = JapeFactory.dao("MGSCT_Metricas").find("NUMCONTRATO = ?", numeroContrato);
         for (DynamicVO metricasContratoVO : metricasContratoVOS){
-            GeraFila geraFila = geraFilaFactory.getGeraFilaContaCorrente(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"));
+            GeraFila geraFila = geraFilaFactory.getGeraFilaContaCorrente(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"), tipoDeProcessamento);
             if (geraFila != null) {
                 geraFila.setParametroExecucao("numeroUnicoMetrica",metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
                 geraFila.setParametroExecucao("numeroUnidadeFaturamento",unidadeFaturamento);

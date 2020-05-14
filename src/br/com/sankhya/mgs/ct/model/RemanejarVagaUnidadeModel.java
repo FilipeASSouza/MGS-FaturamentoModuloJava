@@ -40,6 +40,14 @@ public class RemanejarVagaUnidadeModel {
             disparaErro("Unidade de destino não localizada para esse contrato!!!");
         }
 
+        NativeSqlDecorator validaVagaAlocada = new NativeSqlDecorator(this, "RemanejarVagaUnidadaValidaVagaAlocada.sql");
+        validaVagaAlocada.setParametro("CODVAGA",vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
+        validaVagaAlocada.setParametro("DTREF",dataFechamentoVaga);
+
+        if (validaVagaAlocada.proximo()){
+            disparaErro("Vaga alocaga para o periodo selecionado");
+        }
+
         NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql");
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("NUCONTRCENT",unidadesDestinoVO.asBigDecimalOrZero("NUCONTRCENT"));
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("CODTIPOPOSTO",previsoesUnidadeOrigemVO.asBigDecimalOrZero("CODTIPOPOSTO"));

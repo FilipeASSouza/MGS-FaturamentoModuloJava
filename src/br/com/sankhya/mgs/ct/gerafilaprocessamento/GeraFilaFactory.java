@@ -2,12 +2,13 @@ package br.com.sankhya.mgs.ct.gerafilaprocessamento;
 
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
+import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.*;
 
 import java.math.BigDecimal;
 
 public class GeraFilaFactory {
-    public GeraFila getGeraFilaContaCorrente(BigDecimal numeroUnicoTipoMetrica) throws Exception {
+    public GeraFila getGeraFilaContaCorrente(BigDecimal numeroUnicoTipoMetrica, BigDecimal tipoDeProcessamento) throws Exception {
         DynamicVO mgsct_apoio_metrica = JapeFactory.dao("MGSCT_Apoio_Metrica").findByPK(numeroUnicoTipoMetrica);
 
         //Object o = Class.forName("pacote.pacote1.nomeDaClasse").newIstance();
@@ -20,6 +21,15 @@ public class GeraFilaFactory {
 
 
         String textochave = mgsct_apoio_metrica.asString("TEXTOCHAVE");
+
+        JapeWrapper tipoProcessamentoDAO = JapeFactory.dao("MGSCT_Tipo_Processamento");
+        DynamicVO tipoProcessamentoVO = tipoProcessamentoDAO.findByPK(tipoDeProcessamento);
+        if (tipoProcessamentoVO != null){
+            String nometipoProcessamento = tipoProcessamentoVO.asString("NOME");
+            if (nometipoProcessamento.equals(textochave)){
+                return null;
+            }
+        }
 
         return getGeraFila(textochave);
     }

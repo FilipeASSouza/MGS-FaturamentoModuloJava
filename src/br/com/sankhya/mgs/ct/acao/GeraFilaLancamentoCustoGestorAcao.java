@@ -30,20 +30,12 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
                 }
             }
 
-            BigDecimal numeroCotrato = null;
-            numeroCotrato = new BigDecimal(contextoAcao.getParam("NUMCONTRATO").toString());
-
-
-
             for (Registro linha : linhas) {
-
-
                 GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel();
-                geraFilaLancamentoCustoGestorModel.setNumeroContrato(numeroCotrato);
+                geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
                 geraFilaLancamentoCustoGestorModel.setDataCusto(dataCusto);
                 geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento(codigoUnidadeFaturamento);
-
 
                 geraFilaLancamentoCustoGestorModel.gerarFila();
             }

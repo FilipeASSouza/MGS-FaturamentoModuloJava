@@ -10,6 +10,7 @@ import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -62,7 +63,7 @@ public class ImportarEventoMensalModel {
             disparaErro("Modalidade por contrato não localizado!");
         }
 
-        numeroUnicoModalidadeContrato = modalidadeContratoVO.asBigDecimal("NUIMPEVTMENSAL");
+        numeroUnicoModalidadeContrato = modalidadeContratoVO.asBigDecimal("NUMODALIDADE");
 
         try {
             for (String arquivo : getListaDeArquivos("MGSCT_Importacao_Evento_Mensal", this.numeroUnico)) {
@@ -70,7 +71,7 @@ public class ImportarEventoMensalModel {
             }
             FluidUpdateVO fcvo = dao.prepareToUpdate(vo);
             fcvo.set("STATUS","P");
-            fcvo.set("LOG","OK");
+            fcvo.set("LOG","OK, Motivo: "+motivoCarga);
             fcvo.update();
         } catch (Exception e){
             FluidUpdateVO fcvo = dao.prepareToUpdate(vo);
@@ -123,39 +124,41 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("CODCARGA",new BigDecimal(sequencial++));
             detalhamentoCustoFCVO.set("MTVCARGA",motivoCarga);//pedir para o usuário digitar o motivo
             detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
-            detalhamentoCustoFCVO.set("USUINS", AuthenticationInfo.getCurrent().getUserID());//usuário que inseriu
+            detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usuário que inseriu
 
             detalhamentoCustoFCVO.set("CODUNIDADEFATUR",planilha.getValorBigDecimal("CODUNIDADEFATUR"));
-            detalhamentoCustoFCVO.set("CODVAGA",planilha.getValorBigDecimal("CODVAGA"));
+            detalhamentoCustoFCVO.set("CODVAGA",planilha.getValorString("CODVAGA"));
             detalhamentoCustoFCVO.set("CODSERVMATERIAL",planilha.getValorBigDecimal("CODSERVMATERIAL"));
             detalhamentoCustoFCVO.set("CODTIPOPOSTO",planilha.getValorBigDecimal("CODTIPOPOSTO"));
             detalhamentoCustoFCVO.set("CODCARGO",planilha.getValorBigDecimal("CODCARGO"));
             detalhamentoCustoFCVO.set("CODPRONTUARIO",planilha.getValorBigDecimal("CODPRONTUARIO"));
-            detalhamentoCustoFCVO.set("NOME",planilha.getValorBigDecimal("NOME"));
+            detalhamentoCustoFCVO.set("NOME",planilha.getValorString("NOME"));
             detalhamentoCustoFCVO.set("CODEVENTO",planilha.getValorBigDecimal("CODEVENTO"));
-            detalhamentoCustoFCVO.set("DTINIEVENTO",planilha.getValorBigDecimal("DTINIEVENTO"));
-            detalhamentoCustoFCVO.set("DTFIMEVENTO",planilha.getValorBigDecimal("DTFIMEVENTO"));
-            detalhamentoCustoFCVO.set("DSCEVENTO",planilha.getValorBigDecimal("DSCEVENTO"));
-            detalhamentoCustoFCVO.set("INFEVENTO",planilha.getValorBigDecimal("INFEVENTO"));
-            detalhamentoCustoFCVO.set("VLRUNIEVENTO",planilha.getValorBigDecimal("VLRUNIEVENTO"));
-            detalhamentoCustoFCVO.set("QTDEVENTO",planilha.getValorBigDecimal("QTDEVENTO"));
-            detalhamentoCustoFCVO.set("VLRTOTEVENTO",planilha.getValorBigDecimal("VLRTOTEVENTO"));
+            detalhamentoCustoFCVO.set("DTINIEVENTO",planilha.getValorTimestamp("DTINIEVENTO"));
+            detalhamentoCustoFCVO.set("DTFIMEVENTO",planilha.getValorTimestamp("DTFIMEVENTO"));
+            detalhamentoCustoFCVO.set("DSCEVENTO",planilha.getValorString("DSCEVENTO"));
+            detalhamentoCustoFCVO.set("INFEVENTO",planilha.getValorString("INFEVENTO"));
+            detalhamentoCustoFCVO.set("VLRUNIEVENTO",arredondaValor(planilha.getValorBigDecimal("VLRUNIEVENTO")));
+            detalhamentoCustoFCVO.set("QTDEVENTO",arredondaValor(planilha.getValorBigDecimal("QTDEVENTO")));
+            detalhamentoCustoFCVO.set("VLRTOTEVENTO",arredondaValor(planilha.getValorBigDecimal("VLRTOTEVENTO")));
             detalhamentoCustoFCVO.set("COMPEVENTO",planilha.getValorBigDecimal("COMPEVENTO"));
             detalhamentoCustoFCVO.set("COMPLANC",planilha.getValorBigDecimal("COMPLANC"));
             detalhamentoCustoFCVO.set("COMPFATU",planilha.getValorBigDecimal("COMPFATU"));
-            detalhamentoCustoFCVO.set("PERCITF",planilha.getValorBigDecimal("PERCITF"));
-            detalhamentoCustoFCVO.set("PERCTXADM",planilha.getValorBigDecimal("PERCTXADM"));
-            detalhamentoCustoFCVO.set("VLRTXADM",planilha.getValorBigDecimal("VLRTXADM"));
-            detalhamentoCustoFCVO.set("DTLCCUSTO",planilha.getValorBigDecimal("DTLCCUSTO"));
+            detalhamentoCustoFCVO.set("PERCITF",arredondaValor(planilha.getValorBigDecimal("PERCITF")));
+            detalhamentoCustoFCVO.set("PERCTXADM",arredondaValor(planilha.getValorBigDecimal("PERCTXADM")));
+            detalhamentoCustoFCVO.set("VLRTXADM",arredondaValor(planilha.getValorBigDecimal("VLRTXADM")));
+            detalhamentoCustoFCVO.set("DTLCCUSTO",planilha.getValorTimestamp("DTLCCUSTO"));
             detalhamentoCustoFCVO.set("CODCUSTO",planilha.getValorBigDecimal("CODCUSTO"));
             detalhamentoCustoFCVO.set("CODTIPOFATURA",planilha.getValorBigDecimal("CODTIPOFATURA"));
 
-
-
-
-
             detalhamentoCustoFCVO.save();
         }
+    }
+
+    private BigDecimal arredondaValor(BigDecimal valor){
+        if (valor == null)
+            return null;
+        return valor.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     private Collection<String> getListaDeArquivos(String instancia, BigDecimal numeroUnico) {

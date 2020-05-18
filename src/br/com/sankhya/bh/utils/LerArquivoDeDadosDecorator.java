@@ -2,6 +2,7 @@ package br.com.sankhya.bh.utils;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -36,6 +37,14 @@ public class LerArquivoDeDadosDecorator {
         this.extensao = arquivo.substring(arquivo.lastIndexOf(".") + 1, arquivo.length());
     }
 
+    public int getNumeroDeLinhas() {
+        return numeroDeLinhas;
+    }
+
+    public int getLinhaSelecionada() {
+        return linhaSelecionada;
+    }
+
     public LerArquivoDeDadosDecorator(String caminhaAquivo, String extensao) {
         this.arquivo = caminhaAquivo;
         this.extensao = extensao;
@@ -67,7 +76,7 @@ public class LerArquivoDeDadosDecorator {
             case "xls":
                 abrirArquivoXls();
                 break;
-            case "xslx":
+            case "xlsx":
                 abrirArquivoXslx();
                 break;
         }
@@ -93,49 +102,62 @@ public class LerArquivoDeDadosDecorator {
         numeroDeLinhas = planilhaXslx.getPhysicalNumberOfRows();
     }
 
-
-    public BigDecimal getValorBigDecimal(String campo) throws Exception {
-        BigDecimal valor = null;
-
+    private Cell getCell(String campo) throws Exception {
+        Cell cell = null;
         switch (extensao.toLowerCase()) {
             case "xls":
-                valor = new BigDecimal(planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getNumericCellValue());
+                cell = planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
                 break;
-            case "xslx":
-                valor = new BigDecimal(planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getNumericCellValue());
+            case "xlsx":
+                cell = planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
                 break;
         }
+        return cell;
+    }
 
+
+    public BigDecimal getValorBigDecimal(String campo) throws Exception {
+        try {
+        BigDecimal valor = null;
+        Cell cell = getCell(campo);
+        if (cell == null)
+            return null;
+
+        if (cell.toString().trim().equals(""))
+            return null;
+
+        valor = new BigDecimal(cell.getNumericCellValue());
         return valor;
+        } catch (Exception e) {
+            throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);
+        }
     }
 
     public String getValorString(String campo) throws Exception {
-        String valor = null;
-
-        switch (extensao.toLowerCase()) {
-            case "xls":
-                valor = planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getStringCellValue();
-                break;
-            case "xslx":
-                valor = planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getStringCellValue();
-                break;
+        try {
+            String valor = null;
+            Cell cell = getCell(campo);
+            if (cell == null) {
+                return null;
+            }
+            valor = cell.getStringCellValue();
+            return valor;
+        } catch (Exception e) {
+            throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);
         }
-
-        return valor;
     }
 
     public Timestamp getValorTimestamp(String campo) throws Exception {
-        Timestamp valor = null;
-
-        switch (extensao.toLowerCase()) {
-            case "xls":
-                valor = new Timestamp(planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getDateCellValue().getTime());
-                break;
-            case "xslx":
-                valor = new Timestamp(planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo)).getDateCellValue().getTime());
-                break;
+        try {
+            Timestamp valor = null;
+            Cell cell = getCell(campo);
+            if (cell == null) {
+                return null;
+            }
+            valor = new Timestamp(cell.getDateCellValue().getTime());
+            return valor;
+        } catch (Exception e) {
+            throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);
         }
-
-        return valor;
     }
 }

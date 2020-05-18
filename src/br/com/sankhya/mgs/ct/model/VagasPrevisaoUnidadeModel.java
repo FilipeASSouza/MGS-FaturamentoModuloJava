@@ -19,6 +19,15 @@ import java.util.Collection;
 public class VagasPrevisaoUnidadeModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Unidade");
     private DynamicVO vo;
+
+
+    /**
+     * Entidade: MGSCT_Previsoes_Unidade
+     * Tabela: MGSTCTUNIDADEPREV
+     * Chave: NUUNIDPREV
+     */
+    private DynamicVO mestrevo;
+
     private Boolean subtrairVagaPrevisaoUnidade = false;
     public VagasPrevisaoUnidadeModel()  {
     }
@@ -39,7 +48,7 @@ public class VagasPrevisaoUnidadeModel {
     }
 
     private void inicialzaVariaveis()throws Exception {
-
+        mestrevo = JapeFactory.dao("MGSCT_Previsoes_Unidade").findByPK(vo.asBigDecimal("NUUNIDPREV"));
     }
 
     private void validaDadosInsert() throws Exception {
@@ -75,8 +84,8 @@ public class VagasPrevisaoUnidadeModel {
         }
     }
 
-    private void preencheCamposCalculados() throws Exception {
-
+    public void preencheCamposCalculados() throws Exception {
+        vo.setProperty("NUCONTRCENT", mestrevo.asBigDecimalOrZero("NUCONTRCENT"));
     }
 
     private void criaRegistrosDerivados() throws Exception {

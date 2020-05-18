@@ -19,6 +19,11 @@ public class VagasPrevisaoUnidadeController {
         model.validaDadosUpdate(oldVO);
     }
 
+    public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
+        inicializaVariaveis(persistenceEvent);
+        model.preencheCamposCalculados();
+    }
+
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.alteraDadosDerivados();

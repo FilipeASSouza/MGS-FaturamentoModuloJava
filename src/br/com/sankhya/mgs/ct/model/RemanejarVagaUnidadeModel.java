@@ -45,7 +45,7 @@ public class RemanejarVagaUnidadeModel {
         validaVagaAlocada.setParametro("DTREF",dataFechamentoVaga);
 
         if (validaVagaAlocada.proximo()){
-            disparaErro("Vaga alocaga para o periodo selecionado");
+            disparaErro("Vaga alocada para o periodo selecionado");
         }
 
         NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql");
@@ -54,31 +54,36 @@ public class RemanejarVagaUnidadeModel {
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("CODSERVMATERIAL",previsoesUnidadeOrigemVO.asBigDecimalOrZero("CODSERVMATERIAL"));
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("CODEVENTO",previsoesUnidadeOrigemVO.asBigDecimalOrZero("CODEVENTO"));
 
+        FluidUpdateVO vagasPrevisaoUnidadeOrigemFUVO = vagasPrevisaoUnidadeDAO.prepareToUpdate(vagasPrevisaoUnidadeOrigemVO);
+        vagasPrevisaoUnidadeOrigemFUVO.set("DTFIM",dataFechamentoVaga);
+        vagasPrevisaoUnidadeOrigemFUVO.update();
 
         if(buscaPrevisaoUnidadeDestinoNSQL.proximo()){
             previsoesUnidadeDestinoVO = previsoesUnidadeDAO.findByPK(   buscaPrevisaoUnidadeDestinoNSQL.getValorBigDecimal("NUUNIDPREV"));
+
+            FluidUpdateVO previsoesUnidadeDestinoFUVO = previsoesUnidadeDAO.prepareToUpdate(previsoesUnidadeDestinoVO);
+
+            PrevisoesUnidadeModel.setDataIncioVaga(previsoesUnidadeDestinoVO.asBigDecimal("NUCONTRCENT"),dataFechamentoVaga);
+
+            previsoesUnidadeDestinoFUVO.set("QTDCONTRATADA", previsoesUnidadeDestinoVO.asBigDecimalOrZero("QTDCONTRATADA").add(BigDecimal.ONE));
+            previsoesUnidadeDestinoFUVO.update();
         } else {
+            PrevisoesUnidadeModel.setDataIncioVaga(BigDecimal.ZERO,dataFechamentoVaga);
             FluidCreateVO previsoesUnidadeFCVO = previsoesUnidadeDAO.create();
             previsoesUnidadeFCVO.set("NUCONTRCENT",unidadesDestinoVO.asBigDecimalOrZero("NUCONTRCENT"));
             previsoesUnidadeFCVO.set("CODTIPOPOSTO",previsoesUnidadeOrigemVO.asBigDecimal("CODTIPOPOSTO"));
             previsoesUnidadeFCVO.set("NUMCONTRATO",previsoesUnidadeOrigemVO.asBigDecimal("NUMCONTRATO"));
             previsoesUnidadeFCVO.set("CODSERVMATERIAL",previsoesUnidadeOrigemVO.asBigDecimal("CODSERVMATERIAL"));
             previsoesUnidadeFCVO.set("CODEVENTO",previsoesUnidadeOrigemVO.asBigDecimal("CODEVENTO"));
-            previsoesUnidadeFCVO.set("QTDCONTRATADA",BigDecimal.ZERO);
+            previsoesUnidadeFCVO.set("QTDCONTRATADA",BigDecimal.ONE);
             previsoesUnidadeFCVO.set("CODCONTROLE",previsoesUnidadeOrigemVO.asBigDecimal("CODEVENTO"));
-
-
             previsoesUnidadeDestinoVO = previsoesUnidadeFCVO.save();
         }
 
 
-        FluidUpdateVO vagasPrevisaoUnidadeOrigemFUVO = vagasPrevisaoUnidadeDAO.prepareToUpdate(vagasPrevisaoUnidadeOrigemVO);
-        vagasPrevisaoUnidadeOrigemFUVO.set("DTFIM",dataFechamentoVaga);
-        vagasPrevisaoUnidadeOrigemFUVO.update();
 
-        FluidUpdateVO previsoesUnidadeDestinoFUVO = previsoesUnidadeDAO.prepareToUpdate(previsoesUnidadeDestinoVO);
-        previsoesUnidadeDestinoFUVO.set("QTDCONTRATADA", previsoesUnidadeDestinoVO.asBigDecimalOrZero("QTDCONTRATADA").add(BigDecimal.ONE));
-        previsoesUnidadeDestinoFUVO.update();
+
+
 
 
     }

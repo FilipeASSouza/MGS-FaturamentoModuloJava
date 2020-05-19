@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Entidade: MGSCT_Previsoes_Unidade
@@ -38,6 +39,7 @@ public class PrevisoesUnidadeModel {
     private BigDecimal numeroContrato;
     private BigDecimal numeroUnicoModalidade;
     private PrevisaoValidator previsaoValidator;
+    private static Map<BigDecimal, Timestamp> listaDataIncioVaga = new HashMap<BigDecimal,Timestamp>();
 
     public PrevisoesUnidadeModel() {
 
@@ -81,6 +83,12 @@ public class PrevisoesUnidadeModel {
                 numeroUnicoModalidade
         );
         //, NUMCONTRATO, CODEVENTO, CODTIPOPOSTO, CODSERVMATERIAL
+
+        if (listaDataIncioVaga.containsKey(BigDecimal.ZERO)){
+            listaDataIncioVaga.get(BigDecimal.ZERO);
+            listaDataIncioVaga.put(vo.asBigDecimal("NUUNIDPREV"),listaDataIncioVaga.get(BigDecimal.ZERO));
+            listaDataIncioVaga.remove(listaDataIncioVaga.get(BigDecimal.ZERO));
+        }
 
     }
 
@@ -258,7 +266,15 @@ public class PrevisoesUnidadeModel {
         for (DynamicVO vagaVO : vagaVOs) {
             BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
             String codigoVaga = vagaVO.asString("CODVAGA");
-            Timestamp dataInicioUnidade = mestrevo.asTimestamp("DTINICIO");
+            Timestamp dataInicioUnidade = null;
+            if (listaDataIncioVaga.containsKey(numeroUnicoPrevisaoUnidade)){
+                dataInicioUnidade = listaDataIncioVaga.get(numeroUnicoPrevisaoUnidade);
+                listaDataIncioVaga.remove(numeroUnicoPrevisaoUnidade);
+            } else {
+                dataInicioUnidade = mestrevo.asTimestamp("DTINICIO");
+            }
+
+
             vagasPrevisaoUnidadeModel.criar(
                     numeroUnicoPrevisaoUnidade,
                     codigoVaga,
@@ -303,5 +319,9 @@ public class PrevisoesUnidadeModel {
 
     public void validaDelete() throws Exception {
         ErroUtils.disparaErro("Previsão da unidade não pode ser deletada!");
+    }
+
+    public static void setDataIncioVaga(BigDecimal numeroUnicoPrevisaoUnidade, Timestamp dataInicioUnidade) {
+        listaDataIncioVaga.put(numeroUnicoPrevisaoUnidade,dataInicioUnidade);
     }
 }

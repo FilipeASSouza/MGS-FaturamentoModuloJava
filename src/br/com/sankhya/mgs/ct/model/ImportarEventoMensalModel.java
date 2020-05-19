@@ -113,7 +113,7 @@ public class ImportarEventoMensalModel {
         planilha.setColuna("CODCUSTO", 22);
         planilha.setColuna("CODTIPOFATURA", 23);
 
-        int sequencial = 1;
+
         while(planilha.proximo()) {
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
@@ -121,7 +121,7 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("NUMODALIDADE",numeroUnicoModalidadeContrato);//pega do sistema
             detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
             detalhamentoCustoFCVO.set("TIPLANCEVENTO","M");
-            detalhamentoCustoFCVO.set("CODCARGA",new BigDecimal(sequencial++));
+            detalhamentoCustoFCVO.set("CODCARGA",numeroUnico);
             detalhamentoCustoFCVO.set("MTVCARGA",motivoCarga);//pedir para o usuário digitar o motivo
             detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
             detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usuário que inseriu

@@ -63,7 +63,7 @@ public class RemanejarVagaUnidadeModel {
 
             FluidUpdateVO previsoesUnidadeDestinoFUVO = previsoesUnidadeDAO.prepareToUpdate(previsoesUnidadeDestinoVO);
 
-            PrevisoesUnidadeModel.setDataIncioVaga(previsoesUnidadeDestinoVO.asBigDecimal("NUCONTRCENT"),dataFechamentoVaga, vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
+            PrevisoesUnidadeModel.setDataIncioVaga(previsoesUnidadeDestinoVO.asBigDecimal("NUUNIDPREV"),dataFechamentoVaga, vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
 
             previsoesUnidadeDestinoFUVO.set("QTDCONTRATADA", previsoesUnidadeDestinoVO.asBigDecimalOrZero("QTDCONTRATADA").add(BigDecimal.ONE));
             previsoesUnidadeDestinoFUVO.update();

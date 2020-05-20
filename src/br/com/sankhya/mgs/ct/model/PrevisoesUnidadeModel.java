@@ -9,10 +9,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Entidade: MGSCT_Previsoes_Unidade
@@ -235,7 +232,7 @@ public class PrevisoesUnidadeModel {
             ArrayList<DynamicVO> vagaVOs = new ArrayList();
             if (listaVagasRemanajedas.containsKey(numeroUnicoPrevisaoUnidade)){
                 String codigoVaga = listaVagasRemanajedas.get(numeroUnicoPrevisaoUnidade);
-                listaDataIncioVaga.remove(numeroUnicoPrevisaoUnidade);
+                listaVagasRemanajedas.remove(numeroUnicoPrevisaoUnidade);
                 vagaVOs.add((DynamicVO) JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findOne("CODVAGA = ? ", codigoVaga));
 
             }else {
@@ -277,11 +274,15 @@ public class PrevisoesUnidadeModel {
                 dataInicioUnidade = mestrevo.asTimestamp("DTINICIO");
             }
 
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dataInicioUnidade);
+            cal.add(Calendar.DATE, 1);
+            Timestamp dataDiaSeguinte = new Timestamp(cal.getTime().getTime());
 
             vagasPrevisaoUnidadeModel.criar(
                     numeroUnicoPrevisaoUnidade,
                     codigoVaga,
-                    dataInicioUnidade
+                    dataDiaSeguinte
             );
         }
     }

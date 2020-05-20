@@ -38,7 +38,7 @@ public class PrcContrInsLancFatura extends ProcessarSuper implements Processar {
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
             } else {
                 executado = false;
-                mensagem = "Erro PrcContrInsLancCustoUP: [" +sucesso.toString() +"]"+ log;
+                mensagem = "Erro PrcContrInsLancFatura: [" +sucesso.toString() +"]"+ log;
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
             }
 

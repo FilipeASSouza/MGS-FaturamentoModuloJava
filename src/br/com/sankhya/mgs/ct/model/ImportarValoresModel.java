@@ -81,6 +81,20 @@ public class ImportarValoresModel {
         planilha.setColuna("ALIQADM", 10);
 
         while(planilha.proximo()) {
+            int valoresProdutosNumeroRegstrosIguais = valoresProdutosDAO.find("NUMCONTRATO = ? AND CODSERVMATERIAL = ? AND CODEVENTO = ? AND ALIQISS = ? AND  DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
+                    planilha.getValorBigDecimal("NUMCONTRATO"),
+                    planilha.getValorBigDecimal("CODSERVMATERIAL"),
+                    planilha.getValorBigDecimal("CODEVENTO"),
+                    planilha.getValorBigDecimal("ALIQISS"),
+                    planilha.getValorTimestamp("DTINICIO"),
+                    planilha.getValorTimestamp("DTFIM"),
+                    planilha.getValorBigDecimal("NROOCORRENCIA")
+            ).size();
+
+            if (valoresProdutosNumeroRegstrosIguais > 0){
+                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao será importada!");
+            }
+
             FluidCreateVO valoresProdutosFCVO = valoresProdutosDAO.create();
             valoresProdutosFCVO.set("NUMCONTRATO",planilha.getValorBigDecimal("NUMCONTRATO"));
             valoresProdutosFCVO.set("CODTPN",planilha.getValorBigDecimal("CODTPN"));
@@ -98,7 +112,7 @@ public class ImportarValoresModel {
     }
 
     private void processaPlanilhaPosto(String arquivo) throws Exception {
-        JapeWrapper valoresEventosDAO = JapeFactory.dao("MGSCT_Valores_Eventos");//MGSCT_Valores_Eventos
+        JapeWrapper valoresEventosDAO = JapeFactory.dao("MGSCT_Valores_Eventos");//MGSTCTCONTRVLRPS
         LerArquivoDeDadosDecorator planilha = new LerArquivoDeDadosDecorator(arquivo, "xlsx");
 
         planilha.setColuna("NUMCONTRATO", 0);
@@ -114,6 +128,20 @@ public class ImportarValoresModel {
 
 
         while(planilha.proximo()) {
+            int valoresEventosNumeroRegstrosIguais = valoresEventosDAO.find("NUMCONTRATO =? AND CODTPN = ? AND CODEVENTO = ? AND ALIQISS = ? AND DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
+                    planilha.getValorBigDecimal("NUMCONTRATO"),
+                    planilha.getValorBigDecimal("CODTPN"),
+                    planilha.getValorBigDecimal("CODEVENTO"),
+                    planilha.getValorBigDecimal("ALIQISS"),
+                    planilha.getValorTimestamp("DTINICIO"),
+                    planilha.getValorTimestamp("DTFIM"),
+                    planilha.getValorBigDecimal("NROOCORRENCIA")
+            ).size();
+
+            if (valoresEventosNumeroRegstrosIguais > 0){
+                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao será importada!");
+            }
+
             FluidCreateVO valoresEventosFCVO = valoresEventosDAO.create();
             valoresEventosFCVO.set("NUMCONTRATO",planilha.getValorBigDecimal("NUMCONTRATO"));
             valoresEventosFCVO.set("CODTPN",planilha.getValorBigDecimal("CODTPN"));

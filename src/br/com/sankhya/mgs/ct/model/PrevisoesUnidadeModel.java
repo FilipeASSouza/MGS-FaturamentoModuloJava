@@ -40,6 +40,7 @@ public class PrevisoesUnidadeModel {
     private BigDecimal numeroUnicoModalidade;
     private PrevisaoValidator previsaoValidator;
     private static Map<BigDecimal, Timestamp> listaDataIncioVaga = new HashMap<BigDecimal,Timestamp>();
+    private static Map<BigDecimal, String> listaVagasRemanajedas = new HashMap<BigDecimal,String>();
 
     public PrevisoesUnidadeModel() {
 
@@ -229,34 +230,36 @@ public class PrevisoesUnidadeModel {
     public void criaRegistrosDerivados() throws Exception {
         BigDecimal codigoTipoPosto = vo.asBigDecimalOrZero("CODTIPOPOSTO");
         boolean postoPreechido = !(codigoTipoPosto.equals(BigDecimal.ZERO));
+        BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         if (postoPreechido) {
-
-
-            ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
-
-            int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
-            BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
-
-
-            BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
-            BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel().quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
-
-            if (quantidadeContratada.compareTo(quantidadeVagasAtribuidasAtivas) < 0) {
-                ErroUtils.disparaErro("A quantidade de vagas não pode ser diminuida!");
-            }
-
-            BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
-
-            if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
-                ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsa da unidade");
-            }
-
             ArrayList<DynamicVO> vagaVOs = new ArrayList();
+            if (listaVagasRemanajedas.containsKey(numeroUnicoPrevisaoUnidade)){
+                String codigoVaga = listaVagasRemanajedas.get(numeroUnicoPrevisaoUnidade);
+                listaDataIncioVaga.remove(numeroUnicoPrevisaoUnidade);
+                vagaVOs.add((DynamicVO) JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findOne("CODVAGA = ? ", codigoVaga));
 
-            for (BigDecimal i = BigDecimal.ZERO; i.compareTo(quantidadeCriarNovasVagas) < 0; i = i.add(BigDecimal.ONE)) {
-                vagaVOs.add(vagaLivresVOs.remove(0));
+            }else {
+                ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
+
+                int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
+                BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
+
+                BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel().quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
+
+                if (quantidadeContratada.compareTo(quantidadeVagasAtribuidasAtivas) < 0) {
+                    ErroUtils.disparaErro("A quantidade de vagas não pode ser diminuida!");
+                }
+
+                BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
+
+                if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
+                    ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsa da unidade");
+                }
+
+                for (BigDecimal i = BigDecimal.ZERO; i.compareTo(quantidadeCriarNovasVagas) < 0; i = i.add(BigDecimal.ONE)) {
+                    vagaVOs.add(vagaLivresVOs.remove(0));
+                }
             }
-
             criaPrevisaoVagas(vagaVOs);
         }
     }
@@ -321,7 +324,8 @@ public class PrevisoesUnidadeModel {
         ErroUtils.disparaErro("Previsão da unidade não pode ser deletada!");
     }
 
-    public static void setDataIncioVaga(BigDecimal numeroUnicoPrevisaoUnidade, Timestamp dataInicioUnidade) {
+    public static void setDataIncioVaga(BigDecimal numeroUnicoPrevisaoUnidade, Timestamp dataInicioUnidade, String codigoVaga) {
         listaDataIncioVaga.put(numeroUnicoPrevisaoUnidade,dataInicioUnidade);
+        listaVagasRemanajedas.put(numeroUnicoPrevisaoUnidade,codigoVaga);
     }
 }

@@ -93,6 +93,16 @@ public class AlocacoesPostoModel {
 
     public void preencheCamposCalculados() throws Exception {
         gravaAlocacaoPrincipal();
+        gravaUnidadePrevisaoVaga();
+
+    }
+
+    private void gravaUnidadePrevisaoVaga() throws Exception {
+        JapeWrapper vagasPrevisaoUnidadeDAO = JapeFactory.dao("MGSCT_Vagas_Previsao_Unidade");//MGSTCTUNIDPREVVAGA
+        String codigoVaga = vo.asString("CODVAGA");
+        DynamicVO vagasPrevisaoUnidadevo = vagasPrevisaoUnidadeDAO.findOne("CODVAGA = ? AND DTFIM IS NULL",codigoVaga);
+        BigDecimal numeroUnicoPRevisaoCaga = vagasPrevisaoUnidadevo.asBigDecimal("NUUNIDPREVVAGA");
+        vo.setProperty("NUUNIDPREVVAGA",numeroUnicoPRevisaoCaga);
     }
 
     private void recalculaCamposCalculados() throws Exception {

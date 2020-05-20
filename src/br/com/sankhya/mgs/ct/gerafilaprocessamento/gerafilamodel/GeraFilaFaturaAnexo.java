@@ -16,7 +16,6 @@ public class GeraFilaFaturaAnexo extends GeraFilaSuper implements GeraFila {
         String chave = geraChave(mapParametrosChave);
 
         FilaDAO filaDAO = new FilaDAO();
-        filaDAO.setComControleTransacao(true);
         filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
         filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
         return true;

@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -32,7 +33,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
             try {
                 JapeWrapper relatorioDAO = JapeFactory.dao("Relatorio");
 
-                BigDecimal codigoRelatorioPlanilhaCusto = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'AD_MGSCTREPLCUS' AND CODUSU = 0").asBigDecimal("INTEIRO");
+                BigDecimal codigoRelatorioPlanilhaCusto = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'AD_MGSCTRELFAT' AND CODUSU = 0").asBigDecimal("INTEIRO");
 
                 DynamicVO relVO = relatorioDAO.findByPK(codigoRelatorioPlanilhaCusto);
 
@@ -57,18 +58,19 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
             }
 
 
-
-
-            JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");
-            FluidCreateVO relatorioAnexoFCVO = dao.create();
+            JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
+            final FluidCreateVO relatorioAnexoFCVO = dao.create();
 
             relatorioAnexoFCVO.set("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
 
             relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
             relatorioAnexoFCVO.set("USUINS", getLogin());
             relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
-            DynamicVO save = relatorioAnexoFCVO.save();
-
+            hnd.execWithTX(new JapeSession.TXBlock() {
+                public void doWithTx() throws Exception {
+                    DynamicVO save = relatorioAnexoFCVO.save();
+                }
+            });
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrFaturaAnexo: " + e);

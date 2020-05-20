@@ -102,6 +102,9 @@ public class GeraFilaFactory {
             case "CONTR_INS_LANC_FATURA":
                 geraFila = new GeraFilaContrInsLancFatura();
                 break;
+            case "CONTR_INS_LANC_FATURA_PORTAL":
+                geraFila = new GeraFilaContrInsLancFaturaPortal();
+                break;
             default:
                 geraFila = null;
         }

@@ -325,6 +325,9 @@ public class PrevisoesUnidadeModel {
     }
 
     public static void setDataIncioVaga(BigDecimal numeroUnicoPrevisaoUnidade, Timestamp dataInicioUnidade, String codigoVaga) {
+        listaDataIncioVaga = new HashMap<BigDecimal,Timestamp>();
+        listaVagasRemanajedas = new HashMap<BigDecimal,String>();
+
         listaDataIncioVaga.put(numeroUnicoPrevisaoUnidade,dataInicioUnidade);
         listaVagasRemanajedas.put(numeroUnicoPrevisaoUnidade,codigoVaga);
     }

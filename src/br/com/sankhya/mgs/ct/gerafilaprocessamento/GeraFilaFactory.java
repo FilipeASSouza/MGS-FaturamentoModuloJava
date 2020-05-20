@@ -22,7 +22,7 @@ public class GeraFilaFactory {
 
         String textochave = mgsct_apoio_metrica.asString("TEXTOCHAVE");
 
-        if(BigDecimal.ZERO.equals(tipoDeProcessamento)) {
+        if(!BigDecimal.ZERO.equals(tipoDeProcessamento)) {
             JapeWrapper tipoProcessamentoDAO = JapeFactory.dao("MGSCT_Tipo_Processamento");
             DynamicVO tipoProcessamentoVO = tipoProcessamentoDAO.findByPK(tipoDeProcessamento);
             if (tipoProcessamentoVO != null) {

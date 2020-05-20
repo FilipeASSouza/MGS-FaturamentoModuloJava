@@ -22,12 +22,14 @@ public class GeraFilaFactory {
 
         String textochave = mgsct_apoio_metrica.asString("TEXTOCHAVE");
 
-        JapeWrapper tipoProcessamentoDAO = JapeFactory.dao("MGSCT_Tipo_Processamento");
-        DynamicVO tipoProcessamentoVO = tipoProcessamentoDAO.findByPK(tipoDeProcessamento);
-        if (tipoProcessamentoVO != null){
-            String nometipoProcessamento = tipoProcessamentoVO.asString("NOME");
-            if (nometipoProcessamento.equals(textochave)){
-                return null;
+        if(BigDecimal.ZERO.equals(tipoDeProcessamento)) {
+            JapeWrapper tipoProcessamentoDAO = JapeFactory.dao("MGSCT_Tipo_Processamento");
+            DynamicVO tipoProcessamentoVO = tipoProcessamentoDAO.findByPK(tipoDeProcessamento);
+            if (tipoProcessamentoVO != null) {
+                String nometipoProcessamento = tipoProcessamentoVO.asString("NOME");
+                if (!nometipoProcessamento.equals(textochave)) {
+                    return null;
+                }
             }
         }
 

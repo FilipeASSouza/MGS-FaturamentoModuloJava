@@ -24,6 +24,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
     @Override
     public boolean executar() throws Exception {
         Boolean executado = false;//todo refatorar pra super
+        int numeroPaginasGerado;
         try {
             super.executar();
 
@@ -47,30 +48,36 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
 
                 String pastaDeModelosParaImpressão = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
 
-                parametrosRelatorio.put("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
+                parametrosRelatorio.put("P_NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
                 parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpressão);
 
                 jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
+
+                numeroPaginasGerado = jasperPrint.getPages().size();
+
+                mensagem = "Numero de paginas gerado: " + numeroPaginasGerado;
+
                 arquivoBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             } catch (Exception e) {
                 throw new Exception("Erro ao proecessar relatorio: " + e);
             }
+            if (numeroPaginasGerado > 0) {
 
+                JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
+                final FluidCreateVO relatorioAnexoFCVO = dao.create();
 
-            JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
-            final FluidCreateVO relatorioAnexoFCVO = dao.create();
+                relatorioAnexoFCVO.set("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
 
-            relatorioAnexoFCVO.set("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
-
-            relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
-            relatorioAnexoFCVO.set("USUINS", getLogin());
-            relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
-            hnd.execWithTX(new JapeSession.TXBlock() {
-                public void doWithTx() throws Exception {
-                    DynamicVO save = relatorioAnexoFCVO.save();
-                }
-            });
+                relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
+                relatorioAnexoFCVO.set("USUINS", getLogin());
+                relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
+                hnd.execWithTX(new JapeSession.TXBlock() {
+                    public void doWithTx() throws Exception {
+                        DynamicVO save = relatorioAnexoFCVO.save();
+                    }
+                });
+            }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrFaturaAnexo: " + e);

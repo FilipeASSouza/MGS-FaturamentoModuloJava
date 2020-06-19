@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,7 +155,13 @@ public class LerArquivoDeDadosDecorator {
             if (cell == null) {
                 return null;
             }
-            valor = new Timestamp(cell.getDateCellValue().getTime());
+            Date dateCellValue = cell.getDateCellValue();
+
+            if (dateCellValue == null){
+                return null;
+            }
+
+            valor = new Timestamp(dateCellValue.getTime());
             return valor;
         } catch (Exception e) {
             throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);

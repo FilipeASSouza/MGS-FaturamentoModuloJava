@@ -30,7 +30,7 @@ public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Proce
             if (log == "null" || log == null) {
                 log = "";
             }
-            sucesso = caller.resultAsBigDecimal("SUCESSO");
+            sucesso = caller.resultAsBigDecimal("RET");
             if (BigDecimal.ONE.equals(sucesso)) {
                 executado = true;
                 mensagem = "OK";

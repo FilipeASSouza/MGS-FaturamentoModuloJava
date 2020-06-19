@@ -115,6 +115,10 @@ public class ImportarEventoMensalModel {
 
 
         while(planilha.proximo()) {
+            if (planilha.getValorBigDecimal("CODUNIDADEFATUR") == null){
+                break;
+            }
+
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
             detalhamentoCustoFCVO.set("NUMCONTRATO",numeroContrato);//pega do sistema

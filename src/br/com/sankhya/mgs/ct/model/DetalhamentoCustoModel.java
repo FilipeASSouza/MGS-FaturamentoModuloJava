@@ -5,6 +5,8 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -51,9 +53,26 @@ public class DetalhamentoCustoModel {
 
     }
 
-    public void preecheCamposCalculados() throws Exception {
+    public void preencheCamposCalculados() throws Exception {
+        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPEVENTO")));
+        vo.setProperty("COMPFATU", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPFATU")));
+        vo.setProperty("COMPLANC", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPLANC")));
+        vo.setProperty("TIPLANCEVENTO","M");
+        vo.setProperty("DHINS", TimeUtils.getNow());
+        vo.setProperty("DHUPD", TimeUtils.getNow());
+        vo.setProperty("USUINS", AuthenticationInfo.getCurrent().getUserID());
+        vo.setProperty("USUUPD", AuthenticationInfo.getCurrent().getUserID());
+
+
         calculaTaxaManual();
     }
+
+
+    public void recalculaCamposCalculados() {
+        vo.setProperty("DHUPD", TimeUtils.getNow());
+        vo.setProperty("USUUPD", AuthenticationInfo.getCurrent().getUserID());
+    }
+
 
     private void criaRegistrosDerivados() throws Exception {
 
@@ -90,4 +109,6 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
             vo.setProperty("VLRTOTEVENTO",nativeSqlDecorator.getValorBigDecimal("VALOR"));
         }
     }
+
+
 }

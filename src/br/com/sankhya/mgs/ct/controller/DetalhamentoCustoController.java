@@ -16,7 +16,7 @@ public class DetalhamentoCustoController {
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaDadosInsert();
-        model.preecheCamposCalculados();
+        model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -24,7 +24,7 @@ public class DetalhamentoCustoController {
         //model.validaDadosUpdate();
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         //model.validaDadosUpdate(oldVO);
-        //model.recalculaCamposCalculados();
+        model.recalculaCamposCalculados();
 
     }
 

@@ -64,6 +64,20 @@ public class PrevisoesContratoModel {
         PrevisaoValidator previsaoValidator = new PrevisaoValidator();
         previsaoValidator.setVo(vo);
         previsaoValidator.validaDadosInsert();
+        validaRegistroDuplicado();
+    }
+
+    public void validaRegistroDuplicado() throws Exception {
+        DynamicVO registroJaCadastrados = dao.findOne("NUMODALIDADE  = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ? AND  CODEVENTO = ? AND CODCONTROLE = ?",
+                vo.asBigDecimal("NUMODALIDADE"),
+                vo.asBigDecimalOrZero("CODTIPOPOSTO"),
+                vo.asBigDecimalOrZero("CODSERVMATERIAL"),
+                vo.asBigDecimal("CODEVENTO"),
+                vo.asBigDecimal("CODCONTROLE"));
+
+        if(registroJaCadastrados != null){
+            ErroUtils.disparaErro("Registro ja cadastrado! Combinação posto, evento, controle ja existe cadastrado em numero unico "+registroJaCadastrados.asBigDecimal("NUMODALIDADE"));
+        }
     }
 
     private void validaDadosUndate() throws Exception {

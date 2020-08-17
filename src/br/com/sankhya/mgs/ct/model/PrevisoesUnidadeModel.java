@@ -107,6 +107,8 @@ public class PrevisoesUnidadeModel {
         }
         previsaoValidator.validaDadosInsert();
 
+        validaRegistroDuplicado();
+
         if (previsoesContratoVO == null) {
             ErroUtils.disparaErro("Não foi encontrado uma provisão do contrado com os mesmos dados da previsão unidade lancada!");
         }
@@ -135,6 +137,19 @@ public class PrevisoesUnidadeModel {
                 break;
             case "R"://rescisao
             default:
+        }
+    }
+
+    public void validaRegistroDuplicado() throws Exception {
+        DynamicVO registroJaCadastrados = dao.findOne("NUCONTRCENT = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ?  AND CODEVENTO = ? AND CODCONTROLE = ?",
+                vo.asBigDecimal("NUCONTRCENT"),
+                vo.asBigDecimalOrZero("CODTIPOPOSTO"),
+                vo.asBigDecimalOrZero("CODSERVMATERIAL"),
+                vo.asBigDecimal("CODEVENTO"),
+                vo.asBigDecimal("CODCONTROLE"));
+
+        if(registroJaCadastrados != null){
+            ErroUtils.disparaErro("Registro ja cadastrado! Combinação posto, evento, controle ja existe cadastrado em numero unico "+registroJaCadastrados.asBigDecimal("NUCONTRPREV"));
         }
     }
 

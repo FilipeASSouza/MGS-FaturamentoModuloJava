@@ -105,17 +105,13 @@ public class ProcessamentoFilaModel implements Runnable {
                 }
             } catch (Exception e) {
                 throw new Exception("Erro ao percorrer consulta busca fila processamento: " + e);
-            } finally {
-
             }
-
-
-            threadAnterior = thread;
-            thread = null;
-
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally{
+            threadAnterior = thread;
+            thread = null;
         }
     }
 

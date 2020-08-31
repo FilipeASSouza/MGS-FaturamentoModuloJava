@@ -55,7 +55,7 @@ public class PrcContrInsCargaEvtMGAD extends ProcessarSuper implements Processar
                 }
             }
 
-
+            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtMGAD: " + e);
         } finally {

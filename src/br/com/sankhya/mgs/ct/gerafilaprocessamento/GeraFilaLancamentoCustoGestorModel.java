@@ -70,6 +70,9 @@ public class GeraFilaLancamentoCustoGestorModel {
         caller.addInputParameter(numeroContrato);//V_CONTRATO         IN     NUMBER
 
         caller.execute(jdbc.getConnection());
+
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
     }
 
     private void gerarTabelaTemporaria() throws Exception {
@@ -94,6 +97,8 @@ public class GeraFilaLancamentoCustoGestorModel {
         log = caller.resultAsString("LOG");
 
         sucesso = caller.resultAsBigDecimal("SUCESSO");
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
 
     }
 }

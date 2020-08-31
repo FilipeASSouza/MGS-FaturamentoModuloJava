@@ -55,7 +55,7 @@ public class PrcContrInsCargaEvtDVSub extends ProcessarSuper implements Processa
                 }
             }
 
-
+            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtDVSub: " + e);
         } finally {

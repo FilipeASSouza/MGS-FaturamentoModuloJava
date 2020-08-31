@@ -70,7 +70,8 @@ private BigDecimal numeroUnicoEventoMensal;
     }
 
     protected void finalizaExecutar(){
-
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
     }
 
     public Boolean getSucesso() {

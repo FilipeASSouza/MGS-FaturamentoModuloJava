@@ -51,6 +51,8 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
                     IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
+
+            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancCustoUP: " + e);
         } finally {

@@ -40,7 +40,7 @@ public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Proce
                 mensagem = "Erro PrcContrInsLancFaturaPortal: [" +sucesso.toString() +"]"+ log;
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
             }
-
+            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancFaturaPortal: " + e);
         } finally {

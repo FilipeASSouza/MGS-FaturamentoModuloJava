@@ -54,6 +54,7 @@ public class PrcContrInsCargaEvtCCT extends ProcessarSuper implements Processar 
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
+            super.finalizar();
 
 
         } catch (Exception e) {

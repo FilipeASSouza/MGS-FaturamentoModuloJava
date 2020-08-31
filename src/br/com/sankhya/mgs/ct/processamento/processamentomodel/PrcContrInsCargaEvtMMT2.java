@@ -55,7 +55,7 @@ public class PrcContrInsCargaEvtMMT2 extends ProcessarSuper implements Processar
                 }
             }
 
-
+            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtMMT2: " + e);
         } finally {

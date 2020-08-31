@@ -39,6 +39,11 @@ public class ProcessarSuper implements Processar {
         return false;
     }
 
+    public void finalizar(){
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
+    }
+
     @Override
     public String getMensagem() {
         return mensagem;

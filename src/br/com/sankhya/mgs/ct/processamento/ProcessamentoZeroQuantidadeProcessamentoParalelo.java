@@ -7,6 +7,8 @@ public class ProcessamentoZeroQuantidadeProcessamentoParalelo implements AcaoRot
 
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
+        int quantidadeThreads = ProcessamentoFilaParaleloModel.getQuantidadeThreads();
         ProcessamentoFilaParaleloModel.setQuantidadeThreads(0);
+        contextoAcao.setMensagemRetorno("quantidadeThreads antes de zerar: "+quantidadeThreads);
     }
 }

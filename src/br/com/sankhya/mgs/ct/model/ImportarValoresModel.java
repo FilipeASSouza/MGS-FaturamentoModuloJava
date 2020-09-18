@@ -128,8 +128,9 @@ public class ImportarValoresModel {
 
 
         while(planilha.proximo()) {
-            int valoresEventosNumeroRegstrosIguais = valoresEventosDAO.find("NUMCONTRATO =? AND CODTPN = ? AND CODEVENTO = ? AND ALIQISS = ? AND DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
+            int valoresEventosNumeroRegstrosIguais = valoresEventosDAO.find("NUMCONTRATO =? AND CODTIPOPOSTO = ? AND CODTPN = ? AND CODEVENTO = ? AND ALIQISS = ? AND DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
                     planilha.getValorBigDecimal("NUMCONTRATO"),
+                    planilha.getValorBigDecimal("CODTIPOPOSTO"),
                     planilha.getValorBigDecimal("CODTPN"),
                     planilha.getValorBigDecimal("CODEVENTO"),
                     planilha.getValorBigDecimal("ALIQISS"),

@@ -23,6 +23,10 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
         this.numeroUnicoFilaProcessamento = numeroUnicoFilaProcessamento;
     }
 
+    public static void setQuantidadeThreads(int quantidadeThreads) {
+        ProcessamentoFilaParaleloModel.quantidadeThreads = quantidadeThreads;
+    }
+
     public static int getQuantidadeThreads() {
         return quantidadeThreads;
     }
@@ -63,9 +67,12 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
                 exception.printStackTrace();
             }
         } finally {
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
             quantidadeThreads--;
+            try {
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
+            }catch (Exception e){
+            }
         }
     }
 }

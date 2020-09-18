@@ -91,12 +91,11 @@ public class ProcessamentoFilaModel implements Runnable {
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
+                    threadProcessamento.setName("ContratoCorporativoProcessamento");
                     threadProcessamento.start();
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
                         Thread.sleep(10);
                     }
-
-
                 }
 
             } catch (Exception e) {

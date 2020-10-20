@@ -2,29 +2,31 @@ package br.com.sankhya.mgs.ct.controller;
 
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
-import br.com.sankhya.mgs.ct.model.DetalhamentoCustoModel;
+import br.com.sankhya.mgs.ct.model.ValoresEventosModel;
 
 /**
- * Entidade: MGSCT_Detalhamento_Custo
- * Tabela: MGSTCTEVTMENSAL
- * Chave: NUEVTMENSAL
+ * Entidade: AD_CTCONTRVLRPS
+ * Tabela: AD_CTCONTRVLRPS
+ * Chave: SEQCONTREVENTO
  */
 
-public class DetalhamentoCustoController {
-    DetalhamentoCustoModel model = new DetalhamentoCustoModel();
+public class ValoresEventosController {
+    ValoresEventosModel model = new ValoresEventosModel();
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaDadosInsert();
-        model.preencheCamposCalculados();
+        //model.preecheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.validaDadosUpdate();
-        DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
-        //model.validaDadosUpdate(oldVO);
-        model.recalculaCamposCalculados();
+//        model.validaDadosUpdate();
+//        DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
+//        model.validaDadosUpdate(oldVO);
+        //model.recalculaCamposCalculados();
+        model.validaDadosInsert();
+
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {

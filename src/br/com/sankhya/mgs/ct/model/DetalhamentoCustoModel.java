@@ -22,6 +22,7 @@ public class DetalhamentoCustoModel {
     public DetalhamentoCustoModel()  {
     }
 
+
     public DetalhamentoCustoModel(BigDecimal numeroUnico) throws Exception {//Chave: NUEVTMENSAL
         this.vo = dao.findByPK(numeroUnico);
         inicialzaVariaveis();
@@ -41,12 +42,25 @@ public class DetalhamentoCustoModel {
 
     }
 
-    private void validaDadosInsert() throws Exception {
+    public void validaDadosInsert() throws Exception {
+        JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
+        DynamicVO custoEmpregado = daoRH.findOne("MATRICULA =" + vo.asBigDecimal("CODPRONTUARIO"));
+
+        if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
+            vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+        }
     }
 
-    private void validaDadosUpdate() throws Exception {
+    public void validaDadosUpdate() throws Exception {
 
+        JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
+
+        DynamicVO custoEmpregado = daoRH.findOne("MATRICULA =" + vo.asBigDecimal("CODPRONTUARIO"));
+
+        if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
+            vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+        }
     }
 
     private void validaDadosUpdate(DynamicVO oldvo) throws Exception {

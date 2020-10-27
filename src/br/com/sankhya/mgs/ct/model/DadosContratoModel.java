@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class DadosContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Dados_Contrato");
     private DynamicVO vo;
-    String mensagemErro;
+    String mensagemErro = null;
     public DadosContratoModel()  {
     }
 
@@ -42,21 +42,20 @@ public class DadosContratoModel {
 
     public void validaDadosInsert() throws Exception {
 
+        // Bloqueio para o usuário não informar dt fim menor que a dt inicio do contrato
         if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0 ){
 
-            mensagemErro += "<b>Data final</b> menor que a <b>Data Inicial</b> do <b>Contrato</b>! " +
-                    "\nVerifique novamente as datas informadas no contrato!";
-
-            ErroUtils.disparaErro(mensagemErro);
+            ErroUtils.disparaErro("Data final esta menor que a Data Inicial do Contrato! " +
+                    "<br>Verifique novamente a Data Final informada!");
         }
     }
 
     public void validaDadosUpdate() throws Exception {
 
         // Bloqueio para o usuário não informar dt fim menor que a dt inicio do contrato
-        if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0 ){
+        if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < Integer.valueOf(0)){
 
-            mensagemErro += "<b>Data final</b> menor que a <b>Data Inicial</b> do <b>Contrato</b>! " +
+            mensagemErro = "<b>Data final</b> menor que a <b>Data Inicial</b> do <b>Contrato</b>! " +
                     "\nVerifique novamente as datas informadas no contrato!";
 
             ErroUtils.disparaErro(mensagemErro);

@@ -64,6 +64,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
     private ProcedureCaller getProcedureCaller(JdbcWrapper jdbc, Map<String, String> parametrosExecutacao) throws Exception {
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_LANC_CUSTO_UP_GESTOR");
 
+        // implementar o contador com a quantidade de registro
+
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO        IN NUMBER,
         caller.addInputParameter(TimeUtils.getYearMonth(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd")));//V_DTLCCUSTO       IN DATE,
         caller.addInputParameter(parametrosExecutacao.get("V_UNIDADEFAT"));//V_UNIDADEFAT      IN NUMBER,

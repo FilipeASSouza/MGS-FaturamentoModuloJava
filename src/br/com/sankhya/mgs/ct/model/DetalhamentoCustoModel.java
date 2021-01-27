@@ -44,11 +44,18 @@ public class DetalhamentoCustoModel {
 
     public void validaDadosInsert() throws Exception {
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
-
-        DynamicVO custoEmpregado = daoRH.findOne("MATRICULA =" + vo.asBigDecimal("CODPRONTUARIO"));
+        /*
+        DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
 
         if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
             vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+        }*/
+
+        if( vo.asBigDecimal("CODPRONTUARIO") != null ){
+            DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
+            if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
+                vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+            }
         }
     }
 
@@ -56,10 +63,11 @@ public class DetalhamentoCustoModel {
 
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
-        DynamicVO custoEmpregado = daoRH.findOne("MATRICULA =" + vo.asBigDecimal("CODPRONTUARIO"));
-
-        if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
-            vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+        if( vo.asBigDecimal("CODPRONTUARIO") != null ){
+            DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
+            if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
+                vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+            }
         }
     }
 
@@ -68,23 +76,25 @@ public class DetalhamentoCustoModel {
     }
 
     public void preencheCamposCalculados() throws Exception {
-        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPEVENTO")));
-        vo.setProperty("COMPFATU", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPFATU")));
-        vo.setProperty("COMPLANC", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPLANC")));
+
         vo.setProperty("TIPLANCEVENTO","M");
         vo.setProperty("DHINS", TimeUtils.getNow());
-        vo.setProperty("DHUPD", TimeUtils.getNow());
-        vo.setProperty("USUINS", AuthenticationInfo.getCurrent().getUserID());
-        vo.setProperty("USUUPD", AuthenticationInfo.getCurrent().getUserID());
-
+        vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
 
         calculaTaxaManual();
+
+        /*vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPEVENTO")));
+        vo.setProperty("COMPFATU", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPFATU")));
+        vo.setProperty("COMPLANC", TimeUtils.getYearMonth(vo.asTimestamp("DTCOMPLANC")));
+        vo.setProperty("DHUPD", TimeUtils.getNow());
+        vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));*/
+
     }
 
 
-    public void recalculaCamposCalculados() {
+    public void recalculaCamposCalculados() throws Exception {
         vo.setProperty("DHUPD", TimeUtils.getNow());
-        vo.setProperty("USUUPD", AuthenticationInfo.getCurrent().getUserID());
+        vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
     }
 
 
@@ -114,7 +124,8 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
     }
 
     private void calculaTaxaManual() throws Exception {
-        if("S".equals(vo.asString("CALCULATXMANUAL"))){
+        if( vo.asString("CALCULATXMANUAL") != null
+                && vo.asString("CALCULATXMANUAL").equalsIgnoreCase(String.valueOf("S"))){
             NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "DetalhamentoCustoCalculaTaxaManual.sql");
             nativeSqlDecorator.setParametro("UNIDADEFATURAMENTO",vo.asBigDecimal("CODUNIDADEFATUR"));
             nativeSqlDecorator.setParametro("CODTIPOFATURA",vo.asBigDecimal("CODTIPOFATURA"));

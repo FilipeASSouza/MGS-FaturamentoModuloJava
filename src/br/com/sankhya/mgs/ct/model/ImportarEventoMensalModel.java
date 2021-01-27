@@ -86,8 +86,6 @@ public class ImportarEventoMensalModel {
         LerArquivoDeDadosDecorator planilha = new LerArquivoDeDadosDecorator(arquivo, "xlsx");
 
 
-
-
         planilha.setColuna("CODUNIDADEFATUR", 0);
         planilha.setColuna("CODVAGA", 1);
         planilha.setColuna("CODSERVMATERIAL", 2);
@@ -121,6 +119,7 @@ public class ImportarEventoMensalModel {
 
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
+
             detalhamentoCustoFCVO.set("NUMCONTRATO",numeroContrato);//pega do sistema
             detalhamentoCustoFCVO.set("NUMODALIDADE",numeroUnicoModalidadeContrato);//pega do sistema
             detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
@@ -131,12 +130,12 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usuário que inseriu
 
             detalhamentoCustoFCVO.set("CODUNIDADEFATUR",planilha.getValorBigDecimal("CODUNIDADEFATUR"));
-            detalhamentoCustoFCVO.set("CODVAGA",planilha.getValorString("CODVAGA"));
+            detalhamentoCustoFCVO.set("CODVAGA", planilha.getValorString("CODVAGA"));
             detalhamentoCustoFCVO.set("CODSERVMATERIAL",planilha.getValorBigDecimal("CODSERVMATERIAL"));
             detalhamentoCustoFCVO.set("CODTIPOPOSTO",planilha.getValorBigDecimal("CODTIPOPOSTO"));
             detalhamentoCustoFCVO.set("CODCARGO",planilha.getValorBigDecimal("CODCARGO"));
             detalhamentoCustoFCVO.set("CODPRONTUARIO",planilha.getValorBigDecimal("CODPRONTUARIO"));
-            detalhamentoCustoFCVO.set("NOME",planilha.getValorString("NOME"));
+            detalhamentoCustoFCVO.set("NOME",planilha.getValorString("NOME") );
             detalhamentoCustoFCVO.set("CODEVENTO",planilha.getValorBigDecimal("CODEVENTO"));
             detalhamentoCustoFCVO.set("DTINIEVENTO",planilha.getValorTimestamp("DTINIEVENTO"));
             detalhamentoCustoFCVO.set("DTFIMEVENTO",planilha.getValorTimestamp("DTFIMEVENTO"));
@@ -154,8 +153,9 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("DTLCCUSTO",planilha.getValorTimestamp("DTLCCUSTO"));
             detalhamentoCustoFCVO.set("CODCUSTO",planilha.getValorBigDecimal("CODCUSTO"));
             detalhamentoCustoFCVO.set("CODTIPOFATURA",planilha.getValorBigDecimal("CODTIPOFATURA"));
+            /*detalhamentoCustoFCVO.set("NUEVTMENSAL", BigDecimal.valueOf(2297454));*/
 
-            detalhamentoCustoFCVO.save();
+            DynamicVO save = detalhamentoCustoFCVO.save();
         }
     }
 

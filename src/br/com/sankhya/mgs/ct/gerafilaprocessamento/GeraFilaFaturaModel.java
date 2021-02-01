@@ -67,6 +67,23 @@ public class GeraFilaFaturaModel {
 
     }
 
+    public void gerarFilaAprovados() throws Exception {
+
+        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this, "BuscaListaUnidadeFaturamentoFaturaAprovadas.sql");
+        consultaListaCodigoSites.setParametro("CODSITEI", codigoUnidadeFaturamentoInicial);
+        consultaListaCodigoSites.setParametro("CODSITEF", codigoUnidadeFaturamentoFinal);
+        consultaListaCodigoSites.setParametro("CODTIPOFATURA", codigoTipoFatura);
+        consultaListaCodigoSites.setParametro("DTLANCCUSTO", dataCusto);
+
+
+
+        while (consultaListaCodigoSites.proximo()) {
+            BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODSITE");
+            gerarFilaPorUnidadeFaturamento(codigoUnidadeFaturamento);
+        }
+
+    }
+
     private void gerarFilaPorUnidadeFaturamento(BigDecimal codigoUnidadeFaturamento) throws Exception {
         GeraFila geraFila = geraFilaFactory.getGeraFila("CONTR_INS_LANC_FATURA");
         if (geraFila != null) {

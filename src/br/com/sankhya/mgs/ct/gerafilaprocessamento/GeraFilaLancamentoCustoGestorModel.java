@@ -11,7 +11,6 @@ import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 public class GeraFilaLancamentoCustoGestorModel {
     private Timestamp dataCusto;
@@ -24,7 +23,6 @@ public class GeraFilaLancamentoCustoGestorModel {
 
     private BigDecimal numeroContratoVerificacao;
     private BigDecimal dataContratoVerificacao;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     public void setDataCusto(Timestamp dataCusto) {
         this.dataCusto = dataCusto;
@@ -43,9 +41,9 @@ public class GeraFilaLancamentoCustoGestorModel {
     }
 
     public void gerarFila() throws Exception {
-        aprovaRelatorioFiscal();
 
-        gerarTabelaTemporaria();
+        aprovaRelatorioFiscal(); // fiscal
+        gerarTabelaTemporaria(); // anexocad
 
         NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
         consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
@@ -59,7 +57,7 @@ public class GeraFilaLancamentoCustoGestorModel {
             NativeSqlDecorator verificarFilaProcessamento = new NativeSqlDecorator(this, "VerificarFilaProcessamento.sql" );
             verificarFilaProcessamento.setParametro("CODUNIDADEFATUR", codigoUnidadeFaturamento );
 
-            while(verificarFilaProcessamento.proximo()){
+            while( verificarFilaProcessamento.proximo() ){
 
                 String chave = verificarFilaProcessamento.getValorString("CHAVE");
                 String arrayChave[];
@@ -72,15 +70,18 @@ public class GeraFilaLancamentoCustoGestorModel {
             }
 
             GeraFila geraFila = geraFilaFactory.getGeraFila("CONTR_INS_LANC_CUSTO_UP_GESTOR");
-            if (geraFila != null) {
-                geraFila.setParametroExecucao("numeroUnidadeFaturamento", codigoUnidadeFaturamento);
-                geraFila.setParametroExecucao("dataCusto", dataCusto);
-                geraFila.setParametroExecucao("numeroContrato", numeroContrato);
+            if ( geraFila != null ) {
+                geraFila.setParametroExecucao("numeroUnidadeFaturamento", codigoUnidadeFaturamento );
+                geraFila.setParametroExecucao("dataCusto", dataCusto ); // Data Esta sendo convertida dentro da query
+                geraFila.setParametroExecucao("numeroContrato", numeroContrato );
                 geraFila.setParametroExecucao("numeroUnicoModalidade", numeroUnicoModalidade);
                 geraFila.setParametroExecucao("codigoTipoFatura", codigoTipoFatura);
                 geraFila.executar();
             }
         }
+
+        /*  */
+
     }
 
     private void aprovaRelatorioFiscal() throws Exception {//RELATORIO_ANEXOS_APROVA(V_MESFATURAMENTO, V_CONTRATO);
@@ -108,12 +109,12 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_ANEXO_CAD");
 
-        caller.addInputParameter(numeroContrato);//V_CONTRATO         IN     NUMBER,
-        caller.addInputParameter(TimeUtils.getYearMonth(dataCusto));//V_MESFATURAMENTO   IN     NUMBER,
-        caller.addInputParameter(codigoUnidadeFaturamento);//V_UNIDADEFAT_PAI   IN     NUMBER,
-        caller.addInputParameter(BigDecimal.ZERO);
-        caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL          OUT VARCHAR2,
-        caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO             OUT NUMBER
+        caller.addInputParameter( numeroContrato );//V_CONTRATO         IN     NUMBER,
+        caller.addInputParameter( TimeUtils.formataYYYYMMDD( dataCusto ) );//V_MESFATURAMENTO   IN     NUMBER,
+        caller.addInputParameter( codigoUnidadeFaturamento );//V_UNIDADEFAT_PAI   IN     NUMBER,
+        caller.addInputParameter( BigDecimal.ZERO );
+        caller.addOutputParameter(1, "LOG" );//LOG_ERRO_SQL          OUT VARCHAR2,
+        caller.addOutputParameter(2, "SUCESSO" );//V_SUCESSO             OUT NUMBER
         
         caller.execute(jdbc.getConnection());
 
@@ -136,10 +137,10 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_ANEXO_CAD");
 
-        caller.addInputParameter(numeroContratoVerificacao);//V_CONTRATO         IN     NUMBER,
-        caller.addInputParameter(dataContratoVerificacao);//V_MESFATURAMENTO   IN     NUMBER,
-        caller.addInputParameter(codigoUnidadeFaturamento);//V_UNIDADEFAT_PAI   IN     NUMBER,
-        caller.addInputParameter(BigDecimal.ONE);
+        caller.addInputParameter( numeroContratoVerificacao );//V_CONTRATO         IN     NUMBER,
+        caller.addInputParameter( TimeUtils.formataYYYYMMDD( dataContratoVerificacao ) );//V_MESFATURAMENTO   IN     NUMBER,
+        caller.addInputParameter( codigoUnidadeFaturamento );//V_UNIDADEFAT_PAI   IN     NUMBER,
+        caller.addInputParameter( BigDecimal.ONE );
         caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO             OUT NUMBER
 

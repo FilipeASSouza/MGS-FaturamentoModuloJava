@@ -9,6 +9,7 @@ import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
+import org.apache.poi.ss.formula.functions.Na;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -49,61 +50,96 @@ public class MovimentacaoFinanceiraModel {
 
     public void validaDadosUpdate(PersistenceEvent persistenceEvent) throws Exception {
 
-        JapeWrapper cabecalhoNotaDAO = JapeFactory.dao("CabecalhoNota");
         JapeWrapper usuarioDAO = JapeFactory.dao("Usuario");
         vo = (DynamicVO) persistenceEvent.getVo();
         DynamicVO voOld = (DynamicVO) persistenceEvent.getOldVO();
         DynamicVO usuarioVO = usuarioDAO.findByPK(AuthenticationInfo.getCurrent().getUserID());
 
-        if( vo.asTimestamp("DHTIPOPERBAIXA") != null
-                && !vo.asTimestamp("DHTIPOPERBAIXA").equals(voOld.asTimestamp("DHTIPOPERBAIXA")) ){
+        if( vo.asTimestamp("DHBAIXA") != null
+                && vo.asBigDecimal("RECDESP").equals(BigDecimal.ONE)
+                && !vo.asTimestamp("DHBAIXA").equals(voOld.asTimestamp("DHBAIXA")) ){
 
-            if( vo.asBigDecimal("NUNOTA") != null ){
 
-                DynamicVO cabecalhoNotaVo = cabecalhoNotaDAO.findByPK(vo.asBigDecimal("NUNOTA"));
+            if( vo.asBigDecimal("NUMNOTA") != null ){
 
-                if( cabecalhoNotaVo.asBigDecimal("AD_FATURA") != null ){
+                NativeSqlDecorator verificaFatura = new NativeSqlDecorator("SELECT COUNT(*) AS NROFATURA FROM MGSTCTFATURA WHERE NUFATURA = :NUFATURA");
+                verificaFatura.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA"));
 
-                    NativeSqlDecorator verificaFatura = new NativeSqlDecorator("SELECT 1 FROM MGSTCTFATURA WHERE NUFATURA = :NUFATURA");
-                    verificaFatura.setParametro("NUFATURA", cabecalhoNotaVo.asBigDecimal("AD_FATURA"));
-                    verificaFatura.executar();
+                if( verificaFatura.proximo() ){
 
-                    JapeWrapper pagamentoFaturaDAO = JapeFactory.dao("MGCCT_Pagamento_Faturas");
+                    if( !verificaFatura.getValorBigDecimal("NROFATURA").equals(BigDecimal.ZERO) ){
 
-                    while( verificaFatura.proximo() ){
-
-                        FluidCreateVO pagamentoFaturaFCVO = pagamentoFaturaDAO.create();
-
-                        NativeSqlDecorator verificaPagamento = new NativeSqlDecorator("SELECT MAX( NUPAGTOFATUR ) AS NROPAG FROM MGSTCTPAGAMENTO WHERE NUFATURA = :NUFATURA ");
-                        verificaPagamento.setParametro("NUFATURA", cabecalhoNotaVo.asBigDecimal("AD_FATURA"));
-                        verificaPagamento.executar();
+                        NativeSqlDecorator verificaPagamento = new NativeSqlDecorator("SELECT NVL( ( SELECT MAX(NUPAGTOFATUR) FROM MGSTCTPAGAMENTO WHERE NUFATURA = :NUFATURA ) , 0 ) AS NROPAG FROM DUAL ");
+                        verificaPagamento.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA"));
 
                         if( verificaPagamento.proximo() ){
-                            while( verificaPagamento.proximo() ){
 
-                                pagamentoFaturaFCVO.set("NUFATURA", cabecalhoNotaVo.asBigDecimal("AD_FATURA"));
-                                pagamentoFaturaFCVO.set("DTPAGTOFATUR", vo.asTimestamp("DHBAIXA") );
-                                pagamentoFaturaFCVO.set("NUPAGTOFATUR", verificaPagamento.getValorBigDecimal("NROPAG").add(BigDecimal.ONE) );
-                                pagamentoFaturaFCVO.set("VLRPAGTOFATUR", vo.asBigDecimal("VLRBAIXA") );
-                                pagamentoFaturaFCVO.set("ATUALIZADOPOR", usuarioVO.asString("NOMEUSUCPLT") );
-                                pagamentoFaturaFCVO.set("DTATUALIZACAO", TimeUtils.getNow() );
-                                pagamentoFaturaFCVO.set("HISTORICO", vo.asString("HISTORICO") );
-                                pagamentoFaturaFCVO.set("NUBOLETOFATUR", vo.asString("NOSSONUM") );
-                                pagamentoFaturaFCVO.save();
+                            if( verificaPagamento.getValorBigDecimal("NROPAG").equals(BigDecimal.ZERO) ){
+
+                                NativeSqlDecorator inserirPagamento = new NativeSqlDecorator(this,"InserirPagamento.sql");
+
+                                inserirPagamento.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA") );
+                                inserirPagamento.setParametro("DTPAGTOFATUR", vo.asTimestamp("DHBAIXA") );
+                                inserirPagamento.setParametro("NUPAGTOFATUR", BigDecimal.ONE );
+                                inserirPagamento.setParametro("VLRPAGTOFATUR", vo.asBigDecimal("VLRBAIXA") );
+                                inserirPagamento.setParametro("ATUALIZADOPOR", usuarioVO.asString("NOMEUSU") );
+                                inserirPagamento.setParametro("DTATUALIZACAO", TimeUtils.getNow() );
+                                inserirPagamento.setParametro("HISTORICO", vo.asString("HISTORICO") );
+                                inserirPagamento.setParametro("NUFIN", vo.asBigDecimal("NUFIN"));
+                                inserirPagamento.atualizar();
+
+                            }else{
+
+                                NativeSqlDecorator inserirPagamento = new NativeSqlDecorator(this,"InserirPagamento.sql");
+
+                                inserirPagamento.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA") );
+                                inserirPagamento.setParametro("DTPAGTOFATUR", vo.asTimestamp("DHBAIXA") );
+                                inserirPagamento.setParametro("NUPAGTOFATUR", verificaPagamento.getValorBigDecimal("NROPAG").add(BigDecimal.ONE) );
+                                inserirPagamento.setParametro("VLRPAGTOFATUR", vo.asBigDecimal("VLRBAIXA") );
+                                inserirPagamento.setParametro("ATUALIZADOPOR",usuarioVO.asString("NOMEUSU") );
+                                inserirPagamento.setParametro("DTATUALIZACAO", TimeUtils.getNow() );
+                                inserirPagamento.setParametro("HISTORICO", vo.asString("HISTORICO") );
+                                inserirPagamento.setParametro("NUFIN", vo.asBigDecimal("NUFIN"));
+                                inserirPagamento.atualizar();
 
                             }
-                        }else{
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-                            pagamentoFaturaFCVO.set("NUFATURA", cabecalhoNotaVo.asBigDecimal("AD_FATURA"));
-                            pagamentoFaturaFCVO.set("DTPAGTOFATUR", vo.asTimestamp("DHBAIXA") );
-                            pagamentoFaturaFCVO.set("NUPAGTOFATUR", BigDecimal.ONE );
-                            pagamentoFaturaFCVO.set("VLRPAGTOFATUR", vo.asBigDecimal("VLRBAIXA") );
-                            pagamentoFaturaFCVO.set("ATUALIZADOPOR",usuarioVO.asString("NOMEUSUCPLT") );
-                            pagamentoFaturaFCVO.set("DTATUALIZACAO", TimeUtils.getNow() );
-                            pagamentoFaturaFCVO.set("HISTORICO", vo.asString("HISTORICO") );
-                            pagamentoFaturaFCVO.set("NUBOLETOFATUR", vo.asString("NOSSONUM") );
-                            pagamentoFaturaFCVO.save();
+    public void deletarPagamentoFatura(PersistenceEvent persistenceEvent) throws Exception{
+        JapeWrapper usuarioDAO = JapeFactory.dao("Usuario");
+        vo = (DynamicVO) persistenceEvent.getVo();
+        DynamicVO usuarioVO = usuarioDAO.findByPK(AuthenticationInfo.getCurrent().getUserID());
 
+        if( vo.asBigDecimal("RECDESP").equals(BigDecimal.ONE)
+                && vo.asTimestamp("DHBAIXA") == null ){
+
+
+            if( vo.asBigDecimal("NUMNOTA") != null ){
+
+                NativeSqlDecorator verificaFatura = new NativeSqlDecorator("SELECT COUNT(*) AS NROFATURA FROM MGSTCTFATURA WHERE NUFATURA = :NUFATURA");
+                verificaFatura.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA"));
+
+                if( verificaFatura.proximo() ){
+
+                    if( !verificaFatura.getValorBigDecimal("NROFATURA").equals(BigDecimal.ZERO) ){
+
+                        NativeSqlDecorator verificaPagamento = new NativeSqlDecorator("SELECT NVL( ( SELECT MAX(NUPAGTOFATUR) FROM MGSTCTPAGAMENTO WHERE NUFATURA = :NUFATURA ) , 0 ) AS NROPAG FROM DUAL ");
+                        verificaPagamento.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA"));
+
+                        if( verificaPagamento.proximo() ){
+
+                            if( !verificaPagamento.getValorBigDecimal("NROPAG").equals(BigDecimal.ZERO) ){
+                                NativeSqlDecorator deletarPagamento = new NativeSqlDecorator(this,"DeletarPagamento.sql");
+
+                                deletarPagamento.setParametro("NUFATURA", vo.asBigDecimal("NUMNOTA") );
+                                deletarPagamento.setParametro("NUFIN", vo.asBigDecimal("NUFIN"));
+                                deletarPagamento.atualizar();
+                            }
                         }
                     }
                 }

@@ -19,7 +19,9 @@ public class MovimentacaoFinanceiraEvento implements EventoProgramavelJava {
 
 
     @Override
-    public void beforeDelete(PersistenceEvent persistenceEvent) { }
+    public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception{
+        controller.beforeDelete(persistenceEvent);
+    }
 
     @Override
     public void afterInsert(PersistenceEvent persistenceEvent) { }

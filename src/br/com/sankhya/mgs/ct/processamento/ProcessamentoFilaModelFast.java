@@ -1,6 +1,5 @@
 package br.com.sankhya.mgs.ct.processamento;
 
-
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
@@ -13,20 +12,20 @@ import br.com.sankhya.modelcore.util.MGECoreParameter;
 
 import java.math.BigDecimal;
 
-public class ProcessamentoFilaModel implements Runnable {
-    private static ProcessamentoFilaModel instancia;
+public class ProcessamentoFilaModelFast implements Runnable{
+    private static ProcessamentoFilaModelFast instancia;
     private static Thread thread = null;
     private static Thread threadAnterior = null;
 
     private JapeWrapper filadao = JapeFactory.dao("MGSCT_Fila_Processamento");
 
-    private ProcessamentoFilaModel() {
+    private ProcessamentoFilaModelFast() {
         executar();
     }
 
-    public static synchronized ProcessamentoFilaModel getInstance() {
+    public static synchronized ProcessamentoFilaModelFast getInstance() {
         if (instancia == null)
-            instancia = new ProcessamentoFilaModel();
+            instancia = new ProcessamentoFilaModelFast();
         return instancia;
     }
 
@@ -55,13 +54,9 @@ public class ProcessamentoFilaModel implements Runnable {
 
             NativeSqlDecorator consultaFila = null;
             try {
-                BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECFILA");
-                if (quantidadeExecucaoFila == null) {
-                    quantidadeExecucaoFila = new BigDecimal(10);
-                }
 
-                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamento.sql");
-                consultaFila.setParametro("QTDEXECFILA", quantidadeExecucaoFila);
+                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoFast.sql");
+                consultaFila.setParametro("QTDEXECFILA", BigDecimal.ONE);
 
             } catch (Exception e) {
                 throw new Exception("Erro ao executar consulta busca fila processamento: " + e);
@@ -110,7 +105,4 @@ public class ProcessamentoFilaModel implements Runnable {
             thread = null;
         }
     }
-
-
 }
-

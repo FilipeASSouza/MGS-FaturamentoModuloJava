@@ -1,11 +1,13 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
+import org.apache.poi.ss.formula.functions.Na;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -101,10 +103,47 @@ public class PrevisoesUnidadeModel {
         return dynamicVOS;
     }
 
+    private BigDecimal consultaQuantidadePrevisaoUnidade() throws Exception{
+
+        BigDecimal contrato = mestrevo.asBigDecimal("NUMCONTRATO");
+        BigDecimal codTipoPosto = vo.asBigDecimalOrZero("CODTIPOPOSTO");
+        BigDecimal codServicoMaterial = vo.asBigDecimalOrZero("CODSERVMATERIAL");
+        BigDecimal codEvento = vo.asBigDecimalOrZero("CODEVENTO");
+        Timestamp dataInicio = vo.asTimestamp("DTINICIO");
+
+        NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
+                " sum(qtdcontratada) QTDCONTRATADA " +
+                " FROM MGSTCTUNIDADEPREV " +
+                " WHERE " +
+                " NVL(NUMCONTRATO,0) = :NUMCONTRATO AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL " +
+                " AND NVL( CODEVENTO ,0 ) = :CODEVENTO " +
+                " AND NVL(DTFIM, SYSDATE ) > :DT ");
+
+        consultaQuantidadePrevisaoUnidade.setParametro("NUMCONTRATO", contrato);
+        consultaQuantidadePrevisaoUnidade.setParametro("CODTIPOPOSTO", codTipoPosto);
+        consultaQuantidadePrevisaoUnidade.setParametro("CODSERVMATERIAL", codServicoMaterial);
+        consultaQuantidadePrevisaoUnidade.setParametro("CODEVENTO", codEvento);
+        consultaQuantidadePrevisaoUnidade.setParametro("DT", dataInicio == null ? mestrevo.asTimestamp("DTINICIO") : dataInicio );
+
+        BigDecimal qtdTotalPrevisaoUnidade = null;
+
+        if(consultaQuantidadePrevisaoUnidade.proximo()){
+            qtdTotalPrevisaoUnidade = consultaQuantidadePrevisaoUnidade.getValorBigDecimal("QTDCONTRATADA");
+        }
+
+        return qtdTotalPrevisaoUnidade;
+    }
+
     public void validaDadosInsert() throws Exception {
         if (!BigDecimal.ZERO.equals(previsoesContratoVO.asBigDecimalOrZero("CODCONTROLE"))) {
             vo.setProperty("CODCONTROLE", previsoesContratoVO.asBigDecimal("CODCONTROLE"));
         }
+
+        if( ( vo.asTimestamp("DTFIM") != null && vo.asTimestamp("DTINICIO") != null )
+                && vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0 ){
+            ErroUtils.disparaErro("Data Final deve ser maior que a data Inicial! Fineza verificar!");
+        }
+
         previsaoValidator.validaDadosInsert();
 
         validaRegistroDuplicado();
@@ -117,7 +156,7 @@ public class PrevisoesUnidadeModel {
             case "P"://posto
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4
-                //todo valida quantidade total da unidade com cotnrato
+                //todo valida quantidade total da unidade com contrato
                 if (!validaQuantidadeTotalUnidadesPeloContrato()) {
                     ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
                 }
@@ -149,19 +188,13 @@ public class PrevisoesUnidadeModel {
                 vo.asBigDecimal("CODCONTROLE"));
 
         if(registroJaCadastrados != null){
-            ErroUtils.disparaErro("Registro ja cadastrado! Combinação posto, evento, controle ja existe cadastrado em numero unico "+registroJaCadastrados.asBigDecimal("NUCONTRPREV"));
+            ErroUtils.disparaErro("Registro ja cadastrado! Combinação posto, evento, controle ja existe cadastrado !");
         }
     }
 
     private boolean validaQuantidadeTotalUnidadesPeloContrato() throws Exception {
-        Collection<DynamicVO> previsaoUndadeVOS = buscaPrevisoesUnidadeDeMesmoPrevisaoContrato();
-        BigDecimal quantidadeContratadaOutrasUnidades = BigDecimal.ZERO;
-        for (DynamicVO previsaoUnidadeVO : previsaoUndadeVOS) {
-            BigDecimal qtdcontratada = previsaoUnidadeVO.asBigDecimalOrZero("QTDCONTRATADA");
-            quantidadeContratadaOutrasUnidades = quantidadeContratadaOutrasUnidades.add(qtdcontratada);
-        }
 
-        BigDecimal quantidadeContratadaUnidadesTotal = quantidadeContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA"));
+        BigDecimal quantidadeContratadaUnidadesTotal = consultaQuantidadePrevisaoUnidade().add(vo.asBigDecimalOrZero("QTDCONTRATADA"));
         BigDecimal quantidadePrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA");
 
         Boolean validado = quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
@@ -187,9 +220,6 @@ public class PrevisoesUnidadeModel {
 
 
     public void preencheCamposCalculados() throws Exception {
-
-        boolean postoPreechido = !(vo.asBigDecimalOrZero("CODTIPOPOSTO").equals(BigDecimal.ZERO));
-        boolean servicoMaterialPreechido = !(vo.asBigDecimalOrZero("CODSERVMATERIAL").equals(BigDecimal.ZERO));
 
         BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
         BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
@@ -220,7 +250,8 @@ public class PrevisoesUnidadeModel {
                     ErroUtils.disparaErro("Previsão de contrato não localizada");
                 }
                 valorUnitario = previsoesContratoVO.asBigDecimal("VLRUNITARIO");
-                if (BigDecimal.ZERO.equals(valorUnitario)) {
+                if (BigDecimal.ZERO.equals(valorUnitario)
+                    || valorUnitario == null) {
                     ErroUtils.disparaErro("Preço de Material/Serviço localizado não pode ser zero, favor verificar previsão do contrato!");
                 }
                 break;
@@ -232,11 +263,10 @@ public class PrevisoesUnidadeModel {
         vo.setProperty("QTDCONTRATADA", quantidade);
         vo.setProperty("NUMCONTRATO", this.numeroContrato);
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
+
         if (!BigDecimal.ZERO.equals(previsoesContratoVO.asBigDecimalOrZero("CODCONTROLE"))) {
             vo.setProperty("CODCONTROLE", previsoesContratoVO.asBigDecimal("CODCONTROLE"));
         }
-
-
     }
 
     public void criaRegistrosDerivados() throws Exception {
@@ -314,6 +344,15 @@ public class PrevisoesUnidadeModel {
             if (campos.containsKey("VLRUNITARIO")) {
                 mensagemErro += "Campo Vlr. Unitário não pode ser modificado. ";
             }
+
+        /*if( ( vo.asTimestamp("DTFIM") != null && vo.asTimestamp("DTINICIO") != null )
+                && vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0 ){
+            ErroUtils.disparaErro("Data Final deve ser maior que a data Inicial! Fineza verificar!");
+        }
+
+        if () {
+            ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+        }*/
 
         if (campos.containsKey("CODEVENTO")) {
             mensagemErro += "Campo Evento não pode ser modificado. ";

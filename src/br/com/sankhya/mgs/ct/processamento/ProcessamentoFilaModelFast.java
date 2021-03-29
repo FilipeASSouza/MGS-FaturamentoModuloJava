@@ -36,7 +36,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                 threadAnterior = null;
             }
             thread = new Thread(this);
-            thread.setName("ContratoCorporativoFilaProcessamento");
+            thread.setName("ContratoCorporativoFilaProcessamentoFast");
             thread.start();
         }
     }
@@ -85,7 +85,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
-                    threadProcessamento.setName("ContratoCorporativoProcessamento");
+                    threadProcessamento.setName("ContratoCorporativoProcessamentoFast");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){

@@ -8,6 +8,8 @@ import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoSituacaoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 
+import java.math.BigDecimal;
+
 public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJava {
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
@@ -16,15 +18,15 @@ public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJav
             contextoAcao.setMensagemRetorno("Favor seleciona pelo menos um registro");
         } else {
 
-            String sitlanc = contextoAcao.getParam("SITLANC").toString();
+            BigDecimal sitlanc = BigDecimal.valueOf(Long.parseLong(contextoAcao.getParam("SITLANC").toString()));
 
             DynamicVO usuario = JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID());
-            String nomeusu = usuario.asString("NOMEUSU");
+            String codusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
                 EdicaoSituacaoModel edicaoSituacaoModel = new EdicaoSituacaoModel();
                 edicaoSituacaoModel.setParametro("SITLANC",sitlanc);
-                edicaoSituacaoModel.setParametro("LOGIN",nomeusu);
+                edicaoSituacaoModel.setParametro("LOGIN",codusu);
                 edicaoSituacaoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
                 edicaoSituacaoModel.executar();
             }

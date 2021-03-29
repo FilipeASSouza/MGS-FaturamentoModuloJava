@@ -15,7 +15,7 @@ public class AlocacoesServicosController {
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaDadosInsert();
-        //model.preencheCamposCalculados();
+        model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);

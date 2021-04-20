@@ -131,6 +131,10 @@ public class PrevisoesUnidadeModel {
             qtdTotalPrevisaoUnidade = consultaQuantidadePrevisaoUnidade.getValorBigDecimal("QTDCONTRATADA");
         }
 
+        if( qtdTotalPrevisaoUnidade == null ){
+            qtdTotalPrevisaoUnidade = BigDecimal.ZERO;
+        }
+
         return qtdTotalPrevisaoUnidade;
     }
 
@@ -377,6 +381,12 @@ public class PrevisoesUnidadeModel {
 
     public void validaDelete() throws Exception {
         ErroUtils.disparaErro("Previsão da unidade não pode ser deletada!");
+    }
+
+    public void validaDadosUpdade() throws Exception {
+        if (!validaQuantidadeTotalUnidadesPeloContrato()) {
+            ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+        }
     }
 
     public static void setDataIncioVaga(BigDecimal numeroUnicoPrevisaoUnidade, Timestamp dataInicioUnidade, String codigoVaga) {

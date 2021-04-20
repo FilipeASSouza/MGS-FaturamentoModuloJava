@@ -107,9 +107,9 @@ public class ImportarValoresModel {
             valoresProdutosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresProdutosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
             valoresProdutosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
-            valoresProdutosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(15) );
+            valoresProdutosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(15,RoundingMode.UP));
             valoresProdutosFCVO.set("DTREFERCCT",planilha.getValorTimestamp("DTREFERCCT"));
-            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM").setScale(15));
+            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM").setScale(15,RoundingMode.UP));
             valoresProdutosFCVO.save();
         }
     }
@@ -155,7 +155,7 @@ public class ImportarValoresModel {
             valoresEventosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresEventosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
             valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
-            valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(4,BigDecimal.ROUND_UP));
+            valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(4,RoundingMode.UP));
             valoresEventosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM"));
             valoresEventosFCVO.save();
         }

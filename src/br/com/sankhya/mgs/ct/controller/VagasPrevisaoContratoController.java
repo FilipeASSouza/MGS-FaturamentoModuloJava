@@ -1,4 +1,5 @@
 package br.com.sankhya.mgs.ct.controller;
+
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.mgs.ct.model.VagasPrevisaoContratoModel;
@@ -16,6 +17,7 @@ public class VagasPrevisaoContratoController {
 //        DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         inicializaVariaveis(persistenceEvent);
 //        model.validaDadosUpdate(oldVO);
+        //model.diminuirUmQuantidadeContrata();
         model.validaUpdate();
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
     }

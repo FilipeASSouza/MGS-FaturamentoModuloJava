@@ -1,10 +1,12 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
+import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
@@ -22,7 +24,9 @@ import java.util.HashMap;
 
 public class VagasPrevisaoContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
+    private JapeWrapper previsoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
     private DynamicVO vo;
+    private BigDecimal quantidadeVagasDisponiveis;
     private Boolean subtrairVagaPrevisaoContrato = false;
 
     public VagasPrevisaoContratoModel() {
@@ -76,6 +80,10 @@ public class VagasPrevisaoContratoModel {
         if(vagaPrev.asTimestamp("DTFIM") != null){
             ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada!");
         }
+
+        if( vo.asString("PREVUNID").equalsIgnoreCase(String.valueOf("S")) ){
+            ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada esta vinculada a uma unidade!");
+        }
     }
 
     //descontinuado - Sugestão do Juliano para que se a data estiver diferente de nulo alerta
@@ -115,6 +123,23 @@ public class VagasPrevisaoContratoModel {
         }
 
         return false;
+    }
+
+    public void diminuirUmQuantidadeContrata() throws Exception {
+
+        NativeSqlDecorator previsoesContratoVagaSQL = new NativeSqlDecorator("SELECT COUNT(*) QTD FROM MGSTCTCONTRATOVAGA WHERE NUCONTRPREV = :NUCONTRPREV" +
+                " AND DTFIM IS NULL ");
+        previsoesContratoVagaSQL.setParametro("NUCONTRPREV", vo.asBigDecimal("NUCONTRPREV"));
+
+        if(previsoesContratoVagaSQL.proximo()){
+            quantidadeVagasDisponiveis = previsoesContratoVagaSQL.getValorBigDecimal("QTD");
+        }
+
+        DynamicVO previsao = previsoesContratoDAO.findByPK(vo.asBigDecimal("NUCONTRPREV"));
+
+        FluidUpdateVO fluidUpdateVO = previsoesContratoDAO.prepareToUpdate(previsao);
+        fluidUpdateVO.set("QTDCONTRATADA", quantidadeVagasDisponiveis );
+        fluidUpdateVO.update();
     }
 
     public void alteraDadosDerivados() throws Exception {

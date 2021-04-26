@@ -5,9 +5,10 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -17,6 +18,8 @@ import java.util.HashMap;
  */
 public class AlocacoesServicosModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Alocacoes_Servicos");
+    private JapeWrapper unidadePrevisaoDAO = JapeFactory.dao("MGSCT_Previsoes_Unidade");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     private DynamicVO vo;
     private String regraVadalicao = "";
     private BigDecimal codigoModalidade = null;
@@ -51,8 +54,19 @@ public class AlocacoesServicosModel {
 
     }
 
-    private void validaDadosInsert() throws Exception {
+    public void validaDadosInsert() throws Exception {
 
+        DynamicVO unidadePrevisaoVO = unidadePrevisaoDAO.findByPK(vo.asBigDecimal("NUUNIDPREV"));
+        String dataInicioVigencia = sdf.format( unidadePrevisaoVO.asTimestamp("DTINICIO"));
+        String dataFimVigencia = sdf.format(unidadePrevisaoVO.asTimestamp("DTFIM"));
+        String dataFimAlocacao = sdf.format(vo.asTimestamp("DTFIM"));
+        String dataInicioAlocacao = sdf.format(vo.asTimestamp("DTINICIO"));
+
+        if( dataInicioAlocacao.compareTo(dataInicioVigencia) != 0 ){
+            ErroUtils.disparaErro("Data menor que a data de vingencia da alocacao, fineza verificar!");
+        }else if( dataFimAlocacao.compareTo(dataFimVigencia) != 0 ){
+            ErroUtils.disparaErro("Data maior que a data de vingencia da alocacao, fineza verificar!");
+        }
     }
 
     private void validaDadosUpdate() throws Exception {
@@ -128,7 +142,7 @@ public class AlocacoesServicosModel {
 
         vo.setProperty("VLRUNITARIO", valorUnitario);
         vo.setProperty("VLRTOTAL", valorUnitario.multiply(quantidade));
-        vo.setProperty("DTINICIO", dataInicio );
+        //vo.setProperty("DTINICIO", dataInicio );
         vo.setProperty("STATUSALOCACAO", String.valueOf("S"));
     }
 

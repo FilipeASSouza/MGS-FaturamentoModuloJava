@@ -18,9 +18,11 @@ public class DetalhamentoCustoController {
         model.validaDadosInsert();
         model.preencheCamposCalculados();
     }
+
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
+        model.validaDadosModificados(persistenceEvent.getModifingFields());
         model.validaDadosUpdate();
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         //model.validaDadosUpdate(oldVO);

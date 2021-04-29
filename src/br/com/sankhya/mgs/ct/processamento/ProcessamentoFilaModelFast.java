@@ -11,6 +11,7 @@ import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import br.com.sankhya.modelcore.util.MGECoreParameter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class ProcessamentoFilaModelFast implements Runnable{
     private static ProcessamentoFilaModelFast instancia;
@@ -49,7 +50,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
 
             BigDecimal quantidadeExecucaoParalela = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECPARALE");
             if (quantidadeExecucaoParalela == null) {
-                quantidadeExecucaoParalela = new BigDecimal(10);
+                quantidadeExecucaoParalela = new BigDecimal(1);
             }
 
             NativeSqlDecorator consultaFila = null;
@@ -89,7 +90,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
-                        Thread.sleep(10);
+                        Thread.sleep(5000);
                     }
                 }
 

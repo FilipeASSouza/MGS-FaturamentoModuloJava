@@ -37,7 +37,7 @@ public class AlocacoesServicosController {
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDelete();
+        model.validaDelete();
     }
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {

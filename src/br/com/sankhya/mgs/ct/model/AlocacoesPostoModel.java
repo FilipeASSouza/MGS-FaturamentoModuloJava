@@ -69,6 +69,17 @@ public class AlocacoesPostoModel {
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
         validaStatusContratacaoVaga();
+
+        if( vo.asBigDecimal("MATRICULA") != null ){
+            BigDecimal codigoCargo = null;
+
+            NativeSqlDecorator consultarCargo = new NativeSqlDecorator("SELECT CODCARGO + 0 AS CODCARGO FROM mgsvctempregadorh where MATRICULA = :MATRICULA");
+            consultarCargo.setParametro("MATRICULA", vo.asBigDecimal("MATRICULA"));
+            if(consultarCargo.proximo()){
+                codigoCargo = consultarCargo.getValorBigDecimal("CODCARGO");
+            }
+            vo.setProperty("CODCARGO", codigoCargo);
+        }
     }
 
     public void validaDadosUpdate() throws Exception {

@@ -204,7 +204,9 @@ public class AlocacoesServicosModel {
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Registro não pode excluido!");
+        if(vo.asBigDecimal("NUALOCASERV") != null){
+            ErroUtils.disparaErro("Registro não pode excluido!");
+        }
     }
 
     public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {

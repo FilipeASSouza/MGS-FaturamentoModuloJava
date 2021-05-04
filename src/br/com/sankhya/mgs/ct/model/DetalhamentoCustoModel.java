@@ -84,6 +84,11 @@ public class DetalhamentoCustoModel {
                 vo.setProperty("NOME", custoEmpregado.asString("NOME"));
             }
         }
+
+        if( vo.asString("TIPLANCEVENTO") == null
+        || vo.asString("TIPLANCEVENTO").equalsIgnoreCase(String.valueOf("A"))){
+            vo.setProperty("TIPLANCEVENTO", "M");
+        }
     }
     //inutilizado
     public void validaDadosModificados(ModifingFields persistenceEvent) throws Exception {

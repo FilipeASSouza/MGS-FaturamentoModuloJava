@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 public class VagasPrevisaoContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
-    private JapeWrapper previsoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
     private DynamicVO vo;
     private BigDecimal quantidadeVagasDisponiveis;
     private Boolean subtrairVagaPrevisaoContrato = false;
@@ -66,12 +65,12 @@ public class VagasPrevisaoContratoModel {
 
     public void validaDadosInsert() throws Exception{
 
-        DynamicVO usuario = JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID());
+        /*BigDecimal usuario = AuthenticationInfo.getCurrent().getUserID();
 
-        if(usuario.asBigDecimal("CODUSU") != BigDecimal.ZERO){
+        if(usuario != BigDecimal.ZERO){
             ErroUtils.disparaErro("As vagas não podem ser inseridas pelo <b>Usuário</b>" +
                     "<br>Somente a rotina irá <b>cadastrar</b> as Vagas!");
-        }
+        }*/
     }
 
     public void validaUpdate() throws Exception{
@@ -126,6 +125,8 @@ public class VagasPrevisaoContratoModel {
     }
 
     public void diminuirUmQuantidadeContrata() throws Exception {
+
+        JapeWrapper previsoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
 
         NativeSqlDecorator previsoesContratoVagaSQL = new NativeSqlDecorator("SELECT COUNT(*) QTD FROM MGSTCTCONTRATOVAGA WHERE NUCONTRPREV = :NUCONTRPREV" +
                 " AND DTFIM IS NULL ");

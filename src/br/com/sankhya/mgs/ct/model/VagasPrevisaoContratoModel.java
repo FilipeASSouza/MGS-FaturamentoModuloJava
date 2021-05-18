@@ -83,6 +83,8 @@ public class VagasPrevisaoContratoModel {
         if( vo.asString("PREVUNID").equalsIgnoreCase(String.valueOf("S")) ){
             ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada esta vinculada a uma unidade!");
         }
+
+        subtrairVagaPrevisaoContrato = true;
     }
 
     //descontinuado - Sugestão do Juliano para que se a data estiver diferente de nulo alerta
@@ -122,25 +124,6 @@ public class VagasPrevisaoContratoModel {
         }
 
         return false;
-    }
-
-    public void diminuirUmQuantidadeContrata() throws Exception {
-
-        JapeWrapper previsoesContratoDAO = JapeFactory.dao("MGSCT_Previsoes_Contrato");
-
-        NativeSqlDecorator previsoesContratoVagaSQL = new NativeSqlDecorator("SELECT COUNT(*) QTD FROM MGSTCTCONTRATOVAGA WHERE NUCONTRPREV = :NUCONTRPREV" +
-                " AND DTFIM IS NULL ");
-        previsoesContratoVagaSQL.setParametro("NUCONTRPREV", vo.asBigDecimal("NUCONTRPREV"));
-
-        if(previsoesContratoVagaSQL.proximo()){
-            quantidadeVagasDisponiveis = previsoesContratoVagaSQL.getValorBigDecimal("QTD");
-        }
-
-        DynamicVO previsao = previsoesContratoDAO.findByPK(vo.asBigDecimal("NUCONTRPREV"));
-
-        FluidUpdateVO fluidUpdateVO = previsoesContratoDAO.prepareToUpdate(previsao);
-        fluidUpdateVO.set("QTDCONTRATADA", quantidadeVagasDisponiveis );
-        fluidUpdateVO.update();
     }
 
     public void alteraDadosDerivados() throws Exception {

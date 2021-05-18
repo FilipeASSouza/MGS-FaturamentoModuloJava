@@ -234,7 +234,6 @@ public class AlocacoesPostoModel {
 
             NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
 
-
             nativeSqlDecorator.setParametro("MATRICULA", matricula);
             nativeSqlDecorator.setParametro("DTI", dataInicio);
             if (dataFim != null) {
@@ -244,7 +243,7 @@ public class AlocacoesPostoModel {
             if (nativeSqlDecorator.proximo()) {
                 vo.setProperty("NUALOCAPSPRINC", nativeSqlDecorator.getValorBigDecimal("NUALOCAPS"));
             } else {
-                ErroUtils.disparaErro("Não é possível alocar! Necessário vinculação a posto de serviço regular. Favor verificar!");
+                ErroUtils.disparaErro("Não é possível alocar! Necessário vinculação de um posto de serviço para esse empregado. Favor verificar!");
             }
         }
     }

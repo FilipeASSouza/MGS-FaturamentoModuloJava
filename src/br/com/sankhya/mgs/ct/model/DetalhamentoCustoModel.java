@@ -22,6 +22,8 @@ public class DetalhamentoCustoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Detalhamento_Custo");
     private DynamicVO vo;
     private BigDecimal valorTotalEvento;
+    private String verificarTaxa;
+
     public DetalhamentoCustoModel()  {
     }
 
@@ -47,6 +49,11 @@ public class DetalhamentoCustoModel {
 
     public void validaDadosInsert() throws Exception {
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
+
+        if( vo.asBigDecimal("CODTIPOPOSTO") == null
+            && vo.asBigDecimal("CODSERVMATERIAL") == null ){
+            ErroUtils.disparaErro("Necessário preencher o posto ou o serviço, fineza verificar!");
+        }
 
         if( vo.asBigDecimal("CODPRONTUARIO") != null ){
             DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
@@ -77,6 +84,11 @@ public class DetalhamentoCustoModel {
     public void validaDadosUpdate() throws Exception {
 
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
+
+        if( vo.asBigDecimal("CODTIPOPOSTO") == null
+                && vo.asBigDecimal("CODSERVMATERIAL") == null ){
+            ErroUtils.disparaErro("Necessário preencher o posto ou o serviço, fineza verificar!");
+        }
 
         if( vo.asBigDecimal("CODPRONTUARIO") != null ){
             DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
@@ -206,6 +218,8 @@ public class DetalhamentoCustoModel {
 
         if( vo.asBigDecimal("CODTIPOPOSTO") != null ){
 
+            opcaoCalculaTaxa();
+
             if(vo.asBigDecimal("QTDEVENTO") != null
                     && vo.asBigDecimal("VLRUNIEVENTO") != null){
 
@@ -213,10 +227,11 @@ public class DetalhamentoCustoModel {
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 valorTotalEvento = quantidade.multiply(valorUnitario);
 
-                if( vo.asString("CALCULATXMANUAL") == null
-                        || vo.asString("CALCULATXMANUAL").equalsIgnoreCase(String.valueOf("N"))) {
+                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N"))) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa);
                 }else{
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
                     calculaTaxaManual();
                 }
@@ -229,10 +244,11 @@ public class DetalhamentoCustoModel {
                 valorTotalEvento = quantidade.multiply(valorTotalUnitario);
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
 
-                if( vo.asString("CALCULATXMANUAL") == null
-                        || vo.asString("CALCULATXMANUAL").equalsIgnoreCase(String.valueOf("N")) ) {
+                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }else{
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
                     calculaTaxaManual();
                 }
@@ -243,6 +259,9 @@ public class DetalhamentoCustoModel {
     public void calcularValorServico() throws Exception{
 
         if( vo.asBigDecimal("CODSERVMATERIAL") != null ){
+
+            opcaoCalculaTaxa();
+
             if( vo.asBigDecimal("QTDEVENTO") != null
                     && vo.asBigDecimal("VLRUNIEVENTO") != null ){
 
@@ -250,11 +269,12 @@ public class DetalhamentoCustoModel {
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 valorTotalEvento = quantidade.multiply(valorUnitario);
 
-                if( vo.asString("CALCULATXMANUAL") == null
-                        || vo.asString("CALCULATXMANUAL").equalsIgnoreCase(String.valueOf("N"))) {
+                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }else{
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2, RoundingMode.UP));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     calculaTaxaManual();
                 }
             }else{
@@ -265,13 +285,37 @@ public class DetalhamentoCustoModel {
                 valorTotalEvento = quantidade.multiply(valorTotalUnitario);
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
 
-                if( vo.asString("CALCULATXMANUAL") == null
-                        || vo.asString("CALCULATXMANUAL").equalsIgnoreCase(String.valueOf("N")) ) {
+                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }else{
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     calculaTaxaManual();
                 }
+            }
+        }
+    }
+
+    public void opcaoCalculaTaxa() throws Exception{
+        NativeSqlDecorator calculandoTaxaSQL = new NativeSqlDecorator("select Mgstctcontratotaxa.Ativo calcula, Mgstctcontratotaxa.Vlrtaxa , Mgstctlocaltipofat.Nulocaltipofat\n" +
+                "from mgstctcontrcent\n" +
+                "inner join mgstctlocalcont on mgstctlocalcont.nulocalcont = mgstctcontrcent.nulocalcont\n" +
+                "inner join mgstctlocaltipofat on mgstctlocalcont.nulocalcont = Mgstctlocaltipofat.Nulocalcont\n" +
+                "inner join mgstctevtcus on mgstctevtcus.codtipofatura = mgstctlocaltipofat.codtipofatura\n" +
+                "left join mgstctcontratotaxa on Mgstctcontratotaxa.Nulocaltipofat = Mgstctlocaltipofat.Nulocaltipofat\n" +
+                "where mgstctcontrcent.Numcontrato = :contrato\n" +
+                "and mgstctcontrcent.Codsite = :codsite\n" +
+                "and mgstctevtcus.codevento = :codevento\n" +
+                "AND NVL(MGSTCTCONTRATOtaxa.DTFIM,sysdate)                                       >= sysdate\n" +
+                "AND NVL(MGSTCTCONTRCENT.DTfim,sysdate)                                          >= SYSDATE");
+        calculandoTaxaSQL.setParametro("contrato", vo.asBigDecimal("NUMCONTRATO"));
+        calculandoTaxaSQL.setParametro("codsite", vo.asBigDecimal("CODUNIDADEFATUR"));
+        calculandoTaxaSQL.setParametro("codevento", vo.asBigDecimal("CODEVENTO"));
+        if(calculandoTaxaSQL.proximo()){
+            this.verificarTaxa = calculandoTaxaSQL.getValorString("calcula");
+            if(this.verificarTaxa == null){
+                this.verificarTaxa = String.valueOf("N");
             }
         }
     }

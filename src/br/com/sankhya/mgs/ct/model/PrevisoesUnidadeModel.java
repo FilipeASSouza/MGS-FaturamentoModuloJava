@@ -222,6 +222,30 @@ public class PrevisoesUnidadeModel {
         return validado;
     }
 
+    private boolean validaValorTotalUnidadesPeloContratoAtualizacao() throws Exception {
+        BigDecimal valorContratadaOutrasUnidades = BigDecimal.ZERO;
+        BigDecimal valorContratadaUnidadesTotal;
+
+        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES FROM MGSTCTUNIDADEPREV WHERE NUMCONTRATO = :NUMCONTRATO AND CODEVENTO = :CODEVENTO AND NUUNIDPREV <> :NUUNIDPREV");
+        validarValorContratoOutrasUnidadesSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
+        validarValorContratoOutrasUnidadesSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+        validarValorContratoOutrasUnidadesSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
+
+        if( validarValorContratoOutrasUnidadesSQL.proximo() ){
+            valorContratadaOutrasUnidades = validarValorContratoOutrasUnidadesSQL.getValorBigDecimal("VLROUTRASUNIDADES");
+        }
+
+        if( valorContratadaOutrasUnidades == null ){
+            valorContratadaOutrasUnidades = BigDecimal.ZERO;
+        }
+
+        valorContratadaUnidadesTotal = valorContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA").multiply(vo.asBigDecimalOrZero("VLRUNITARIO")));
+        BigDecimal valorPrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA").multiply(previsoesContratoVO.asBigDecimalOrZero("VLRUNITARIO"));
+
+        Boolean validado = valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
+
+        return validado;
+    }
 
     public void preencheCamposCalculados() throws Exception {
 
@@ -384,8 +408,32 @@ public class PrevisoesUnidadeModel {
     }
 
     public void validaDadosUpdade() throws Exception {
-        if (!validaQuantidadeTotalUnidadesPeloContrato()) {
-            ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+
+        switch (previsaoValidator.getRegraValidacao()) {
+            case "P"://posto
+            case "S3"://serviceo/material controle 3
+            case "S4"://serviceo/material controle 4
+                //todo valida quantidade total da unidade com contrato
+                if (!validaQuantidadeTotalUnidadesPeloContrato()) {
+                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+
+            case "C"://contrato
+            case "C1"://diarias de viagem
+            case "S1"://servico/material controle 1
+            case "S2"://servico/material controle 2
+                if (vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO)){
+                    vo.setProperty("QTDCONTRATADA",BigDecimal.ONE);
+                }
+
+                //todo valida valor total da unidade com contrato
+                if (!validaValorTotalUnidadesPeloContratoAtualizacao()) {
+                    ErroUtils.disparaErro("Valor total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+            case "R"://rescisao
+            default:
         }
     }
 

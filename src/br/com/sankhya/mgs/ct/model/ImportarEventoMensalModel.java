@@ -178,6 +178,8 @@ public class ImportarEventoMensalModel {
                 continue;
             }
 
+            BigDecimal valorUnitario = planilha.getValorBigDecimal("VLRUNIEVENTO");
+
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
             detalhamentoCustoFCVO.set("NUMCONTRATO",numeroContrato);//pega do sistema
@@ -201,7 +203,7 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("DTFIMEVENTO",planilha.getValorTimestamp("DTFIMEVENTO"));
             detalhamentoCustoFCVO.set("DSCEVENTO",planilha.getValorString("DSCEVENTO"));
             detalhamentoCustoFCVO.set("INFEVENTO",planilha.getValorString("INFEVENTO"));
-            detalhamentoCustoFCVO.set("VLRUNIEVENTO",planilha.getValorBigDecimal("VLRUNIEVENTO").setScale(15, RoundingMode.HALF_EVEN));
+            detalhamentoCustoFCVO.set("VLRUNIEVENTO", valorUnitario );
             detalhamentoCustoFCVO.set("QTDEVENTO",arredondaValor(planilha.getValorBigDecimal("QTDEVENTO")));
             detalhamentoCustoFCVO.set("VLRTOTEVENTO",arredondaValor(planilha.getValorBigDecimal("VLRTOTEVENTO")));
             detalhamentoCustoFCVO.set("COMPEVENTO",planilha.getValorBigDecimal("COMPEVENTO"));

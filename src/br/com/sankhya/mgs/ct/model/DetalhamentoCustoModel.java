@@ -23,6 +23,8 @@ public class DetalhamentoCustoModel {
     private DynamicVO vo;
     private BigDecimal valorTotalEvento;
     private String verificarTaxa;
+    private BigDecimal valorUnitario;
+    private BigDecimal valorUnitarioTemporario;
 
     public DetalhamentoCustoModel()  {
     }
@@ -120,9 +122,16 @@ public class DetalhamentoCustoModel {
         vo.setProperty("DHINS", TimeUtils.getNow());
         vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
 
-        calcularValorPosto();
-        calcularValorServico();
-
+        if( vo.asBigDecimal("CODCARGA") != null ){
+            BigDecimal valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+            BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
+            valorTotalEvento = quantidade.multiply(valorUnitario);
+            vo.setProperty("CALCULATXMANUAL", String.valueOf("N"));
+            vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+        }else {
+            calcularValorPosto();
+            calcularValorServico();
+        }
         vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
     }
 
@@ -143,6 +152,8 @@ public class DetalhamentoCustoModel {
         nativeSqlDDecorator.setParametro("CODTPN", numeroModalidade );
         nativeSqlDDecorator.setParametro("CODTIPOPOSTO", vo.asBigDecimal("CODTIPOPOSTO"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+        nativeSqlDDecorator.setParametro("v_codunidadefatura", vo.asBigDecimal("CODUNIDADEFATUR"));
+        nativeSqlDDecorator.setParametro("v_codtipofatura", vo.asBigDecimal("CODTIPOFATURA"));
 
         BigDecimal numeroUnicoValoresEventos = BigDecimal.ZERO;
         if (nativeSqlDDecorator.proximo()) {
@@ -181,6 +192,8 @@ public class DetalhamentoCustoModel {
         nativeSqlDDecorator.setParametro("CODTPN", numeroModalidade );
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
         nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+        nativeSqlDDecorator.setParametro("v_codunidadefatura", vo.asBigDecimal("CODUNIDADEFATUR"));
+        nativeSqlDDecorator.setParametro("v_codtipofatura", vo.asBigDecimal("CODTIPOFATURA"));
 
         BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
         if (nativeSqlDDecorator.proximo()) {
@@ -223,35 +236,39 @@ public class DetalhamentoCustoModel {
             if(vo.asBigDecimal("QTDEVENTO") != null
                     && vo.asBigDecimal("VLRUNIEVENTO") != null){
 
-                BigDecimal valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitarioTemporario = this.valorUnitario;
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 valorTotalEvento = quantidade.multiply(valorUnitario);
 
-                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N"))) {
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
-                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa);
-                }else{
+                if( this.verificarTaxa == null
+                        || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N"))) {
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
                     calculaTaxaManual();
+                }else{
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa);
                 }
             }else{
 
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 BigDecimal valorUnitario = getPrecoEvento();
-                BigDecimal valorTotalUnitario = valorUnitario.divide(BigDecimal.valueOf(30), RoundingMode.UP);
+                BigDecimal valorTotalUnitario = valorUnitario.divide(calcularQuantidadeDias(vo.asBigDecimal("NUMCONTRATO"), vo.asBigDecimal("CODEVENTO")), 15, RoundingMode.HALF_EVEN);
 
                 valorTotalEvento = quantidade.multiply(valorTotalUnitario);
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
+                vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
 
-                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
+                /* solicitado pelo rafael para retirar o calculo da taxa ao buscar o preço
+                if( this.verificarTaxa == null
+                    || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }else{
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
                     calculaTaxaManual();
-                }
+                }*/
             }
         }
     }
@@ -265,36 +282,58 @@ public class DetalhamentoCustoModel {
             if( vo.asBigDecimal("QTDEVENTO") != null
                     && vo.asBigDecimal("VLRUNIEVENTO") != null ){
 
-                BigDecimal valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitarioTemporario = this.valorUnitario;
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 valorTotalEvento = quantidade.multiply(valorUnitario);
 
-                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
-                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
-                }else{
+                if( this.verificarTaxa == null
+                || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2, RoundingMode.UP));
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     calculaTaxaManual();
+                }else{
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }
             }else{
                 BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
                 BigDecimal valorUnitario = getPrecoServico();
-                BigDecimal valorTotalUnitario = valorUnitario.divide(BigDecimal.valueOf(30), RoundingMode.UP);
+                BigDecimal valorTotalUnitario = valorUnitario.divide(calcularQuantidadeDias(vo.asBigDecimal("NUMCONTRATO"), vo.asBigDecimal("CODEVENTO")),15, RoundingMode.HALF_EVEN);
 
                 valorTotalEvento = quantidade.multiply(valorTotalUnitario);
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
+                vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
 
-                if( this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
+                /* solicitado pelo rafael para retirar o calculo da taxa ao buscar o preço
+                if( this.verificarTaxa == null
+                        || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                 }else{
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
                     calculaTaxaManual();
-                }
+                }*/
             }
         }
+    }
+
+    public BigDecimal calcularQuantidadeDias(BigDecimal contrato, BigDecimal codigoEvento) throws Exception{
+        BigDecimal resultado = null;
+        NativeSqlDecorator consultarDiasSQL = new NativeSqlDecorator("select qtdevtvlr as qtd from mgstctevtapt\n" +
+                "where codevento = :codevento\n" +
+                "and (numcontrato = :numcontrato or numcontrato is null)\n" +
+                "and rownum <= 1");
+        consultarDiasSQL.setParametro("codevento", codigoEvento);
+        consultarDiasSQL.setParametro("numcontrato", contrato);
+        if(consultarDiasSQL.proximo()){
+            resultado = consultarDiasSQL.getValorBigDecimal("qtd");
+        }
+
+        if(resultado == null){
+            resultado = BigDecimal.ONE;
+        }
+        return resultado;
     }
 
     public void opcaoCalculaTaxa() throws Exception{
@@ -349,6 +388,7 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
     private void calculaTaxaManual() throws Exception {
 
         BigDecimal valortotal = null;
+        BigDecimal taxa = null;
 
         JapeWrapper eventoCustoDAO = JapeFactory.dao("MGSCT_Eventos_Custos");
         DynamicVO eventoCustoVO = eventoCustoDAO.findOne("CODEVENTO = ? ", new Object[]{vo.asBigDecimal("CODEVENTO")});
@@ -360,8 +400,13 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
 
         if( nativeSqlDecorator.proximo() ){
             valortotal = nativeSqlDecorator.getValorBigDecimal("VALOR");
+            taxa = nativeSqlDecorator.getValorBigDecimal("TAXA");
         }
 
-        vo.setProperty("VLRTOTEVENTO", valortotal.setScale(2, RoundingMode.UP));
+        valorUnitario = valorUnitario.multiply(taxa);
+        valorUnitario = valorUnitarioTemporario.add(valorUnitario);
+
+        vo.setProperty("VLRTOTEVENTO", valortotal.setScale(2, RoundingMode.HALF_EVEN));
+        vo.setProperty("VLRUNIEVENTO", valorUnitario.setScale(4, RoundingMode.HALF_EVEN));
     }
 }

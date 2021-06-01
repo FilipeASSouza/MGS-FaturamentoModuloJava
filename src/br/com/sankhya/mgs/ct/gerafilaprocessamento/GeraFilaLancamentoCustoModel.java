@@ -1,13 +1,10 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento;
 
-import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.GeraFila;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
-import static com.hazelcast.org.apache.calcite.linq4j.tree.ExpressionType.Throw;
 
 public class GeraFilaLancamentoCustoModel {
     private Timestamp dataReferencia;

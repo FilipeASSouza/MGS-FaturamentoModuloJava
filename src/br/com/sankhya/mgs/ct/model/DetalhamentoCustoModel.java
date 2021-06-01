@@ -127,7 +127,7 @@ public class DetalhamentoCustoModel {
             BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
             valorTotalEvento = quantidade.multiply(valorUnitario);
             vo.setProperty("CALCULATXMANUAL", String.valueOf("N"));
-            vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+            vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN ));
         }else {
             calcularValorPosto();
             calcularValorServico();

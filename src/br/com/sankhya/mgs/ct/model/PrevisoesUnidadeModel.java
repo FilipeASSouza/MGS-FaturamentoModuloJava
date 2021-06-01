@@ -6,6 +6,7 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
+import br.com.sankhya.mgs.ct.validator.PrevisaoContrato;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 import org.apache.poi.ss.formula.functions.Na;
 
@@ -38,6 +39,7 @@ public class PrevisoesUnidadeModel {
     private BigDecimal numeroContrato;
     private BigDecimal numeroUnicoModalidade;
     private PrevisaoValidator previsaoValidator;
+    private PrevisaoContrato previsaoContrato;
     private static Map<BigDecimal, Timestamp> listaDataIncioVaga = new HashMap<BigDecimal,Timestamp>();
     private static Map<BigDecimal, String> listaVagasRemanajedas = new HashMap<BigDecimal,String>();
 
@@ -68,6 +70,7 @@ public class PrevisoesUnidadeModel {
     }
 
     private void inicialzaVariaveis() throws Exception {
+
         previsaoValidator = new PrevisaoValidator();
         previsaoValidator.setVo(vo);
 
@@ -82,6 +85,11 @@ public class PrevisoesUnidadeModel {
                 vo.asBigDecimalOrZero("CODEVENTO"),
                 numeroUnicoModalidade
         );
+
+        //regra para validar o controle conforme as informacoes da previsao para o contrato
+        previsaoContrato = new PrevisaoContrato();
+        previsaoContrato.setVo(previsoesContratoVO);
+
         //, NUMCONTRATO, CODEVENTO, CODTIPOPOSTO, CODSERVMATERIAL
 
         if (listaDataIncioVaga.containsKey(BigDecimal.ZERO)){
@@ -166,7 +174,6 @@ public class PrevisoesUnidadeModel {
                 }
                 break;
 
-            case "C"://contrato
             case "S1"://servico/material controle 1
             case "S2"://servico/material controle 2
                 if (vo.asBigDecimalOrZero("QTDCONTRATADA").equals(BigDecimal.ZERO)){
@@ -181,17 +188,61 @@ public class PrevisoesUnidadeModel {
             case "R"://rescisao
             default:
         }
+
+        switch(previsaoContrato.getRegraValidacao()){
+            case "C"://contrato
+            case "C1": //diarias de viagem
+            case "C2":
+                if (!validaValorTotalUnidadesPeloContratoAtualizacao()) {
+                    ErroUtils.disparaErro("Valor total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+            case "C3":
+            case "C4":
+                //todo valida quantidade total da unidade com contrato
+                if (!validaQuantidadeTotalUnidadesPeloContrato()) {
+                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+                }
+                break;
+            default:
+        }
     }
 
     public void validaRegistroDuplicado() throws Exception {
-        DynamicVO registroJaCadastrados = dao.findOne("NUCONTRCENT = ? AND NVL(CODTIPOPOSTO,0) = ? AND NVL(CODSERVMATERIAL,0) = ?  AND CODEVENTO = ? AND CODCONTROLE = ?",
-                vo.asBigDecimal("NUCONTRCENT"),
-                vo.asBigDecimalOrZero("CODTIPOPOSTO"),
-                vo.asBigDecimalOrZero("CODSERVMATERIAL"),
-                vo.asBigDecimal("CODEVENTO"),
-                vo.asBigDecimal("CODCONTROLE"));
+        BigDecimal numeroUnicoUnidade = vo.asBigDecimal("NUCONTRCENT");
+        BigDecimal codigoPosto = vo.asBigDecimalOrZero("CODTIPOPOSTO");
+        BigDecimal codigoMaterialServico = vo.asBigDecimalOrZero("CODSERVMATERIAL");
+        BigDecimal codigoEvento = vo.asBigDecimal("CODEVENTO");
+        BigDecimal codigoControle = vo.asBigDecimal("CODCONTROLE");
+        Timestamp dataInicio = vo.asTimestamp("DTINICIO");
+        Timestamp dataFim = vo.asTimestamp("DTFIM");
 
-        if(registroJaCadastrados != null){
+        if( dataInicio == null ){
+            ErroUtils.disparaErro("Data inicio não informada, fineza verificar!");
+        }
+
+        BigDecimal numeroUnicoPrevisaoUnidade = null;
+
+        NativeSqlDecorator registroDuplicadoSQL = new NativeSqlDecorator("SELECT NUCONTRCENT FROM MGSTCTUNIDADEPREV WHERE NUCONTRCENT = :NUCONTRCENT " +
+                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
+                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL" +
+                " AND CODEVENTO = :CODEVENTO" +
+                " AND CODCONTROLE = :CODCONTROLE" +
+                " AND DTINICIO = :DTINICIO" +
+                " AND ( DTFIM = :DTFIM OR DTFIM IS NULL )");
+        registroDuplicadoSQL.setParametro("NUCONTRCENT", numeroUnicoUnidade);
+        registroDuplicadoSQL.setParametro("CODTIPOPOSTO", codigoPosto);
+        registroDuplicadoSQL.setParametro("CODSERVMATERIAL", codigoMaterialServico);
+        registroDuplicadoSQL.setParametro("CODEVENTO", codigoEvento);
+        registroDuplicadoSQL.setParametro("CODCONTROLE", codigoControle);
+        registroDuplicadoSQL.setParametro("DTINICIO", dataInicio);
+        registroDuplicadoSQL.setParametro("DTFIM", dataFim);
+
+        if( registroDuplicadoSQL.proximo()){
+            numeroUnicoPrevisaoUnidade = registroDuplicadoSQL.getValorBigDecimal("NUCONTRCENT");
+        }
+
+        if( numeroUnicoPrevisaoUnidade != null ){
             ErroUtils.disparaErro("Registro ja cadastrado! Combinação posto, evento, controle ja existe cadastrado !");
         }
     }
@@ -226,10 +277,11 @@ public class PrevisoesUnidadeModel {
         BigDecimal valorContratadaOutrasUnidades = BigDecimal.ZERO;
         BigDecimal valorContratadaUnidadesTotal;
 
-        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES FROM MGSTCTUNIDADEPREV WHERE NUMCONTRATO = :NUMCONTRATO AND CODEVENTO = :CODEVENTO AND NUUNIDPREV <> :NUUNIDPREV");
+        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES FROM MGSTCTUNIDADEPREV WHERE NUMCONTRATO = :NUMCONTRATO AND CODEVENTO = :CODEVENTO AND NUUNIDPREV <> :NUUNIDPREV AND ( DTFIM >= :DTINICIO OR DTFIM IS NULL )");
         validarValorContratoOutrasUnidadesSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
+        validarValorContratoOutrasUnidadesSQL.setParametro("DTINICIO", vo.asTimestamp("DTINICIO"));
 
         if( validarValorContratoOutrasUnidadesSQL.proximo() ){
             valorContratadaOutrasUnidades = validarValorContratoOutrasUnidadesSQL.getValorBigDecimal("VLROUTRASUNIDADES");

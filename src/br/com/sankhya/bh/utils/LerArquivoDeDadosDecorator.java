@@ -144,7 +144,7 @@ public class LerArquivoDeDadosDecorator {
             if (cell.toString().trim().equals(""))
                 return null;
 
-            valor = new BigDecimal(cell.getNumericCellValue());
+            valor = BigDecimal.valueOf(cell.getNumericCellValue());
             return valor;
         } catch (Exception e) {
             throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);

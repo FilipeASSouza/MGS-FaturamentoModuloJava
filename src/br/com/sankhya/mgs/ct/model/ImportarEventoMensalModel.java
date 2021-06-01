@@ -178,7 +178,7 @@ public class ImportarEventoMensalModel {
                 continue;
             }
 
-            BigDecimal valorUnitario = planilha.getValorBigDecimal("VLRUNIEVENTO");
+            BigDecimal valorUnitario = planilha.getValorBigDecimal2("VLRUNIEVENTO");
 
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 

@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -22,6 +23,7 @@ import java.util.*;
 public class PrevisoesUnidadeModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Previsoes_Unidade");
     private DynamicVO vo;
+    private DynamicVO oldVO;
 
     /**
      * Entidade: MGSCT_Unidades
@@ -97,7 +99,6 @@ public class PrevisoesUnidadeModel {
             listaDataIncioVaga.put(vo.asBigDecimal("NUUNIDPREV"),listaDataIncioVaga.get(BigDecimal.ZERO));
             listaDataIncioVaga.remove(listaDataIncioVaga.get(BigDecimal.ZERO));
         }
-
     }
 
     private Collection<DynamicVO> buscaPrevisoesUnidadeDeMesmoPrevisaoContrato() throws Exception {
@@ -114,23 +115,28 @@ public class PrevisoesUnidadeModel {
     private BigDecimal consultaQuantidadePrevisaoUnidade() throws Exception{
 
         BigDecimal contrato = mestrevo.asBigDecimal("NUMCONTRATO");
-        BigDecimal codTipoPosto = vo.asBigDecimalOrZero("CODTIPOPOSTO");
-        BigDecimal codServicoMaterial = vo.asBigDecimalOrZero("CODSERVMATERIAL");
-        BigDecimal codEvento = vo.asBigDecimalOrZero("CODEVENTO");
+        BigDecimal codTipoPosto = previsoesContratoVO.asBigDecimalOrZero("CODTIPOPOSTO");
+        BigDecimal codServicoMaterial = previsoesContratoVO.asBigDecimalOrZero("CODSERVMATERIAL");
+        BigDecimal codEvento = previsoesContratoVO.asBigDecimalOrZero("CODEVENTO");
+        BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
 
         NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
                 " sum(qtdcontratada) QTDCONTRATADA " +
                 " FROM MGSTCTUNIDADEPREV " +
                 " WHERE " +
-                " NVL(NUMCONTRATO,0) = :NUMCONTRATO AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL " +
+                " NVL(NUMCONTRATO,0) = :NUMCONTRATO " +
+                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
+                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL " +
+                " AND NUUNIDPREV <> :NUUNIDPREV" +
                 " AND NVL( CODEVENTO ,0 ) = :CODEVENTO " +
-                " AND NVL(DTFIM, SYSDATE ) > :DT ");
+                " AND ( DTFIM = :DT OR DTFIM IS NULL ) ");
 
         consultaQuantidadePrevisaoUnidade.setParametro("NUMCONTRATO", contrato);
         consultaQuantidadePrevisaoUnidade.setParametro("CODTIPOPOSTO", codTipoPosto);
         consultaQuantidadePrevisaoUnidade.setParametro("CODSERVMATERIAL", codServicoMaterial);
         consultaQuantidadePrevisaoUnidade.setParametro("CODEVENTO", codEvento);
+        consultaQuantidadePrevisaoUnidade.setParametro("NUUNIDPREV", numeroUnicoPrevisaoUnidade);
         consultaQuantidadePrevisaoUnidade.setParametro("DT", dataInicio == null ? mestrevo.asTimestamp("DTINICIO") : dataInicio );
 
         BigDecimal qtdTotalPrevisaoUnidade = null;
@@ -215,7 +221,7 @@ public class PrevisoesUnidadeModel {
         BigDecimal codigoEvento = vo.asBigDecimal("CODEVENTO");
         BigDecimal codigoControle = vo.asBigDecimal("CODCONTROLE");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
-        Timestamp dataFim = vo.asTimestamp("DTFIM");
+        //Timestamp dataFim = vo.asTimestamp("DTFIM");
 
         if( dataInicio == null ){
             ErroUtils.disparaErro("Data inicio não informada, fineza verificar!");
@@ -223,20 +229,21 @@ public class PrevisoesUnidadeModel {
 
         BigDecimal numeroUnicoPrevisaoUnidade = null;
 
-        NativeSqlDecorator registroDuplicadoSQL = new NativeSqlDecorator("SELECT NUCONTRCENT FROM MGSTCTUNIDADEPREV WHERE NUCONTRCENT = :NUCONTRCENT " +
+        NativeSqlDecorator registroDuplicadoSQL = new NativeSqlDecorator("SELECT " +
+                " NUCONTRCENT FROM MGSTCTUNIDADEPREV " +
+                " WHERE NUCONTRCENT = :NUCONTRCENT " +
                 " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
                 " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL" +
                 " AND CODEVENTO = :CODEVENTO" +
                 " AND CODCONTROLE = :CODCONTROLE" +
-                " AND DTINICIO = :DTINICIO" +
-                " AND ( DTFIM = :DTFIM OR DTFIM IS NULL )");
+                " AND DTINICIO = :DTINICIO ");
         registroDuplicadoSQL.setParametro("NUCONTRCENT", numeroUnicoUnidade);
         registroDuplicadoSQL.setParametro("CODTIPOPOSTO", codigoPosto);
         registroDuplicadoSQL.setParametro("CODSERVMATERIAL", codigoMaterialServico);
         registroDuplicadoSQL.setParametro("CODEVENTO", codigoEvento);
         registroDuplicadoSQL.setParametro("CODCONTROLE", codigoControle);
         registroDuplicadoSQL.setParametro("DTINICIO", dataInicio);
-        registroDuplicadoSQL.setParametro("DTFIM", dataFim);
+        //registroDuplicadoSQL.setParametro("DTFIM", dataFim == null ? oldVO.asTimestamp("DTFIM") : dataFim );
 
         if( registroDuplicadoSQL.proximo()){
             numeroUnicoPrevisaoUnidade = registroDuplicadoSQL.getValorBigDecimal("NUCONTRCENT");
@@ -277,7 +284,13 @@ public class PrevisoesUnidadeModel {
         BigDecimal valorContratadaOutrasUnidades = BigDecimal.ZERO;
         BigDecimal valorContratadaUnidadesTotal;
 
-        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES FROM MGSTCTUNIDADEPREV WHERE NUMCONTRATO = :NUMCONTRATO AND CODEVENTO = :CODEVENTO AND NUUNIDPREV <> :NUUNIDPREV AND ( DTFIM >= :DTINICIO OR DTFIM IS NULL )");
+        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT " +
+                " ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES " +
+                " FROM MGSTCTUNIDADEPREV " +
+                " WHERE NUMCONTRATO = :NUMCONTRATO " +
+                " AND CODEVENTO = :CODEVENTO " +
+                " AND NUUNIDPREV <> :NUUNIDPREV " +
+                " AND ( DTFIM >= :DTINICIO OR DTFIM IS NULL )");
         validarValorContratoOutrasUnidadesSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));

@@ -172,7 +172,7 @@ public class AlocacoesServicosModel {
         BigDecimal valorUnitario;
 
         JapeWrapper mgsct_valores_produtosDAO = JapeFactory.dao("MGSCT_Valores_Produtos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterial.sql");
+        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql");
         nativeSqlDDecorator.setParametro("NUMCONTRATO", numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", codigoModalidade );
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", codigoServMaterial);

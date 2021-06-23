@@ -221,7 +221,6 @@ public class PrevisoesUnidadeModel {
         BigDecimal codigoEvento = vo.asBigDecimal("CODEVENTO");
         BigDecimal codigoControle = vo.asBigDecimal("CODCONTROLE");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
-        //Timestamp dataFim = vo.asTimestamp("DTFIM");
 
         if( dataInicio == null ){
             ErroUtils.disparaErro("Data inicio não informada, fineza verificar!");
@@ -243,7 +242,6 @@ public class PrevisoesUnidadeModel {
         registroDuplicadoSQL.setParametro("CODEVENTO", codigoEvento);
         registroDuplicadoSQL.setParametro("CODCONTROLE", codigoControle);
         registroDuplicadoSQL.setParametro("DTINICIO", dataInicio);
-        //registroDuplicadoSQL.setParametro("DTFIM", dataFim == null ? oldVO.asTimestamp("DTFIM") : dataFim );
 
         if( registroDuplicadoSQL.proximo()){
             numeroUnicoPrevisaoUnidade = registroDuplicadoSQL.getValorBigDecimal("NUCONTRCENT");

@@ -33,6 +33,7 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
                 BigDecimal sucesso = null;
 
 
+
                 ProcedureCaller caller = getProcedureCaller(jdbc, parametrosExecutacao);
 
                 log = caller.resultAsString("LOG");

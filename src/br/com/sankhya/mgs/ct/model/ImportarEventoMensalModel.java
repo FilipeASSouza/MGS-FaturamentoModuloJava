@@ -183,7 +183,7 @@ public class ImportarEventoMensalModel {
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
             detalhamentoCustoFCVO.set("NUMCONTRATO",numeroContrato);//pega do sistema
-            detalhamentoCustoFCVO.set("NUMODALIDADE",numeroUnicoModalidadeContrato);//pega do sistema
+            detalhamentoCustoFCVO.set("NUMODALIDADE",numeroUnicoModalidadeContrato); //pega do sistema
             detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
             detalhamentoCustoFCVO.set("TIPLANCEVENTO","M");
             detalhamentoCustoFCVO.set("CODCARGA",numeroUnico);

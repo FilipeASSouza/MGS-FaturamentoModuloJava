@@ -5,6 +5,7 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.extensions.flow.ContextoTarefa;
 import br.com.sankhya.mgs.ct.model.AplicarPercGlosaModel;
 import com.sankhya.util.TimeUtils;
 

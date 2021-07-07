@@ -11,6 +11,8 @@ import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 /**
@@ -52,10 +54,22 @@ public class DetalhamentoCustoModel {
     public void validaDadosInsert() throws Exception {
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
+        BigDecimal anoMes = TimeUtils.getYearMonth(vo.asTimestamp("DTLCCUSTO"));
+        BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU");
+
+        if( !anoMes.equals( compentenciaFaturamento ) ){
+            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
+        }
+
+        // Juliano
+        verificarRegistroDuplicado(vo.asBigDecimal("CODUNIDADEFATUR"), vo.asBigDecimal("CODTIPOFATURA"), vo.asTimestamp("DTLCCUSTO"));
+
         if( vo.asBigDecimal("CODTIPOPOSTO") == null
             && vo.asBigDecimal("CODSERVMATERIAL") == null ){
             ErroUtils.disparaErro("Necessário preencher o posto ou o serviço, fineza verificar!");
         }
+
+
 
         if( vo.asBigDecimal("CODPRONTUARIO") != null ){
             DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
@@ -85,7 +99,17 @@ public class DetalhamentoCustoModel {
 
     public void validaDadosUpdate() throws Exception {
 
+        BigDecimal anoMes = TimeUtils.getYearMonth(vo.asTimestamp("DTLCCUSTO"));
+        BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU");
+
+        if( !anoMes.equals( compentenciaFaturamento ) ){
+            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
+        }
+
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
+
+        // Juliano
+        verificarRegistroDuplicado(vo.asBigDecimal("CODUNIDADEFATUR"), vo.asBigDecimal("CODTIPOFATURA"), vo.asTimestamp("DTLCCUSTO"));
 
         if( vo.asBigDecimal("CODTIPOPOSTO") == null
                 && vo.asBigDecimal("CODSERVMATERIAL") == null ){
@@ -221,8 +245,8 @@ public class DetalhamentoCustoModel {
         vo.setProperty("DHUPD", TimeUtils.getNow());
         vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
 
-        calcularValorPosto();
-        calcularValorServico();
+        calcularValorPostoAtualizacao();
+        calcularValorServicoAtualizacao();
 
         vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
     }
@@ -244,7 +268,7 @@ public class DetalhamentoCustoModel {
                 if( this.verificarTaxa == null
                         || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N"))) {
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2, RoundingMode.HALF_EVEN));
                     calculaTaxaManual();
                 }else{
                     vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
@@ -260,15 +284,43 @@ public class DetalhamentoCustoModel {
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
                 vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
 
-                /* solicitado pelo rafael para retirar o calculo da taxa ao buscar o preço
+            }
+        }
+    }
+
+    public void calcularValorPostoAtualizacao() throws Exception{
+
+        if( vo.asBigDecimal("CODTIPOPOSTO") != null ){
+
+            opcaoCalculaTaxa();
+
+            if(vo.asBigDecimal("QTDEVENTO") != null
+                    && vo.asBigDecimal("VLRUNIEVENTO") != null){
+
+                this.valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitarioTemporario = this.valorUnitario;
+                BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
+                valorTotalEvento = quantidade.multiply(valorUnitario);
+
                 if( this.verificarTaxa == null
-                    || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
+                        || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N"))) {
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2, RoundingMode.HALF_EVEN));
+                    //calculaTaxaManual();
                 }else{
-                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento);
-                    calculaTaxaManual();
-                }*/
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
+                    vo.setProperty("CALCULATXMANUAL", this.verificarTaxa);
+                }
+            }else{
+
+                BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
+                BigDecimal valorUnitario = getPrecoEvento();
+                BigDecimal valorTotalUnitario = valorUnitario.divide(calcularQuantidadeDias(vo.asBigDecimal("NUMCONTRATO"), vo.asBigDecimal("CODEVENTO")), 15, RoundingMode.HALF_EVEN);
+
+                valorTotalEvento = quantidade.multiply(valorTotalUnitario);
+                vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
+                vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
+
             }
         }
     }
@@ -305,15 +357,42 @@ public class DetalhamentoCustoModel {
                 vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
                 vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
 
-                /* solicitado pelo rafael para retirar o calculo da taxa ao buscar o preço
+            }
+        }
+    }
+
+    public void calcularValorServicoAtualizacao() throws Exception{
+
+        if( vo.asBigDecimal("CODSERVMATERIAL") != null ){
+
+            opcaoCalculaTaxa();
+
+            if( vo.asBigDecimal("QTDEVENTO") != null
+                    && vo.asBigDecimal("VLRUNIEVENTO") != null ){
+
+                this.valorUnitario = vo.asBigDecimal("VLRUNIEVENTO");
+                this.valorUnitarioTemporario = this.valorUnitario;
+                BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
+                valorTotalEvento = quantidade.multiply(valorUnitario);
+
                 if( this.verificarTaxa == null
                         || this.verificarTaxa.equalsIgnoreCase(String.valueOf("N")) ) {
-                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP));
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2, RoundingMode.UP));
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
+                    //calculaTaxaManual();
                 }else{
+                    vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.UP ));
                     vo.setProperty("CALCULATXMANUAL", this.verificarTaxa );
-                    calculaTaxaManual();
-                }*/
+                }
+            }else{
+                BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEVENTO");
+                BigDecimal valorUnitario = getPrecoServico();
+                BigDecimal valorTotalUnitario = valorUnitario.divide(calcularQuantidadeDias(vo.asBigDecimal("NUMCONTRATO"), vo.asBigDecimal("CODEVENTO")),15, RoundingMode.HALF_EVEN);
+
+                valorTotalEvento = quantidade.multiply(valorTotalUnitario);
+                vo.setProperty("VLRUNIEVENTO", valorTotalUnitario);
+                vo.setProperty("VLRTOTEVENTO", valorTotalEvento.setScale(2,RoundingMode.HALF_EVEN));
+
             }
         }
     }
@@ -408,5 +487,20 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
 
         vo.setProperty("VLRTOTEVENTO", valortotal.setScale(2, RoundingMode.HALF_EVEN));
         vo.setProperty("VLRUNIEVENTO", valorUnitario.setScale(4, RoundingMode.HALF_EVEN));
+    }
+
+    public void verificarRegistroDuplicado(BigDecimal codigoTipoFatur, BigDecimal codigoUnidadeFatur, Timestamp dataLancamentoCusto ) throws Exception{
+        //Juliano
+        NativeSqlDecorator validarInsercao = new NativeSqlDecorator("select distinct 1 from mgstctlctcusto\n" +
+                "where codunidadefatur = :codunidadefatur\n" +
+                "and TRUNC( dtlanccusto ) = :dtlanccusto\n" +
+                "and codtipofatura = :codtipofatura");
+        validarInsercao.setParametro("codunidadefatur", codigoTipoFatur);
+        validarInsercao.setParametro("codtipofatura", codigoUnidadeFatur);
+        validarInsercao.setParametro("dtlanccusto", dataLancamentoCusto);
+
+        if( validarInsercao.proximo() ){
+            ErroUtils.disparaErro("Já existe planilha de fiscal para esse conjunto de informações. Verifique com o faturamento!");
+        }
     }
 }

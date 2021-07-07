@@ -1,5 +1,7 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.sankhya.bh.utils.ErroUtils;
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
@@ -65,6 +67,13 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
             if (numeroPaginasGerado > 0) {
 
                 JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
+
+                NativeSqlDecorator verificarAnexo = new NativeSqlDecorator("SELECT NUFATURA FROM MGSTCTFTRANEXO WHERE NUFATURA = :NUFATURA");
+                verificarAnexo.setParametro("NUFATURA", parametrosExecutacao.get("NUFATURA"));
+                if(verificarAnexo.proximo()){
+                    ErroUtils.disparaErro("Fatura já enviada para o site!");
+                }
+
                 final FluidCreateVO relatorioAnexoFCVO = dao.create();
 
                 relatorioAnexoFCVO.set("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));

@@ -143,6 +143,8 @@ public class ImportarEventoMensalModel {
 
         while(planilha.proximo()) {
 
+            //ERRO CURSOR
+
             NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :codevento and ROWNUM < 2");
             consultaCustoFaturaSQL.setParametro("codevento", planilha.getValorBigDecimal("CODEVENTO"));
             if(consultaCustoFaturaSQL.proximo()){
@@ -183,7 +185,7 @@ public class ImportarEventoMensalModel {
             FluidCreateVO detalhamentoCustoFCVO = detalhamentoCustoDAO.create();
 
             detalhamentoCustoFCVO.set("NUMCONTRATO",numeroContrato);//pega do sistema
-            detalhamentoCustoFCVO.set("NUMODALIDADE",numeroUnicoModalidadeContrato); //pega do sistema
+            detalhamentoCustoFCVO.set("NUMODALIDADE", numeroUnicoModalidadeContrato ); //pega do sistema
             detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
             detalhamentoCustoFCVO.set("TIPLANCEVENTO","M");
             detalhamentoCustoFCVO.set("CODCARGA",numeroUnico);
@@ -213,8 +215,8 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("PERCTXADM",arredondaValor(planilha.getValorBigDecimal("PERCTXADM")));
             detalhamentoCustoFCVO.set("VLRTXADM",arredondaValor(planilha.getValorBigDecimal("VLRTXADM")));
             detalhamentoCustoFCVO.set("DTLCCUSTO",planilha.getValorTimestamp("DTLCCUSTO"));
-            detalhamentoCustoFCVO.set("CODCUSTO",codCusto);
-            detalhamentoCustoFCVO.set("CODTIPOFATURA",codTipoFatura);
+            detalhamentoCustoFCVO.set("CODCUSTO", codCusto );
+            detalhamentoCustoFCVO.set("CODTIPOFATURA", codTipoFatura );
 
             DynamicVO save = detalhamentoCustoFCVO.save();
         }

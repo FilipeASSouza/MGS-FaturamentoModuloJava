@@ -59,6 +59,7 @@ public class GeraFilaLancamentoCustoModel {
         consultaListaCodigoSites.setParametro("CODSITEI", unidadeFaturamentoInicial);
         consultaListaCodigoSites.setParametro("CODSITEF", unidadeFaturamentoFinal);
         consultaListaCodigoSites.setParametro("NUMCONTRATO", numeroContrato);
+        consultaListaCodigoSites.setParametro("NUMODALIDADE", numeroUnicoModalidade);
 
         while (consultaListaCodigoSites.proximo()) {
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODSITE");

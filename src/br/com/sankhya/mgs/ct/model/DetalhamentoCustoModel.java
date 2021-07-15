@@ -69,12 +69,12 @@ public class DetalhamentoCustoModel {
             ErroUtils.disparaErro("Necessário preencher o posto ou o serviço, fineza verificar!");
         }
 
-
-
-        if( vo.asBigDecimal("CODPRONTUARIO") != null ){
-            DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
-            if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
-                vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+        if( vo.asBigDecimalOrZero("CODCARGA") == null ) {
+            if( vo.asBigDecimal("CODPRONTUARIO") != null ){
+                DynamicVO custoEmpregado = daoRH.findOne("MATRICULA = ?", new Object[]{vo.asBigDecimal("CODPRONTUARIO")});
+                if( custoEmpregado.asBigDecimal("MATRICULA") != null ){
+                    vo.setProperty("NOME", custoEmpregado.asString("NOME"));
+                }
             }
         }
 

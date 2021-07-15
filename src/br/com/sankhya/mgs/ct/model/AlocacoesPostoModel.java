@@ -84,9 +84,17 @@ public class AlocacoesPostoModel {
 
     public void validaDadosUpdate() throws Exception {
         validaDataFinalMenorQueInicial();
-        validaEncavalamentoPeriodosVaga();
-        validaEncavalamentoPeriodosMatricula();
-        validaStatusContratacaoVaga();
+
+        if( vo.asString("STATUSALOCACAO").equalsIgnoreCase("N")){
+            if( vo.asTimestamp("DTFIM") == null ){
+                vo.setProperty("DTFIM", vo.asTimestamp("DTINICIO"));
+            }
+            vo.setProperty("STATUSALOCACAO", "N");
+        }else{
+            validaEncavalamentoPeriodosVaga();
+            validaEncavalamentoPeriodosMatricula();
+            validaStatusContratacaoVaga();
+        }
     }
 
     private void validaDataFinalMenorQueInicial() throws Exception {

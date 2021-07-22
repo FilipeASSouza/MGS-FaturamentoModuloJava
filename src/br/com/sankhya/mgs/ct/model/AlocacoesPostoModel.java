@@ -5,6 +5,8 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -65,6 +67,10 @@ public class AlocacoesPostoModel {
     }
 
     public void validaDadosInsert() throws Exception {
+
+        vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
+        vo.setProperty("DHINS", TimeUtils.getNow() );
+
         validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
@@ -84,6 +90,9 @@ public class AlocacoesPostoModel {
 
     public void validaDadosUpdate() throws Exception {
         validaDataFinalMenorQueInicial();
+
+        vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
+        vo.setProperty("DHUPD", TimeUtils.getNow() );
 
         if( vo.asString("STATUSALOCACAO").equalsIgnoreCase("N")){
             if( vo.asTimestamp("DTFIM") == null ){

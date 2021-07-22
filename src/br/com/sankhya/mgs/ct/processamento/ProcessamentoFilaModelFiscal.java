@@ -1,6 +1,5 @@
 package br.com.sankhya.mgs.ct.processamento;
 
-
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
@@ -13,20 +12,20 @@ import br.com.sankhya.modelcore.util.MGECoreParameter;
 
 import java.math.BigDecimal;
 
-public class ProcessamentoFilaModel implements Runnable {
-    private static ProcessamentoFilaModel instancia;
+public class ProcessamentoFilaModelFiscal implements Runnable{
+    private static ProcessamentoFilaModelFiscal instancia;
     private static Thread thread = null;
     private static Thread threadAnterior = null;
 
     private JapeWrapper filadao = JapeFactory.dao("MGSCT_Fila_Processamento");
 
-    private ProcessamentoFilaModel() {
+    private ProcessamentoFilaModelFiscal() {
         executar();
     }
 
-    public static synchronized ProcessamentoFilaModel getInstance() {
+    public static synchronized ProcessamentoFilaModelFiscal getInstance() {
         if (instancia == null)
-            instancia = new ProcessamentoFilaModel();
+            instancia = new ProcessamentoFilaModelFiscal();
         return instancia;
     }
 
@@ -37,7 +36,7 @@ public class ProcessamentoFilaModel implements Runnable {
                 threadAnterior = null;
             }
             thread = new Thread(this);
-            thread.setName("ContratoCorporativoFilaProcessamento");
+            thread.setName("ContratoCorporativoFilaProcessamentoFiscal");
             thread.start();
         }
     }
@@ -53,7 +52,7 @@ public class ProcessamentoFilaModel implements Runnable {
                 quantidadeExecucaoParalela = new BigDecimal(10);
             }
 
-            System.out.println("Executando o run ProcessamentoFilaModel");
+            System.out.println("Executando o run ProcessamentoFilaModelFiscal ln 55");
 
             NativeSqlDecorator consultaFila = null;
             try {
@@ -62,8 +61,8 @@ public class ProcessamentoFilaModel implements Runnable {
                     quantidadeExecucaoFila = new BigDecimal(10);
                 }
 
-                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamento.sql");
-                consultaFila.setParametro("QTDEXECFILA", quantidadeExecucaoFila);
+                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoFiscal.sql");
+                consultaFila.setParametro("QTDEXECFILAFISC", quantidadeExecucaoFila);
 
             } catch (Exception e) {
                 throw new Exception("Erro ao executar consulta busca fila processamento: " + e);
@@ -84,6 +83,13 @@ public class ProcessamentoFilaModel implements Runnable {
                     numeroUnicoTipoProcessamento = consultaFila.getValorBigDecimal("NUTIPOPROC");
                     numeroUnicoFilaProcessamento = consultaFila.getValorBigDecimal("NUFILAPROC");
 
+                    //P = processado, I = incluido, E = Erro, A = andamento
+
+                    NativeSqlDecorator atualizandoProcessamentoSQL = new NativeSqlDecorator("UPDATE MGSTCTFILAPROC SET STATUS = :STATUS WHERE NUFILAPROC = :NUFILAPROC");
+                    atualizandoProcessamentoSQL.setParametro("STATUS", String.valueOf("A"));
+                    atualizandoProcessamentoSQL.setParametro("NUFILAPROC", numeroUnicoFilaProcessamento );
+                    atualizandoProcessamentoSQL.atualizar();
+
                     ProcessamentoFilaFactory processamentoFilaFactory = new ProcessamentoFilaFactory();
                     Processar processamento = processamentoFilaFactory.getProcessamento(numeroUnicoTipoProcessamento);
 
@@ -92,11 +98,11 @@ public class ProcessamentoFilaModel implements Runnable {
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
-                    threadProcessamento.setName("ContratoCorporativoProcessamento");
+                    threadProcessamento.setName("ContratoCorporativoProcessamentoFiscal");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
-                        System.out.println("Execuções paralelas ProcessamentoFilaModel ln 97");
+                        System.out.println("Execuções paralelas ProcessamentoFilaModelFiscal ln 97");
                         Thread.sleep(10);
                     }
                 }
@@ -113,7 +119,4 @@ public class ProcessamentoFilaModel implements Runnable {
             thread = null;
         }
     }
-
-
 }
-

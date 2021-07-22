@@ -53,6 +53,9 @@ public class FilaDAO {
     }
 
     public RegistroFila getRegistroFila(BigDecimal numeroUnicoFilaProcessamento) throws Exception {
+
+        System.out.println(" BUSCA REGISTRO FILA getRegistroFila numeroUnicoFilaProcessamento = " + numeroUnicoFilaProcessamento.toString() );
+
         buscaRegistroFilaProcessamento(numeroUnicoFilaProcessamento);
         RegistroFila registroFila = new RegistroFila();
         registroFila.NUFILAPROC = vo.asBigDecimal("NUFILAPROC");
@@ -68,6 +71,8 @@ public class FilaDAO {
     }
 
     public void salva(RegistroFila registroFila) throws Exception {
+
+        System.out.println("TENTANDO SALVA FILA " + registroFila.toString() );
         FluidCreateVO fluidCreateVO = dao.create();
         fluidCreateVO.set("NUTIPOPROC", registroFila.NUTIPOPROC);
         fluidCreateVO.set("CHAVE", registroFila.CHAVE);
@@ -81,6 +86,8 @@ public class FilaDAO {
 
 
     public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
+
+        System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.toString());
         JapeSession.SessionHandle hnd = JapeSession.open();
         final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
@@ -98,12 +105,18 @@ public class FilaDAO {
     }
 
     public void incializaFila(String chave, String nomeProcessamento) throws Exception {
+
+        System.out.println("GRAVANDO NA FILA COM A CHAVE " + chave + " NOME PROCESSAMENTO = " + nomeProcessamento);
+
         RegistroFila registroFila = new RegistroFila();
         DynamicVO tipoProcessamentoVO = JapeFactory
                 .dao("MGSCT_Tipo_Processamento")
                 .findOne("NOME = ?", nomeProcessamento);
 
         if (tipoProcessamentoVO == null) {
+
+            System.out.println("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
+
             ErroUtils.disparaErro("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
         }
 
@@ -121,6 +134,7 @@ public class FilaDAO {
             registroFila.CODUSU = codigoUsuario;
         }
         if(comControleTransacao){
+            System.out.println(" CONTROLE DE TRANSACAO = " + registroFila.toString() );
             salvaComControleTransacao(registroFila);
         } else {
             salva(registroFila);

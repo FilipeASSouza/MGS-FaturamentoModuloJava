@@ -43,10 +43,17 @@ public class GeraFilaLancamentoCustoGestorModel {
     public void gerarFila() throws Exception {
 
         aprovaRelatorioFiscal(); // fiscal
+
+        System.out.println("INSERINDO RELATORIO FISCAL");
+
         gerarTabelaTemporaria(); // anexocad
+
+        System.out.println("INSERINDO NA ANEXOCAD");
 
         NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
         consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
+
+        System.out.println("INICIANDO A VERIFICACAO FILA DE PROCESSAMENTO");
 
         while (consultaListaCodigoSites.proximo()) {
 
@@ -57,7 +64,9 @@ public class GeraFilaLancamentoCustoGestorModel {
             NativeSqlDecorator verificarFilaProcessamento = new NativeSqlDecorator(this, "VerificarFilaProcessamento.sql" );
             verificarFilaProcessamento.setParametro("CODUNIDADEFATUR", codigoUnidadeFaturamento );
 
+
             while( verificarFilaProcessamento.proximo() ){
+
 
                 String chave = verificarFilaProcessamento.getValorString("CHAVE");
                 String arrayChave[];
@@ -80,6 +89,7 @@ public class GeraFilaLancamentoCustoGestorModel {
             }
         }
 
+        System.out.println("GEROU TODAS AS UNIDADES FILA GESTOR");
         /*  */
 
     }

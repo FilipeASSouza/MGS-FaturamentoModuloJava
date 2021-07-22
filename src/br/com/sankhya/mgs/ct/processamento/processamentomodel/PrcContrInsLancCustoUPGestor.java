@@ -20,6 +20,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         try {
             super.executar();
 
+            System.out.println("Executando");
+
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
@@ -41,6 +43,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
                 }
                 sucesso = caller.resultAsBigDecimal("SUCESSO");
                 if (BigDecimal.ONE.equals(sucesso)) {
+
+                    System.out.println("Falta executar o papel ln 47 geraFilaAnexo");
                     executado = true;
                     mensagem = "OK";
                     IntegracaoLancamentoCustoGestorModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso

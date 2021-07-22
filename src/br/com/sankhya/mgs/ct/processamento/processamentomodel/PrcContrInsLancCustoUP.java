@@ -42,6 +42,8 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
                 }
                 sucesso = caller.resultAsBigDecimal("SUCESSO");
                 if (BigDecimal.ONE.equals(sucesso)) {
+
+                    System.out.println("ENTROU AQUI MAS NAO GEROU PAPEL LN 46 geraFilaAnexo PrcContrInsLancCustoUp");
                     executado = true;
                     mensagem = "OK";
                     IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso

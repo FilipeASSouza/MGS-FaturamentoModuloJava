@@ -52,6 +52,19 @@ public class DetalhamentoCustoModel {
     }
 
     public void validaDadosInsert() throws Exception {
+
+        //Correção para não ter problema ao duplicar os registros
+        vo.setProperty("CODINTEGRACAOLC", null);
+        vo.setProperty("NULCTCUSTO", null);
+        vo.setProperty("DHUPD", null);
+        vo.setProperty("USUUPD", null);
+
+        /* verificar com o Juliano depois esses dois campos */
+        //vo.setProperty("CODCARGA", null);
+        //vo.setProperty("MTVCARGA", null);
+
+        vo.setProperty("CODINTEGRACAODC", null);
+
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
         BigDecimal anoMes = TimeUtils.getYearMonth(vo.asTimestamp("DTLCCUSTO"));
@@ -60,9 +73,6 @@ public class DetalhamentoCustoModel {
         if( !anoMes.equals( compentenciaFaturamento ) ){
             ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
         }
-
-        // Juliano
-        verificarRegistroDuplicado(vo.asBigDecimal("CODUNIDADEFATUR"), vo.asBigDecimal("CODTIPOFATURA"), vo.asTimestamp("DTLCCUSTO"));
 
         if( vo.asBigDecimal("CODTIPOPOSTO") == null
             && vo.asBigDecimal("CODSERVMATERIAL") == null ){
@@ -85,6 +95,9 @@ public class DetalhamentoCustoModel {
             vo.setProperty("CODTIPOFATURA", consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA"));
         }
 
+        // Juliano
+        verificarRegistroDuplicado(vo.asBigDecimal("CODUNIDADEFATUR"), vo.asBigDecimal("CODTIPOFATURA"), vo.asTimestamp("DTLCCUSTO"));
+
         if( vo.asBigDecimal("CODPRONTUARIO") != null ){
             BigDecimal codigoCargo = null;
 
@@ -98,6 +111,10 @@ public class DetalhamentoCustoModel {
     }
 
     public void validaDadosUpdate() throws Exception {
+
+        //Correção para não ter problema ao duplicar os registros
+        vo.setProperty("CODINTEGRACAOLC", null);
+        vo.setProperty("NULCTCUSTO", null);
 
         BigDecimal anoMes = TimeUtils.getYearMonth(vo.asTimestamp("DTLCCUSTO"));
         BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU");

@@ -5,6 +5,7 @@ import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
+import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoSituacaoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
@@ -27,14 +28,15 @@ public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJav
 
             for (Registro linha : linhas) {
 
-                    linha.setCampo("TIPO_EVENTO", String.valueOf("M") );
-                    linha.setCampo("SITUACAO_LANC", sitlanc );
-                    linha.setCampo("DHUPD", TimeUtils.getNow() );
-                    linha.setCampo("USUINS", codusu );
-                    linha.save();
+                    if( linha.getCampo("INTEGRACAO_LANC") == null ){
+                        linha.setCampo("TIPO_EVENTO", String.valueOf("M") );
+                        linha.setCampo("SITUACAO_LANC", sitlanc );
+                        linha.setCampo("DHUPD", TimeUtils.getNow() );
+                        linha.setCampo("USUINS", codusu );
+                        linha.save();
+                    }
 
-                    /*
-                    Descontinuado devido ao erro no cursor
+                    /*Descontinuado devido ao erro no cursor
 
                     NativeSqlDecorator atualizarDetalhamentoSQL = new NativeSqlDecorator("UPDATE MGSTCTEVTMENSAL SET TIPLANCEVENTO = 'M', CODSITLANC = :V_SIT, DTALTERLANC = SYSDATE, CODUSUALTERLANC = :LOGIN WHERE NUEVTMENSAL = :V_NUEVTMENSAL ");
                     atualizarDetalhamentoSQL.setParametro("V_SIT", sitlanc);

@@ -11,22 +11,21 @@ import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import br.com.sankhya.modelcore.util.MGECoreParameter;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
-public class ProcessamentoFilaModelFast implements Runnable{
-    private static ProcessamentoFilaModelFast instancia;
+public class ProcessamentoFilaModelGestor implements Runnable{
+    private static ProcessamentoFilaModelGestor instancia;
     private static Thread thread = null;
     private static Thread threadAnterior = null;
 
     private JapeWrapper filadao = JapeFactory.dao("MGSCT_Fila_Processamento");
 
-    private ProcessamentoFilaModelFast() {
+    private ProcessamentoFilaModelGestor() {
         executar();
     }
 
-    public static synchronized ProcessamentoFilaModelFast getInstance() {
+    public static synchronized ProcessamentoFilaModelGestor getInstance() {
         if (instancia == null)
-            instancia = new ProcessamentoFilaModelFast();
+            instancia = new ProcessamentoFilaModelGestor();
         return instancia;
     }
 
@@ -37,7 +36,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                 threadAnterior = null;
             }
             thread = new Thread(this);
-            thread.setName("ContratoCorporativoFilaProcessamentoFast");
+            thread.setName("ContratoCorporativoFilaProcessamentoGestor");
             thread.start();
         }
     }
@@ -53,14 +52,16 @@ public class ProcessamentoFilaModelFast implements Runnable{
                 quantidadeExecucaoParalela = new BigDecimal(1);
             }
 
+            System.out.println("executando ContratoCorporativoFilaProcessamentoGestor ln 55");
+
             NativeSqlDecorator consultaFila = null;
             try {
 
-                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoFast.sql");
+                consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoGestor.sql");
                 consultaFila.setParametro("QTDEXECFILA", BigDecimal.ONE);
 
             } catch (Exception e) {
-                throw new Exception("Erro ao executar consulta busca fila processamento: " + e);
+                throw new Exception("Erro ao executar consulta busca fila processamento Gestor: " + e);
             }
 
 
@@ -93,7 +94,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
-                    threadProcessamento.setName("ContratoCorporativoProcessamentoFast");
+                    threadProcessamento.setName("ContratoCorporativoProcessamentoGestor");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
@@ -102,7 +103,7 @@ public class ProcessamentoFilaModelFast implements Runnable{
                 }
 
             } catch (Exception e) {
-                throw new Exception("Erro ao percorrer consulta busca fila processamento: " + e);
+                throw new Exception("Erro ao percorrer consulta busca fila processamento Gestor: " + e);
             }
             JapeSession.close(hnd);
             JdbcWrapper.closeSession(jdbc);

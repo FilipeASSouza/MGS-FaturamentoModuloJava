@@ -22,11 +22,13 @@ public class EdicaoUnidadeFaturamentoAcao extends EdicaoAcaoSuper implements Aca
             String nomeusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
-                EdicaoUnidadeFaturamentoModel edicaoUnidadeFaturamentoModel = new EdicaoUnidadeFaturamentoModel();
-                edicaoUnidadeFaturamentoModel.setParametro("CODUNIDADEFATUR",codunidadefatur);
-                edicaoUnidadeFaturamentoModel.setParametro("LOGIN",nomeusu);
-                edicaoUnidadeFaturamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
-                edicaoUnidadeFaturamentoModel.executar();
+                if( linha.getCampo("INTEGRACAO_LANC") == null ){
+                    EdicaoUnidadeFaturamentoModel edicaoUnidadeFaturamentoModel = new EdicaoUnidadeFaturamentoModel();
+                    edicaoUnidadeFaturamentoModel.setParametro("CODUNIDADEFATUR",codunidadefatur);
+                    edicaoUnidadeFaturamentoModel.setParametro("LOGIN",nomeusu);
+                    edicaoUnidadeFaturamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                    edicaoUnidadeFaturamentoModel.executar();
+                }
             }
         }
     }

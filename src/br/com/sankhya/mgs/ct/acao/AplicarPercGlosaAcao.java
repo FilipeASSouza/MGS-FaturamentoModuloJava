@@ -56,60 +56,59 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
         } else {
             for (Registro linha : linhas) {
 
-                if( linha.getCampo("INTEGRACAO_LANC") == null ){
-                    numeroReferenciaGlosa = (BigDecimal) linha.getCampo("NUEVTMENSAL");
+                numeroReferenciaGlosa = (BigDecimal) linha.getCampo("NUEVTMENSAL");
 
-                    NativeSqlDecorator referenciaGlosaSQL = new NativeSqlDecorator("SELECT " +
-                    " VLRTXADM," +
-                    " VALOR_TOTAL " +
-                    " FROM MGSVCTDETALHACUSTO WHERE NUEVTMENSAL = :NUEVTMENSAL");
-                    referenciaGlosaSQL.setParametro("NUEVTMENSAL", numeroReferenciaGlosa );
+                NativeSqlDecorator referenciaGlosaSQL = new NativeSqlDecorator("SELECT " +
+                " VLRTXADM," +
+                " VALOR_TOTAL " +
+                " FROM MGSVCTDETALHACUSTO WHERE NUEVTMENSAL = :NUEVTMENSAL");
+                referenciaGlosaSQL.setParametro("NUEVTMENSAL", numeroReferenciaGlosa );
 
-                    if( referenciaGlosaSQL.proximo() ){
-                        valorTaxaAdministracao = referenciaGlosaSQL.getValorBigDecimal("VLRTXADM");
-                        valorTotalEvento = referenciaGlosaSQL.getValorBigDecimal("VALOR_TOTAL");
-                    }
+                if( referenciaGlosaSQL.proximo() ){
+                    valorTaxaAdministracao = referenciaGlosaSQL.getValorBigDecimal("VLRTXADM");
+                    valorTotalEvento = referenciaGlosaSQL.getValorBigDecimal("VALOR_TOTAL");
+                }
 
-                    if( contextoAcao.getParam("PERCTOTEVENTO") != null
-                            && contextoAcao.getParam("PERCTXADM") != null ){
+                if( contextoAcao.getParam("PERCTOTEVENTO") != null
+                        && contextoAcao.getParam("PERCTXADM") != null ){
 
-                        ErroUtils.disparaErro("Apenas um valor deve ser informado para o calculo da glosa!" +
-                                "Verifique o filtro novamente!");
+                    ErroUtils.disparaErro("Apenas um valor deve ser informado para o calculo da glosa!" +
+                            "Verifique o filtro novamente!");
 
-                    }else if( valorTotalEvento != BigDecimal.ZERO
-                        || valorTotalEvento != null ){
+                }else if( valorTotalEvento != BigDecimal.ZERO
+                    || valorTotalEvento != null ){
 
-                        BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
+                    BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
 
-                        AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
+                    AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
 
-                        aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
-                        aplicarPercGlosaModel.setCompetencia(competencia);
-                        aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
-                        aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
-                        aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
-                        aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
-                        aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
-                        aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
-                        aplicarPercGlosaModel.executar();
+                    aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
+                    aplicarPercGlosaModel.setCompetencia(competencia);
+                    aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
+                    aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
+                    aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
+                    aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
+                    aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
+                    aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
+                    aplicarPercGlosaModel.executar();
 
-                    }else if( valorTaxaAdministracao != BigDecimal.ZERO
-                        || valorTaxaAdministracao != null ){
+                }else if( valorTaxaAdministracao != BigDecimal.ZERO
+                    || valorTaxaAdministracao != null ){
 
-                        BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
+                    BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
 
-                        AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
+                    AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
 
-                        aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
-                        aplicarPercGlosaModel.setCompetencia(competencia);
-                        aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
-                        aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
-                        aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
-                        aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
-                        aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
-                        aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
-                        aplicarPercGlosaModel.executar();
-                    }
+                    aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
+                    aplicarPercGlosaModel.setCompetencia(competencia);
+                    aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
+                    aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
+                    aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
+                    aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
+                    aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
+                    aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
+                    aplicarPercGlosaModel.executar();
+
                 }
             }
         }

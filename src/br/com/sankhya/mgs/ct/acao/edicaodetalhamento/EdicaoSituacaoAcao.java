@@ -5,7 +5,6 @@ import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoSituacaoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 

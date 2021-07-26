@@ -11,6 +11,7 @@ public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implem
         super.executar();
         setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPGestorAnexo");
 
+
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
         mapParametrosChave.put("NUMCONTRATO", getParametroBigDecimal("numeroContrato").toString());
         mapParametrosChave.put("CODUNIDADEFATUR", getParametroBigDecimal("numeroUnidadeFaturamento").toString());
@@ -19,6 +20,8 @@ public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implem
 
 
         String chave = geraChave(mapParametrosChave);
+
+        System.out.println("EXECUTANDO GeraFilaContrInsLancCustoUPGestorAnexo CHAVE = " + chave);
 
         FilaDAO filaDAO = new FilaDAO();
         filaDAO.setComControleTransacao(true);

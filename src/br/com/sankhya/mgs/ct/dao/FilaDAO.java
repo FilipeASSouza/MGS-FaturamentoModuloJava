@@ -8,6 +8,7 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
+import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaParaleloModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;
@@ -88,6 +89,11 @@ public class FilaDAO {
     public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
 
         System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.toString());
+
+        int quantidadeThreads = ProcessamentoFilaParaleloModel.getQuantidadeThreads();
+        ProcessamentoFilaParaleloModel.setQuantidadeThreads(0);
+        System.out.println("quantidadeThreads antes de zerar: "+quantidadeThreads);
+
         JapeSession.SessionHandle hnd = JapeSession.open();
         final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
@@ -114,9 +120,7 @@ public class FilaDAO {
                 .findOne("NOME = ?", nomeProcessamento);
 
         if (tipoProcessamentoVO == null) {
-
             System.out.println("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
-
             ErroUtils.disparaErro("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
         }
 
@@ -139,6 +143,7 @@ public class FilaDAO {
         } else {
             salva(registroFila);
         }
+        System.out.println("FINALIZANDO incializaFila");
     }
 
 

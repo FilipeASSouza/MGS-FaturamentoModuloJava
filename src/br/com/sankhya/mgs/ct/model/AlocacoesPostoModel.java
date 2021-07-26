@@ -69,7 +69,7 @@ public class AlocacoesPostoModel {
     public void validaDadosInsert() throws Exception {
 
         vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
-        vo.setProperty("DHINS", TimeUtils.getNow() );
+        vo.setProperty("DTINS", TimeUtils.getNow() );
 
         validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();

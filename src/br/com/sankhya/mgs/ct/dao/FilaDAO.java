@@ -90,9 +90,17 @@ public class FilaDAO {
 
         System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.toString());
 
+        /*
+
+        implementar o encerramento threads no processamento da fila
+
+         */
         int quantidadeThreads = ProcessamentoFilaParaleloModel.getQuantidadeThreads();
-        ProcessamentoFilaParaleloModel.setQuantidadeThreads(0);
-        System.out.println("quantidadeThreads antes de zerar: "+quantidadeThreads);
+
+        if( quantidadeThreads != 0 ){
+            ProcessamentoFilaParaleloModel.setQuantidadeThreads(0);
+            System.out.println("quantidadeThreads antes de zerar: "+quantidadeThreads);
+        }
 
         JapeSession.SessionHandle hnd = JapeSession.open();
         final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();

@@ -60,6 +60,7 @@ public class GeraFilaLancamentoCustoGestorModel {
             Timestamp dataCusto = consultaListaCodigoSites.getValorTimestamp("MESRELATORIO");
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODUNIDADEFATUR");
             BigDecimal codigoTipoFatura = consultaListaCodigoSites.getValorBigDecimal("CODTIPOFATURA");
+            numeroContrato = consultaListaCodigoSites.getValorBigDecimal("NUMCONTRATO");
 
             NativeSqlDecorator verificarFilaProcessamento = new NativeSqlDecorator(this, "VerificarFilaProcessamento.sql" );
             verificarFilaProcessamento.setParametro("CODUNIDADEFATUR", codigoUnidadeFaturamento );

@@ -91,9 +91,7 @@ public class FilaDAO {
         System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.toString());
 
         /*
-
-        implementar o encerramento threads no processamento da fila
-
+        implementar o zerando threads no processamento da fila
          */
         int quantidadeThreads = ProcessamentoFilaParaleloModel.getQuantidadeThreads();
 

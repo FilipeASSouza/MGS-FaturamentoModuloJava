@@ -49,14 +49,14 @@ public class ProcessamentoFilaModelFiscal implements Runnable{
 
             BigDecimal quantidadeExecucaoParalela = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECPARALE");
             if (quantidadeExecucaoParalela == null) {
-                quantidadeExecucaoParalela = new BigDecimal(10);
+                quantidadeExecucaoParalela = new BigDecimal(1);
             }
 
             System.out.println("Executando o run ProcessamentoFilaModelFiscal ln 55");
 
             NativeSqlDecorator consultaFila = null;
             try {
-                BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECFILA");
+                BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter("QTDEXECFILAFISC");
                 if (quantidadeExecucaoFila == null) {
                     quantidadeExecucaoFila = new BigDecimal(10);
                 }

@@ -94,7 +94,7 @@ public class VagasPrevisaoContratoModel {
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
+                ErroUtils.disparaErro("Data final não pode ser menor que a data inicial!");
             }
         }
 
@@ -109,7 +109,7 @@ public class VagasPrevisaoContratoModel {
             }
 
             if (vagaAtivaPrevisaoUnidade()){
-                ErroUtils.disparaErro("Vaga ainda se encontra ativa na previsao da undiade, deve ser desabilitado primeiro!");
+                ErroUtils.disparaErro("Vaga ainda se encontra ativa na previsao da unidade, deve ser desabilitado primeiro!");
             }
 
             subtrairVagaPrevisaoContrato = true;

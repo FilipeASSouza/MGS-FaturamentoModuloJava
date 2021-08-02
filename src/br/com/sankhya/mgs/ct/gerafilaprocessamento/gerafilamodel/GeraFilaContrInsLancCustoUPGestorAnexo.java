@@ -27,6 +27,7 @@ public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implem
         filaDAO.setComControleTransacao(true);
         filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
         filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
+        System.out.println("FINALIZADO GeraFilaContrInsLancCustoUPGestorAnexo CHAVE = " + chave + " NOME PROCESSAMENTO = " + getParametroString("nomeProcessamento") );
         return true;
     }
 }

@@ -123,6 +123,13 @@ public class DetalhamentoCustoModel {
             ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
         }
 
+        NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :codevento and ROWNUM < 2");
+        consultaCustoFaturaSQL.setParametro("codevento", vo.asBigDecimal("CODEVENTO"));
+        if(consultaCustoFaturaSQL.proximo()){
+            vo.setProperty("CODCUSTO", consultaCustoFaturaSQL.getValorBigDecimal("CODCUSTO"));
+            vo.setProperty("CODTIPOFATURA", consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA"));
+        }
+
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
         // Juliano

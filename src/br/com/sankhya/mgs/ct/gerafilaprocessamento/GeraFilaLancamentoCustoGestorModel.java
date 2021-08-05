@@ -17,6 +17,7 @@ public class GeraFilaLancamentoCustoGestorModel {
     private BigDecimal numeroContrato;
     private BigDecimal numeroUnicoModalidade;
     private BigDecimal codigoUnidadeFaturamento;
+    private BigDecimal codigoUnidadeFaturamentoFinal;
     private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
 
     //Verificar a Fila de Processamento
@@ -40,6 +41,10 @@ public class GeraFilaLancamentoCustoGestorModel {
         this.codigoUnidadeFaturamento = codigoUnidadeFaturamento;
     }
 
+    public void setCodigoUnidadeFaturamentoFinal(BigDecimal codigoUnidadeFaturamentoFinal){
+        this.codigoUnidadeFaturamentoFinal = codigoUnidadeFaturamentoFinal;
+    }
+
     public void gerarFila() throws Exception {
 
         aprovaRelatorioFiscal(); // fiscal
@@ -52,6 +57,7 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
         consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
+        consultaListaCodigoSites.setParametro("CODUNIDADEFATURFIN", this.codigoUnidadeFaturamentoFinal);
 
         System.out.println("INICIANDO A VERIFICACAO FILA DE PROCESSAMENTO");
 
@@ -103,8 +109,14 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         ProcedureCaller caller = new ProcedureCaller("RELATORIO_ANEXOS_APROVA");
 
+        System.out.println("data de custo = "+ dataCusto.toString() +"numero contrato ="
+                + numeroContrato
+                + "unidade pai = " + codigoUnidadeFaturamento);
+
         caller.addInputParameter(TimeUtils.getYearMonth(dataCusto));//V_MESFATURAMENTO   IN     NUMBER,
         caller.addInputParameter(numeroContrato);//V_CONTRATO         IN     NUMBER
+        caller.addInputParameter(codigoUnidadeFaturamento); //V_CODUNIDADEFATPAI   IN     NUMBER,
+        caller.addInputParameter(codigoUnidadeFaturamentoFinal);//V_CODUNIDADEFATPAIFINAL   IN     NUMBER,
 
         caller.execute(jdbc.getConnection());
 
@@ -123,6 +135,7 @@ public class GeraFilaLancamentoCustoGestorModel {
         caller.addInputParameter( numeroContrato );//V_CONTRATO         IN     NUMBER,
         caller.addInputParameter( TimeUtils.formataYYYYMMDD( dataCusto ) );//V_MESFATURAMENTO   IN     NUMBER,
         caller.addInputParameter( codigoUnidadeFaturamento );//V_UNIDADEFAT_PAI   IN     NUMBER,
+        caller.addInputParameter( codigoUnidadeFaturamentoFinal );
         caller.addInputParameter( BigDecimal.ZERO );
         caller.addOutputParameter(1, "LOG" );//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO" );//V_SUCESSO             OUT NUMBER
@@ -151,6 +164,7 @@ public class GeraFilaLancamentoCustoGestorModel {
         caller.addInputParameter( numeroContratoVerificacao );//V_CONTRATO         IN     NUMBER,
         caller.addInputParameter( TimeUtils.formataYYYYMMDD( dataContratoVerificacao ) );//V_MESFATURAMENTO   IN     NUMBER,
         caller.addInputParameter( codigoUnidadeFaturamento );//V_UNIDADEFAT_PAI   IN     NUMBER,
+        caller.addInputParameter( codigoUnidadeFaturamentoFinal );//V_UNIDADEFAT_PAI   IN     NUMBER,
         caller.addInputParameter( BigDecimal.ONE );
         caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO             OUT NUMBER

@@ -49,7 +49,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
 
             BigDecimal quantidadeExecucaoParalela = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECPARALE");
             if (quantidadeExecucaoParalela == null) {
-                quantidadeExecucaoParalela = new BigDecimal(1);
+                quantidadeExecucaoParalela = new BigDecimal(10);
             }
 
             System.out.println("executando ContratoCorporativoFilaProcessamentoGestor ln 55");
@@ -93,12 +93,16 @@ public class ProcessamentoFilaModelGestor implements Runnable{
                     ProcessamentoFilaParaleloModel processamentoFilaParaleloModel = new ProcessamentoFilaParaleloModel();
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
+
+                    System.out.println("processamento fila = " + processamentoFilaParaleloModel.toString());
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
                     threadProcessamento.setName("ContratoCorporativoProcessamentoGestor");
+
+                    System.out.println("inicidando processamento");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
-                        Thread.sleep(5000);
+                        Thread.sleep(8000);
                     }
                 }
 

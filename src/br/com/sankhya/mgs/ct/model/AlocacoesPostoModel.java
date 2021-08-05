@@ -71,6 +71,8 @@ public class AlocacoesPostoModel {
         vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
         vo.setProperty("DTINS", TimeUtils.getNow() );
 
+        validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
+
         validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
@@ -90,6 +92,7 @@ public class AlocacoesPostoModel {
 
     public void validaDadosUpdate() throws Exception {
         validaDataFinalMenorQueInicial();
+        validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
 
         vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
         vo.setProperty("DHUPD", TimeUtils.getNow() );
@@ -111,6 +114,36 @@ public class AlocacoesPostoModel {
         if (dataFimPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
                 ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
+            }
+        }
+    }
+
+    private void validaDataeContratoAtivo(BigDecimal numeroContrato, BigDecimal unidade ) throws Exception{
+        NativeSqlDecorator validaContratoAtivo = new NativeSqlDecorator("select " +
+                " codtipsituacao " +
+                " from mgstctcontrato\n" +
+                " where numcontrato = :numcontrato");
+        validaContratoAtivo.setParametro("numcontrato", numeroContrato);
+        if(validaContratoAtivo.proximo()){
+            if (!validaContratoAtivo.getValorBigDecimal("codtipsituacao").equals(BigDecimal.ONE)){
+                ErroUtils.disparaErro("Contrato não está ativo, fineza verificar!");
+            }
+        }
+
+        Timestamp dataFimContrato = null;
+
+        NativeSqlDecorator validaEncerramentoContrato = new NativeSqlDecorator("select " +
+                " dtfim " +
+                " from mgstctcontrcent\n" +
+                " where codsite = :codsite");
+        validaEncerramentoContrato.setParametro("codsite", unidade );
+        if(validaEncerramentoContrato.proximo()){
+            dataFimContrato = validaEncerramentoContrato.getValorTimestamp("dtfim");
+        }
+
+        if(dataFimContrato != null ){
+            if(dataFimContrato.compareTo(TimeUtils.getNow()) < 0){
+                ErroUtils.disparaErro("Unidade de faturamento encerrada, fineza verificar!");
             }
         }
     }

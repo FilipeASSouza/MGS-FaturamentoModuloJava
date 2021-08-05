@@ -88,7 +88,7 @@ public class FilaDAO {
 
     public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
 
-        System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.toString());
+        System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.getNUFILAPROC().toString() + " TIPO = " + registroFila.getNUTIPOPROC().toString());
 
         /*
         implementar o zerando threads no processamento da fila

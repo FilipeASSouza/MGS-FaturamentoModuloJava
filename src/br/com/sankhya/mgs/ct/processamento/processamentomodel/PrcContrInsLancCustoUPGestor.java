@@ -20,7 +20,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         try {
             super.executar();
 
-            System.out.println("Executando");
+            System.out.println("Executando processamento = " + getParametrosExecutacao().toString());
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 

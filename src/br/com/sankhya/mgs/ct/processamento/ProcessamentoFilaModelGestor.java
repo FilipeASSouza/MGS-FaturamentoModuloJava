@@ -49,7 +49,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
 
             BigDecimal quantidadeExecucaoParalela = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECPARALE");
             if (quantidadeExecucaoParalela == null) {
-                quantidadeExecucaoParalela = new BigDecimal(10);
+                quantidadeExecucaoParalela = new BigDecimal(100);
             }
 
             System.out.println("executando ContratoCorporativoFilaProcessamentoGestor ln 55");
@@ -58,7 +58,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
             try {
 
                 consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoGestor.sql");
-                consultaFila.setParametro("QTDEXECFILA", BigDecimal.ONE);
+                consultaFila.setParametro("QTDEXECFILA", 1000); // ajustado para testar o processamento da fila pois o agendamento não fica ativado no ambiente de teste
 
             } catch (Exception e) {
                 throw new Exception("Erro ao executar consulta busca fila processamento Gestor: " + e);

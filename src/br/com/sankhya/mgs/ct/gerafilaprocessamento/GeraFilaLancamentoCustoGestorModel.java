@@ -68,6 +68,10 @@ public class GeraFilaLancamentoCustoGestorModel {
             BigDecimal codigoTipoFatura = consultaListaCodigoSites.getValorBigDecimal("CODTIPOFATURA");
             numeroContrato = consultaListaCodigoSites.getValorBigDecimal("NUMCONTRATO");
 
+            /*
+            Comentado para testar a performance na inserção da fila quando está ativo a inserção na fila de processamento fica extremamente lenta
+            Necessário verificar se é preciso que seja feito esse teste nesse ponto ou implementar em outro passo do projeto
+
             NativeSqlDecorator verificarFilaProcessamento = new NativeSqlDecorator(this, "VerificarFilaProcessamento.sql" );
             verificarFilaProcessamento.setParametro("CODUNIDADEFATUR", codigoUnidadeFaturamento );
 
@@ -83,7 +87,7 @@ public class GeraFilaLancamentoCustoGestorModel {
                 dataContratoVerificacao = verificarFilaProcessamento.getValorBigDecimal("DATA");
 
                 executarVerificacaoFilaProcessamento();
-            }
+            }*/
 
             GeraFila geraFila = geraFilaFactory.getGeraFila("CONTR_INS_LANC_CUSTO_UP_GESTOR");
             if ( geraFila != null ) {

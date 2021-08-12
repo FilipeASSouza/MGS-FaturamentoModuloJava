@@ -68,11 +68,8 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
             }
         } finally {
             quantidadeThreads--;
-            try {
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
-            }catch (Exception e){
-            }
+            JapeSession.close(hnd);
+            JdbcWrapper.closeSession(jdbc);
         }
     }
 }

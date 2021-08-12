@@ -20,7 +20,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         try {
             super.executar();
 
-            System.out.println("Executando processamento = " + getParametrosExecutacao().toString());
+            System.out.println("Executando processamento = ");
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
@@ -56,11 +56,11 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
                 }
             }
 
-            super.finalizar();
+
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancCustoUP: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

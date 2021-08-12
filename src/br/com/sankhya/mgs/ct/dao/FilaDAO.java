@@ -88,7 +88,7 @@ public class FilaDAO {
 
     public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
 
-        System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = "+registroFila.getNUFILAPROC().toString() + " TIPO = " + registroFila.getNUTIPOPROC().toString());
+        System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = ");
 
         /*
         implementar o zerando threads no processamento da fila
@@ -105,15 +105,21 @@ public class FilaDAO {
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
         jdbc.openSession();
 
+        try{
+            hnd.execWithTX(new JapeSession.TXBlock() {
+                public void doWithTx() throws Exception {
+                    salva(registroFila);
+                    System.out.println("FINALIZANDO salva");
+                }
+            });
+        }finally {
+            System.out.println("FINALIZANDO O doWithTx");
 
-        hnd.execWithTX(new JapeSession.TXBlock() {
-            public void doWithTx() throws Exception {
-                salva(registroFila);
+            if(JapeSession.hasCurrentSession()){
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
             }
-        });
-        JapeSession.close(hnd);
-        JdbcWrapper.closeSession(jdbc);
-
+        }
     }
 
     public void incializaFila(String chave, String nomeProcessamento) throws Exception {

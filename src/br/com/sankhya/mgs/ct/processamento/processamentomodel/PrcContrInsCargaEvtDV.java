@@ -54,12 +54,10 @@ public class PrcContrInsCargaEvtDV extends ProcessarSuper implements Processar {
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
-
-            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtDV: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

@@ -54,12 +54,10 @@ public class PrcContrInsCargaEvtM007 extends ProcessarSuper implements Processar
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
-
-            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure prcContrInsCargaEvtM007: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

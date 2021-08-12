@@ -83,9 +83,9 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
                 fluidCreateVO.set("ANEXO", arquivoBytes);
 
 
-                JapeSession.SessionHandle hnd = JapeSession.open();
+                hnd = JapeSession.open();
                 final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-                JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
+                jdbc = dwfFacade.getJdbcWrapper();
                 jdbc.openSession();
 
 
@@ -103,15 +103,14 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
                         nativeSqlDecorator.atualizar();
                     }
                 });
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
-
             }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);
         } finally {
-
+            JapeSession.close(hnd);
+            JdbcWrapper.closeSession(jdbc);
+            super.finalizar();
         }
         return executado;
     }

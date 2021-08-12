@@ -41,12 +41,10 @@ public class PrcContrInsLancFatura extends ProcessarSuper implements Processar {
                 mensagem = "Erro PrcContrInsLancFatura: [" +sucesso.toString() +"]"+ log;
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
             }
-
-            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancFatura: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

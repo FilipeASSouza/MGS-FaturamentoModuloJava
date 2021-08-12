@@ -88,9 +88,9 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
                 relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
 
 
-                JapeSession.SessionHandle hnd = JapeSession.open();
+                hnd = JapeSession.open();
                 final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-                JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
+                jdbc = dwfFacade.getJdbcWrapper();
                 jdbc.openSession();
 
                 final BigDecimal numeroUnicoRelatorioAnexo = BigDecimal.ZERO;
@@ -111,15 +111,13 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
 
                     }
                 });
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
-
             }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);
         } finally {
-
+            JapeSession.close(hnd);
+            JdbcWrapper.closeSession(jdbc);
         }
         return executado;
     }

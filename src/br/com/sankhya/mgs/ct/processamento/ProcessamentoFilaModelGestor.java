@@ -108,9 +108,10 @@ public class ProcessamentoFilaModelGestor implements Runnable{
 
             } catch (Exception e) {
                 throw new Exception("Erro ao percorrer consulta busca fila processamento Gestor: " + e);
+            } finally {
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
             }
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
         } catch (Exception e) {
             e.printStackTrace();
         } finally{

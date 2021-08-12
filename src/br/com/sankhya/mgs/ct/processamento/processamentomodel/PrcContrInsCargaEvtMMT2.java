@@ -54,12 +54,10 @@ public class PrcContrInsCargaEvtMMT2 extends ProcessarSuper implements Processar
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
-
-            super.finalizar();
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtMMT2: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

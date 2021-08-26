@@ -6,7 +6,7 @@ SELECT NUCONTREVENTO FROM (
                                 AND CODTIPOPOSTO = :CODTIPOPOSTO
                                 AND MGSTCTCONTRVLRPS.CODEVENTO = DECODE( :CODEVENTO, 142, 142, 191, 191, 242, 242, (select mgstctevtapt.codevtvlr from mgstctevtapt where codevento = :CODEVENTO and rownum <= 1) )
                                 AND TRUNC(SYSDATE) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM)
-                                AND ALIQISS = (select mgstctcontratotrib.percinss
+                                AND ALIQISS = NVL( ( select mgstctcontratotrib.percinss
                                                FROM MGSTCTCONTRATOTRIB,
                                                     MGSTCTLOCALCONT,
                                                     MGSTCTLOCALTIPOFAT,
@@ -25,6 +25,6 @@ SELECT NUCONTREVENTO FROM (
                                                  AND nvl(MGSTCTCONTRATOTRIB.DTFIM,sysdate)         >= sysdate
                                                  AND nvl(MGSTCTCONTRCENT.DTfim,sysdate)            >= SYSDATE
                                                  AND MGSTCTCONTRCENT.CODSITE = :v_codunidadefatura
-                                                 and mgstctlocaltipofat.codtipofatura  = :v_codtipofatura)
+                                                 and mgstctlocaltipofat.codtipofatura  = :v_codtipofatura) , 0 )
 
                           ) WHERE NROOCORRENCIA = MAXNROOCORRENCIA

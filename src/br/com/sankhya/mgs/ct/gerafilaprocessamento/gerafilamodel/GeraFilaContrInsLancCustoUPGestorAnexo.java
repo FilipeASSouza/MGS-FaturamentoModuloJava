@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
+import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaParaleloModel;
 import com.sankhya.util.TimeUtils;
 
 import java.util.HashMap;

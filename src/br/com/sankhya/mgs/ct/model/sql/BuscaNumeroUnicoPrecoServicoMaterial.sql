@@ -6,7 +6,7 @@ AND CODTPN = :CODTPN
 AND CODSERVMATERIAL = :CODSERVMATERIAL
 AND CODEVENTO = :CODEVENTO
 AND TRUNC(SYSDATE) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM)
-  AND ALIQISS = (select mgstctcontratotrib.percinss
+  AND ALIQISS = NVL(( select mgstctcontratotrib.percinss
                  FROM MGSTCTCONTRATOTRIB,
                       MGSTCTLOCALCONT,
                       MGSTCTLOCALTIPOFAT,
@@ -25,6 +25,6 @@ AND TRUNC(SYSDATE) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM)
                    AND nvl(MGSTCTCONTRATOTRIB.DTFIM,sysdate)         >= sysdate
                    AND nvl(MGSTCTCONTRCENT.DTfim,sysdate)            >= SYSDATE
                    AND MGSTCTCONTRCENT.CODSITE = :v_codunidadefatura
-                   and mgstctlocaltipofat.codtipofatura  = :v_codtipofatura)
+                   and mgstctlocaltipofat.codtipofatura  = :v_codtipofatura) , 0 )
 
                           ) WHERE NROOCORRENCIA = MAXNROOCORRENCIA

@@ -4,15 +4,14 @@ import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
-import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaParaleloModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;
-import br.com.sankhya.jape.dao.JdbcWrapper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -90,16 +89,6 @@ public class FilaDAO {
 
         System.out.println("INICIANDO METODO salvaComControleTransacao REGISTRO = ");
 
-        /*
-        implementar o zerando threads no processamento da fila
-         */
-        int quantidadeThreads = ProcessamentoFilaParaleloModel.getQuantidadeThreads();
-
-        if( quantidadeThreads != 0 ){
-            ProcessamentoFilaParaleloModel.setQuantidadeThreads(0);
-            System.out.println("quantidadeThreads antes de zerar: "+quantidadeThreads);
-        }
-
         JapeSession.SessionHandle hnd = JapeSession.open();
         final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
@@ -112,13 +101,13 @@ public class FilaDAO {
                     System.out.println("FINALIZANDO salva");
                 }
             });
+        }catch(Exception e){
+            System.out.println("Erro de execução no controle de transação ");
+            e.printStackTrace();
         }finally {
             System.out.println("FINALIZANDO O doWithTx");
-
-            if(JapeSession.hasCurrentSession()){
                 JapeSession.close(hnd);
                 JdbcWrapper.closeSession(jdbc);
-            }
         }
     }
 

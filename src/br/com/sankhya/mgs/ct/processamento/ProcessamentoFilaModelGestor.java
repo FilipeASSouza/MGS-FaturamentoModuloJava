@@ -49,7 +49,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
 
             BigDecimal quantidadeExecucaoParalela = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECPARALE");
             if (quantidadeExecucaoParalela == null) {
-                quantidadeExecucaoParalela = new BigDecimal(100);
+                quantidadeExecucaoParalela = new BigDecimal(20);
             }
 
             System.out.println("executando ContratoCorporativoFilaProcessamentoGestor ln 55");
@@ -58,7 +58,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
             try {
 
                 consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoGestor.sql");
-                consultaFila.setParametro("QTDEXECFILA", 1000); // ajustado para testar o processamento da fila pois o agendamento não fica ativado no ambiente de teste
+                consultaFila.setParametro("QTDEXECFILA", 10); // ajustado para testar o processamento da fila pois o agendamento não fica ativado no ambiente de teste
 
             } catch (Exception e) {
                 throw new Exception("Erro ao executar consulta busca fila processamento Gestor: " + e);
@@ -97,11 +97,12 @@ public class ProcessamentoFilaModelGestor implements Runnable{
                     System.out.println("processamento fila = " + processamentoFilaParaleloModel.toString());
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
                     threadProcessamento.setName("ContratoCorporativoProcessamentoGestor");
-
+                    System.out.println("THREAD ID " + threadProcessamento.getId() + " STATE " + threadProcessamento.getState());
                     System.out.println("inicidando processamento");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
+                        System.out.println("ENTROU NO SLEEP");
                         Thread.sleep(8000);
                     }
                 }

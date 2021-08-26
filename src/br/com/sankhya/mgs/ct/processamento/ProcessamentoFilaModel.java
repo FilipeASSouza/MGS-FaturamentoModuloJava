@@ -84,6 +84,13 @@ public class ProcessamentoFilaModel implements Runnable {
                     numeroUnicoTipoProcessamento = consultaFila.getValorBigDecimal("NUTIPOPROC");
                     numeroUnicoFilaProcessamento = consultaFila.getValorBigDecimal("NUFILAPROC");
 
+                    //P = processado, I = incluido, E = Erro, A = andamento
+
+                    NativeSqlDecorator atualizandoProcessamentoSQL = new NativeSqlDecorator("UPDATE MGSTCTFILAPROC SET STATUS = :STATUS WHERE NUFILAPROC = :NUFILAPROC");
+                    atualizandoProcessamentoSQL.setParametro("STATUS", String.valueOf("A"));
+                    atualizandoProcessamentoSQL.setParametro("NUFILAPROC", numeroUnicoFilaProcessamento );
+                    atualizandoProcessamentoSQL.atualizar();
+
                     ProcessamentoFilaFactory processamentoFilaFactory = new ProcessamentoFilaFactory();
                     Processar processamento = processamentoFilaFactory.getProcessamento(numeroUnicoTipoProcessamento);
 

@@ -70,6 +70,9 @@ public class AlocacoesPostoModel {
 
         vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
         vo.setProperty("DTINS", TimeUtils.getNow() );
+        if( vo.asString("STATUSALOCACAO") == null ){
+            vo.setProperty("STATUSALOCACAO", "S");
+        }
 
         validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
 

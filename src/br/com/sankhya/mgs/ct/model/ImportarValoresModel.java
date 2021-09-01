@@ -154,7 +154,7 @@ public class ImportarValoresModel {
             valoresEventosFCVO.set("NROOCORRENCIA",planilha.getValorBigDecimal("NROOCORRENCIA"));
             valoresEventosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresEventosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
-            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
+            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal2("ALIQISS"));
             valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(4,RoundingMode.UP));
             valoresEventosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM"));
             valoresEventosFCVO.save();

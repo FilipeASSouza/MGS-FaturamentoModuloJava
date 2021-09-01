@@ -16,11 +16,12 @@ public class TributosContratoController {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
         //model.recalculaCamposCalculados();
+        model.validaDadosUpdate();
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDadosInsert();
+        model.validaDadosInsert();
         //model.preencheCamposCalculados();
     }
 

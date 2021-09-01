@@ -116,8 +116,7 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);
         } finally {
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
+            super.finalizar();
         }
         return executado;
     }

@@ -192,7 +192,6 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("MTVCARGA",motivoCarga);//pedir para o usuário digitar o motivo
             detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
             detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usuário que inseriu
-
             detalhamentoCustoFCVO.set("CODUNIDADEFATUR",planilha.getValorBigDecimal("CODUNIDADEFATUR"));
             detalhamentoCustoFCVO.set("CODVAGA", planilha.getValorString("CODVAGA"));
             detalhamentoCustoFCVO.set("CODSERVMATERIAL",planilha.getValorBigDecimal("CODSERVMATERIAL"));

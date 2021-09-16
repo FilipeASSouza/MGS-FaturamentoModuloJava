@@ -2,8 +2,10 @@ package br.com.sankhya.mgs.ct.processamento;
 
 import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.core.JapeSession;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
 import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;
 
@@ -25,40 +27,45 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
     @Override
     public void run() {
         JapeSession.SessionHandle hnd = null;
-        
-        FilaDAO filaDAO = new FilaDAO();
         try {
             hnd = JapeSession.open();
             final JapeSession.SessionHandle hndFinal = hnd;
-            PerformanceMonitor.INSTANCE.measureJava(nomeFila + ":" + tipoFila, () -> {
-                hndFinal.execWithTX(() -> {
-                    processamento.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
-                    
-                    boolean executado = processamento.executar();
-                    
-                    if (executado) {
-                        filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
-                                "OK. " + processamento.getMensagem());
-                    } else {
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+            FilaDAO filaDAO = new FilaDAO(jdbcWrapper);
+            try {
+                
+                PerformanceMonitor.INSTANCE.measureJava(nomeFila + ":" + tipoFila, () -> {
+                    hndFinal.execWithTX(() -> {
+                        processamento.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
+                        
+                        boolean executado = processamento.executar();
+                        
+                        if (executado) {
+                            filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
+                                    "OK. " + processamento.getMensagem());
+                        } else {
+                            filaDAO.atualizaFilaErro(
+                                    numeroUnicoFilaProcessamento,
+                                    "Erro ao executar processamento: " + processamento.getMensagem());
+                        }
+                        
+                    });
+                });
+                
+                
+            } catch (Exception e) {
+                try {
+                    hnd.execWithTX(() -> {
                         filaDAO.atualizaFilaErro(
                                 numeroUnicoFilaProcessamento,
-                                "Erro ao executar processamento: " + processamento.getMensagem());
-                    }
-                    
-                });
-            });
-            
-            
-        } catch (Exception e) {
-            try {
-                hnd.execWithTX(() -> {
-                    filaDAO.atualizaFilaErro(
-                            numeroUnicoFilaProcessamento,
-                            "Erro ao executar processamento: " + e);
-                });
-            } catch (Exception exception) {
-                exception.printStackTrace();
+                                "Erro ao executar processamento: " + e);
+                    });
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             JapeSession.close(hnd);
         }

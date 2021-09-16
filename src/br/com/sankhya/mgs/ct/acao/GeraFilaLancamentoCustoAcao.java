@@ -3,7 +3,9 @@ package br.com.sankhya.mgs.ct.acao;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.GeraFilaLancamentoCustoModel;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -33,7 +35,7 @@ public class GeraFilaLancamentoCustoAcao implements AcaoRotinaJava {
             } else {
                 codigoUnidadeFaturamentoFinal = BigDecimal.ZERO;
             }
-
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
             for (Registro linha : linhas) {
 
                 /*mapParametrosChave.put("V_CONTRATO", getParametroBigDecimal("numeroContrato").toString());//V_CONTRATO IN NUMBER
@@ -44,7 +46,7 @@ public class GeraFilaLancamentoCustoAcao implements AcaoRotinaJava {
                 mapParametrosChave.put("V_UNIDADEFAT", getParametroBigDecimal("numeroUnidadeFaturamento").toString());//V_UNIDADEFAT IN NUMBER*/
 
 
-                GeraFilaLancamentoCustoModel geraFilaLancamentoCustoModel = new GeraFilaLancamentoCustoModel();
+                GeraFilaLancamentoCustoModel geraFilaLancamentoCustoModel = new GeraFilaLancamentoCustoModel(jdbcWrapper);
                 geraFilaLancamentoCustoModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaLancamentoCustoModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
                 geraFilaLancamentoCustoModel.setDataReferencia(dataReferencia);

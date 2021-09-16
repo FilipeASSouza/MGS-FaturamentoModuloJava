@@ -3,6 +3,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -27,7 +28,16 @@ public class RemanejarVagaUnidadeModel {
     private DynamicVO previsoesUnidadeDestinoVO;
     private DynamicVO vagasPrevisaoUnidadeOrigemVO;
     private DynamicVO vagasPrevisaoUnidadeDestinoVO;
-
+    private JdbcWrapper jdbcWrapper;
+    NativeSqlDecorator validaVagaAlocada;
+    NativeSqlDecorator nativeSqlDecorator;
+    NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL;
+    public void RemanejarVagaUnidadeModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper =jdbc;
+        validaVagaAlocada = new NativeSqlDecorator(this, "RemanejarVagaUnidadaValidaVagaAlocada.sql",this.jdbcWrapper);
+        nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA",this.jdbcWrapper);
+        buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql",this.jdbcWrapper);
+    }
 
 
     public void transferir() throws Exception {
@@ -40,8 +50,8 @@ public class RemanejarVagaUnidadeModel {
         if (unidadesDestinoVO == null){
             disparaErro("Unidade de destino não localizada para esse contrato!!!");
         }
-
-        NativeSqlDecorator validaVagaAlocada = new NativeSqlDecorator(this, "RemanejarVagaUnidadaValidaVagaAlocada.sql");
+    
+        validaVagaAlocada.cleanParameters();
         validaVagaAlocada.setParametro("CODVAGA",vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
         validaVagaAlocada.setParametro("DTREF",dataFechamentoVaga);
 
@@ -49,7 +59,8 @@ public class RemanejarVagaUnidadeModel {
             disparaErro("Vaga alocada para o periodo selecionado");
         }
 
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA");
+       
+        nativeSqlDecorator.cleanParameters();
         nativeSqlDecorator.setParametro("CODVAGA", vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
         nativeSqlDecorator.proximo();
         Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
@@ -57,8 +68,8 @@ public class RemanejarVagaUnidadeModel {
         if (!vagaLivre) {
             ErroUtils.disparaErro("Vaga vinculada a uma contratacao e não pode ser alocada!");
         }
-
-        NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql");
+    
+        buscaPrevisaoUnidadeDestinoNSQL.cleanParameters();
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("NUCONTRCENT",unidadesDestinoVO.asBigDecimalOrZero("NUCONTRCENT"));
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("CODTIPOPOSTO",previsoesUnidadeOrigemVO.asBigDecimalOrZero("CODTIPOPOSTO"));
         buscaPrevisaoUnidadeDestinoNSQL.setParametro("CODSERVMATERIAL",previsoesUnidadeOrigemVO.asBigDecimalOrZero("CODSERVMATERIAL"));

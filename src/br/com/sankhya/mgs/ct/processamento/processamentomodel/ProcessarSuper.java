@@ -20,20 +20,21 @@ public class ProcessarSuper implements Processar {
     protected JdbcWrapper jdbc = null;
     protected String mensagem;
     final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+    
     protected ProcessarSuper() {
     
     }
     
     @Override
     public boolean executar() throws Exception {
-            this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
-            hnd = JapeSession.open();
-            jdbc = dwfFacade.getJdbcWrapper();
-            jdbc.openSession();
+        hnd = JapeSession.open();
+        jdbc = dwfFacade.getJdbcWrapper();
+        jdbc.openSession();
+        this.registroFila = new FilaDAO(jdbc).getRegistroFila(numeroUnicoFilaProcessamento);
         return false;
     }
     
-    public void finalizar(){
+    public void finalizar() {
         JapeSession.close(hnd);
         JdbcWrapper.closeSession(jdbc);
     }

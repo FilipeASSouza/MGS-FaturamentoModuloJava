@@ -1,13 +1,11 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
-import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
-import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
-import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
@@ -27,15 +25,18 @@ public class VagasPrevisaoContratoModel {
     private DynamicVO vo;
     private BigDecimal quantidadeVagasDisponiveis;
     private Boolean subtrairVagaPrevisaoContrato = false;
-
-    public VagasPrevisaoContratoModel() {
+    private JdbcWrapper jdbcWrapper;
+    public VagasPrevisaoContratoModel(JdbcWrapper jdbcWrapper) {
+        this.jdbcWrapper = jdbcWrapper;
+        inicialzaVariaveis();
     }
 
     public void setVo(DynamicVO vo) {
         this.vo = vo;
     }
 
-    public VagasPrevisaoContratoModel(DynamicVO dynamicVO) {
+    public VagasPrevisaoContratoModel(DynamicVO dynamicVO,JdbcWrapper jdbcWrapper) {
+        this.jdbcWrapper = jdbcWrapper;
         this.vo = dynamicVO;
         inicialzaVariaveis();
     }
@@ -119,16 +120,12 @@ public class VagasPrevisaoContratoModel {
     public boolean vagaAtivaPrevisaoUnidade() throws Exception {
         JapeWrapper vagasPrevisaoUnidadeDAO = JapeFactory.dao("MGSCT_Vagas_Previsao_Unidade");
         DynamicVO vagasPrevisaoUnidadeVO = vagasPrevisaoUnidadeDAO.findOne("CODVAGA = ? AND DTFIM IS NULL", vo.asString("CODVAGA"));
-        if (vagasPrevisaoUnidadeVO != null){
-            return true;
-        }
-
-        return false;
+        return vagasPrevisaoUnidadeVO != null;
     }
 
     public void alteraDadosDerivados() throws Exception {
         if(subtrairVagaPrevisaoContrato){
-            PrevisoesContratoModel previsoesContratoModel = new PrevisoesContratoModel(vo.asBigDecimal("NUCONTRPREV"));
+            PrevisoesContratoModel previsoesContratoModel = new PrevisoesContratoModel(vo.asBigDecimal("NUCONTRPREV"),this.jdbcWrapper);
             previsoesContratoModel.diminuirUmQuantidadeContrata();
             subtrairVagaPrevisaoContrato = false;
         }

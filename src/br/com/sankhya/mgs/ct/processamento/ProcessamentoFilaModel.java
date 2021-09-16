@@ -4,6 +4,7 @@ package br.com.sankhya.mgs.ct.processamento;
 import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.bh.utils.FilaUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
 import br.com.sankhya.modelcore.util.MGECoreParameter;
 
@@ -21,6 +22,7 @@ public class ProcessamentoFilaModel {
     BlockingThreadPoolExecutor tp;
     private String nomeFila;
     private String nomeConsulta;
+    private JdbcWrapper jdbcWrapper;
     public void stop(){
         tp.shutdownNow();
     }
@@ -30,7 +32,8 @@ public class ProcessamentoFilaModel {
         }
     }
     
-    private ProcessamentoFilaModel(String fila) {
+    private ProcessamentoFilaModel(String fila,JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
         nomeFila = fila;
         switch (fila) {
             case "normal":
@@ -59,8 +62,8 @@ public class ProcessamentoFilaModel {
         tp = new BlockingThreadPoolExecutor(10, quantidadeExecucaoParalela.intValue(), 1, TimeUnit.HOURS, q);
     }
     
-    public static synchronized ProcessamentoFilaModel getInstance(String fila) throws Exception {
-        return instancias.computeIfAbsent(fila, s -> new ProcessamentoFilaModel(fila));
+    public static synchronized ProcessamentoFilaModel getInstance(String fila, JdbcWrapper jdbc) throws Exception {
+        return instancias.computeIfAbsent(fila, s -> new ProcessamentoFilaModel(fila,jdbc));
     }
     
     public void executar() throws Exception {
@@ -79,8 +82,8 @@ public class ProcessamentoFilaModel {
                 if (quantidadeExecucaoFila == null) {
                     quantidadeExecucaoFila = new BigDecimal(10);
                 }
-                
-                consultaFila = new NativeSqlDecorator(this, nomeConsulta);
+    
+                consultaFila = new NativeSqlDecorator(this, nomeConsulta,this.jdbcWrapper);
                 consultaFila.setParametro("QTDEXECFILA", quantidadeExecucaoFila);
                 while (consultaFila.proximo()) {
                     fila.add(new FilaPojo(consultaFila.getValorBigDecimal("NUFILAPROC"), consultaFila.getValorBigDecimal("NUTIPOPROC"), consultaFila.getValorString("CHAVE"), consultaFila.getValorString("NOME")));
@@ -95,10 +98,10 @@ public class ProcessamentoFilaModel {
         
         try {
             PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento "+nomeFila, () -> {
-                
+                FilaUtils filaUtils = new FilaUtils(jdbcWrapper);
                 for (FilaPojo filaCod : fila) {
-                    
-                    FilaUtils.atualizarStatusFila(filaCod.getNUFILAPROC(), "A");
+    
+                    filaUtils.atualizarStatusFila(filaCod.getNUFILAPROC(), "A");
                     
                     
                     Processar processamento = processamentoFilaFactory.getProcessamento(filaCod.NOME);

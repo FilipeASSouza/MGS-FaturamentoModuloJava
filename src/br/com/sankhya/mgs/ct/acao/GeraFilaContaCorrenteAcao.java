@@ -3,7 +3,9 @@ package br.com.sankhya.mgs.ct.acao;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.GeraFilaContaCorrenteModel;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -35,11 +37,11 @@ public class GeraFilaContaCorrenteAcao implements AcaoRotinaJava {
             } else {
                 tipoDeProcessamento = BigDecimal.ZERO;
             }
-
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
             for (Registro linha : linhas) {
 
 
-                GeraFilaContaCorrenteModel geraFilaContaCorrenteModel = new GeraFilaContaCorrenteModel();
+                GeraFilaContaCorrenteModel geraFilaContaCorrenteModel = new GeraFilaContaCorrenteModel(jdbcWrapper);
                 geraFilaContaCorrenteModel.setDataReferencia(dataReferencia);
                 geraFilaContaCorrenteModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaContaCorrenteModel.setUnidadeFaturamentoInicial(codigoUnidadeFaturamentoInicial);

@@ -70,7 +70,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
 
                 JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
 
-                NativeSqlDecorator verificarAnexo = new NativeSqlDecorator("SELECT NUFATURA FROM MGSTCTFTRANEXO WHERE NUFATURA = :NUFATURA");
+                NativeSqlDecorator verificarAnexo = new NativeSqlDecorator("SELECT NUFATURA FROM MGSTCTFTRANEXO WHERE NUFATURA = :NUFATURA",jdbc);
                 verificarAnexo.setParametro("NUFATURA", parametrosExecutacao.get("NUFATURA"));
                 if(verificarAnexo.proximo()){
                     ErroUtils.disparaErro("Fatura já enviada para o site!");

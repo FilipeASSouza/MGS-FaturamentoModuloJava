@@ -2,14 +2,13 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
-import br.com.sankhya.jape.event.PersistenceEvent;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 import br.com.sankhya.mgs.ct.validator.PrevisaoContrato;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
-import org.apache.poi.ss.formula.functions.Na;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -42,20 +41,27 @@ public class PrevisoesUnidadeModel {
     private BigDecimal numeroUnicoModalidade;
     private PrevisaoValidator previsaoValidator;
     private PrevisaoContrato previsaoContrato;
+    private JdbcWrapper jdbcWrapper;
     private static Map<BigDecimal, Timestamp> listaDataIncioVaga = new HashMap<BigDecimal,Timestamp>();
     private static Map<BigDecimal, String> listaVagasRemanajedas = new HashMap<BigDecimal,String>();
-
+    NativeSqlDecorator consultaQuantidadePrevisaoUnidade;
+    NativeSqlDecorator registroDuplicadoSQL;
+    NativeSqlDecorator validarValorContratoOutrasUnidadesSQL;
+    VagasPrevisaoContratoModel vagasPrevisaoContratoModel;
+    ApoioVagasModel modelApoio;
     public PrevisoesUnidadeModel() {
-
+    
     }
 
-    PrevisoesUnidadeModel(BigDecimal numeroUnico) throws Exception {//Chave: NUUNIDPREV
+    PrevisoesUnidadeModel(BigDecimal numeroUnico, JdbcWrapper jdbcWrapper) throws Exception {//Chave: NUUNIDPREV
         this.vo = dao.findByPK(numeroUnico);
+        this.jdbcWrapper = jdbcWrapper;
         inicialzaVariaveis();
     }
 
-    private PrevisoesUnidadeModel(DynamicVO dynamicVO) throws Exception {
+    private PrevisoesUnidadeModel(DynamicVO dynamicVO, JdbcWrapper jdbcWrapper) throws Exception {
         this.vo = dynamicVO;
+        this.jdbcWrapper = jdbcWrapper;
         inicialzaVariaveis();
     }
 
@@ -99,6 +105,34 @@ public class PrevisoesUnidadeModel {
             listaDataIncioVaga.put(vo.asBigDecimal("NUUNIDPREV"),listaDataIncioVaga.get(BigDecimal.ZERO));
             listaDataIncioVaga.remove(listaDataIncioVaga.get(BigDecimal.ZERO));
         }
+        consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
+                " sum(qtdcontratada) QTDCONTRATADA " +
+                " FROM MGSTCTUNIDADEPREV " +
+                " WHERE " +
+                " NVL(NUMCONTRATO,0) = :NUMCONTRATO " +
+                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
+                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL " +
+                " AND NUUNIDPREV <> :NUUNIDPREV" +
+                " AND NVL( CODEVENTO ,0 ) = :CODEVENTO " +
+                " AND ( DTFIM = :DT OR DTFIM IS NULL ) ",jdbcWrapper);
+        registroDuplicadoSQL = new NativeSqlDecorator("SELECT " +
+                " NUCONTRCENT FROM MGSTCTUNIDADEPREV " +
+                " WHERE NUCONTRCENT = :NUCONTRCENT " +
+                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
+                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL" +
+                " AND CODEVENTO = :CODEVENTO" +
+                " AND CODCONTROLE = :CODCONTROLE" +
+                " AND DTINICIO = :DTINICIO ",this.jdbcWrapper);
+        validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT " +
+                " ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES " +
+                " FROM MGSTCTUNIDADEPREV " +
+                " WHERE NUMCONTRATO = :NUMCONTRATO " +
+                " AND CODEVENTO = :CODEVENTO " +
+                " AND NUUNIDPREV <> :NUUNIDPREV " +
+                " AND ( DTFIM >= :DTINICIO OR DTFIM IS NULL )",jdbcWrapper);
+    
+        vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel(vo,jdbcWrapper);
+        modelApoio = new ApoioVagasModel(vo,jdbcWrapper);
     }
 
     private Collection<DynamicVO> buscaPrevisoesUnidadeDeMesmoPrevisaoContrato() throws Exception {
@@ -120,18 +154,9 @@ public class PrevisoesUnidadeModel {
         BigDecimal codEvento = previsoesContratoVO.asBigDecimalOrZero("CODEVENTO");
         BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
-
-        NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
-                " sum(qtdcontratada) QTDCONTRATADA " +
-                " FROM MGSTCTUNIDADEPREV " +
-                " WHERE " +
-                " NVL(NUMCONTRATO,0) = :NUMCONTRATO " +
-                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
-                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL " +
-                " AND NUUNIDPREV <> :NUUNIDPREV" +
-                " AND NVL( CODEVENTO ,0 ) = :CODEVENTO " +
-                " AND ( DTFIM = :DT OR DTFIM IS NULL ) ");
-
+    
+    
+        consultaQuantidadePrevisaoUnidade.cleanParameters();
         consultaQuantidadePrevisaoUnidade.setParametro("NUMCONTRATO", contrato);
         consultaQuantidadePrevisaoUnidade.setParametro("CODTIPOPOSTO", codTipoPosto);
         consultaQuantidadePrevisaoUnidade.setParametro("CODSERVMATERIAL", codServicoMaterial);
@@ -228,14 +253,8 @@ public class PrevisoesUnidadeModel {
 
         BigDecimal numeroUnicoPrevisaoUnidade = null;
 
-        NativeSqlDecorator registroDuplicadoSQL = new NativeSqlDecorator("SELECT " +
-                " NUCONTRCENT FROM MGSTCTUNIDADEPREV " +
-                " WHERE NUCONTRCENT = :NUCONTRCENT " +
-                " AND NVL(CODTIPOPOSTO,0) = :CODTIPOPOSTO " +
-                " AND NVL(CODSERVMATERIAL,0) = :CODSERVMATERIAL" +
-                " AND CODEVENTO = :CODEVENTO" +
-                " AND CODCONTROLE = :CODCONTROLE" +
-                " AND DTINICIO = :DTINICIO ");
+       
+        registroDuplicadoSQL.cleanParameters();
         registroDuplicadoSQL.setParametro("NUCONTRCENT", numeroUnicoUnidade);
         registroDuplicadoSQL.setParametro("CODTIPOPOSTO", codigoPosto);
         registroDuplicadoSQL.setParametro("CODSERVMATERIAL", codigoMaterialServico);
@@ -282,13 +301,8 @@ public class PrevisoesUnidadeModel {
         BigDecimal valorContratadaOutrasUnidades = BigDecimal.ZERO;
         BigDecimal valorContratadaUnidadesTotal;
 
-        NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT " +
-                " ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES " +
-                " FROM MGSTCTUNIDADEPREV " +
-                " WHERE NUMCONTRATO = :NUMCONTRATO " +
-                " AND CODEVENTO = :CODEVENTO " +
-                " AND NUUNIDPREV <> :NUUNIDPREV " +
-                " AND ( DTFIM >= :DTINICIO OR DTFIM IS NULL )");
+       
+        validarValorContratoOutrasUnidadesSQL.cleanParameters();
         validarValorContratoOutrasUnidadesSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
         validarValorContratoOutrasUnidadesSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
@@ -372,12 +386,12 @@ public class PrevisoesUnidadeModel {
                 vagaVOs.add((DynamicVO) JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findOne("CODVAGA = ? ", codigoVaga));
 
             }else {
-                ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
+                ArrayList<DynamicVO> vagaLivresVOs = vagasPrevisaoContratoModel.getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
 
                 int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
                 BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
 
-                BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel().quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
+                BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel(jdbcWrapper).quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
 
                 if (quantidadeContratada.compareTo(quantidadeVagasAtribuidasAtivas) < 0) {
                     ErroUtils.disparaErro("A quantidade de vagas não pode ser diminuida!");
@@ -398,7 +412,6 @@ public class PrevisoesUnidadeModel {
     }
 
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
-        VagasPrevisaoUnidadeModel vagasPrevisaoUnidadeModel = new VagasPrevisaoUnidadeModel();
         for (DynamicVO vagaVO : vagaVOs) {
             BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
             String codigoVaga = vagaVO.asString("CODVAGA");
@@ -415,7 +428,7 @@ public class PrevisoesUnidadeModel {
             cal.add(Calendar.DATE, 1);
             Timestamp dataDiaSeguinte = new Timestamp(cal.getTime().getTime());
 
-            vagasPrevisaoUnidadeModel.criar(
+            vagasPrevisaoContratoModel.criar(
                     numeroUnicoPrevisaoUnidade,
                     codigoVaga,
                     dataDiaSeguinte

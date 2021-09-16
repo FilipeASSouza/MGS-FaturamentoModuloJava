@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -20,7 +21,16 @@ import java.util.HashMap;
 public class AlocacoesPostoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Alocacoes_PS");
     private DynamicVO vo;
+    private JdbcWrapper jdbcWrapper;
+    NativeSqlDecorator nativeSqlDecorator;
+    NativeSqlDecorator consultarCargo;
+    NativeSqlDecorator validaContratoAtivo;
+    NativeSqlDecorator validaEncerramentoContrato;
+    private AlocacoesPostoModel() {
+    
+    }
 
+    
     /**
      * Entidade: MGSCT_Previsoes_Unidade_PS
      * Tabela: MGSVCTUNIDADEPREVPS
@@ -35,16 +45,16 @@ public class AlocacoesPostoModel {
     private String tipoPosto;
     private BigDecimal numeroUnico;
 
-    public AlocacoesPostoModel() {
-    }
 
-    public AlocacoesPostoModel(BigDecimal numeroUnico) throws Exception {//Chave: NUALOCAPS
+    public AlocacoesPostoModel(BigDecimal numeroUnico, JdbcWrapper jdbc) throws Exception {//Chave: NUALOCAPS
         this.vo = dao.findByPK(numeroUnico);
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
-    public AlocacoesPostoModel(DynamicVO dynamicVO) throws Exception {
+    public AlocacoesPostoModel(DynamicVO dynamicVO, JdbcWrapper jdbc) throws Exception {
         this.vo = dynamicVO;
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
@@ -64,6 +74,16 @@ public class AlocacoesPostoModel {
                 .findByPK(mestrevo.asBigDecimalOrZero("CODEVENTO"))
                 .asString("TIPOPOSTO");
         numeroUnico = vo.asBigDecimalOrZero("NUALOCAPS");
+        nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA",this.jdbcWrapper);
+        consultarCargo = new NativeSqlDecorator("SELECT CODCARGO + 0 AS CODCARGO FROM mgsvctempregadorh where MATRICULA = :MATRICULA",this.jdbcWrapper);
+        validaContratoAtivo = new NativeSqlDecorator("select " +
+                " codtipsituacao " +
+                " from mgstctcontrato\n" +
+                " where numcontrato = :numcontrato",this.jdbcWrapper);
+        validaEncerramentoContrato = new NativeSqlDecorator("select " +
+                " dtfim " +
+                " from mgstctcontrcent\n" +
+                " where codsite = :codsite",this.jdbcWrapper);
     }
 
     public void validaDadosInsert() throws Exception {
@@ -83,8 +103,8 @@ public class AlocacoesPostoModel {
 
         if( vo.asBigDecimal("MATRICULA") != null ){
             BigDecimal codigoCargo = null;
-
-            NativeSqlDecorator consultarCargo = new NativeSqlDecorator("SELECT CODCARGO + 0 AS CODCARGO FROM mgsvctempregadorh where MATRICULA = :MATRICULA");
+    
+            consultarCargo.cleanParameters();
             consultarCargo.setParametro("MATRICULA", vo.asBigDecimal("MATRICULA"));
             if(consultarCargo.proximo()){
                 codigoCargo = consultarCargo.getValorBigDecimal("CODCARGO");
@@ -122,10 +142,7 @@ public class AlocacoesPostoModel {
     }
 
     private void validaDataeContratoAtivo(BigDecimal numeroContrato, BigDecimal unidade ) throws Exception{
-        NativeSqlDecorator validaContratoAtivo = new NativeSqlDecorator("select " +
-                " codtipsituacao " +
-                " from mgstctcontrato\n" +
-                " where numcontrato = :numcontrato");
+        validaContratoAtivo.cleanParameters();
         validaContratoAtivo.setParametro("numcontrato", numeroContrato);
         if(validaContratoAtivo.proximo()){
             if (!validaContratoAtivo.getValorBigDecimal("codtipsituacao").equals(BigDecimal.ONE)){
@@ -135,10 +152,8 @@ public class AlocacoesPostoModel {
 
         Timestamp dataFimContrato = null;
 
-        NativeSqlDecorator validaEncerramentoContrato = new NativeSqlDecorator("select " +
-                " dtfim " +
-                " from mgstctcontrcent\n" +
-                " where codsite = :codsite");
+        
+        validaEncerramentoContrato.cleanParameters();
         validaEncerramentoContrato.setParametro("codsite", unidade );
         if(validaEncerramentoContrato.proximo()){
             dataFimContrato = validaEncerramentoContrato.getValorTimestamp("dtfim");
@@ -150,10 +165,7 @@ public class AlocacoesPostoModel {
             }
         }
     }
-
-    private void validaDadosUpdate(DynamicVO oldvo) throws Exception {
-
-    }
+    
 
     public void preencheCamposCalculados() throws Exception {
         gravaAlocacaoPrincipal();
@@ -168,15 +180,7 @@ public class AlocacoesPostoModel {
         BigDecimal numeroUnicoPRevisaoCaga = vagasPrevisaoUnidadevo.asBigDecimal("NUUNIDPREVVAGA");
         vo.setProperty("NUUNIDPREVVAGA",numeroUnicoPRevisaoCaga);
     }
-
-    private void recalculaCamposCalculados() throws Exception {
-
-    }
-
-    private void criaRegistrosDerivados() throws Exception {
-
-    }
-
+    
     public void validaDelete() throws Exception {
         ErroUtils.disparaErro("Registro não pode excluido!");
     }
@@ -228,9 +232,8 @@ public class AlocacoesPostoModel {
             consulta = "BuscaEncavalamentoPeriodosVagaSemDataFim.sql";
         }
 
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
-
-
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta,this.jdbcWrapper);
+        
         nativeSqlDecorator.setParametro("NUALOCAPS", numeroUnico);
         nativeSqlDecorator.setParametro("CODVAGA", codigoVaga);
         nativeSqlDecorator.setParametro("DTI", dataInicio);
@@ -244,6 +247,7 @@ public class AlocacoesPostoModel {
         if (nativeSqlDecorator.getValorInt("QTD") > 0) {
             ErroUtils.disparaErro("Existe conflito de periodo para essa vaga em outra alocação, favor corrigir periodo!");
         }
+        nativeSqlDecorator.close();
 
     }
 
@@ -255,7 +259,7 @@ public class AlocacoesPostoModel {
             consulta = "BuscaEncavalamentoPeriodosMatriculaSemDataFim.sql";
         }
 
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta,this.jdbcWrapper);
 
 
         nativeSqlDecorator.setParametro("NUALOCAPS", numeroUnico);
@@ -285,7 +289,7 @@ public class AlocacoesPostoModel {
                 consulta = "BuscaAlocacaoPrincipalSemDataFim.sql";
             }
 
-            NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
+            NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta,this.jdbcWrapper);
 
             nativeSqlDecorator.setParametro("MATRICULA", matricula);
             nativeSqlDecorator.setParametro("DTI", dataInicio);
@@ -302,7 +306,7 @@ public class AlocacoesPostoModel {
     }
 
     private void validaStatusContratacaoVaga() throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA");
+        nativeSqlDecorator.cleanParameters();
         nativeSqlDecorator.setParametro("CODVAGA", codigoVaga);
         nativeSqlDecorator.proximo();
         Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
@@ -312,6 +316,6 @@ public class AlocacoesPostoModel {
         }
 
     }
-
-
+    
+    
 }

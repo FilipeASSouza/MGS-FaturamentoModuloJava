@@ -10,7 +10,7 @@ import br.com.sankhya.mgs.ct.model.AlocacoesServicosModel;
  * Chave: NUALOCASERV
  */
 public class AlocacoesServicosController {
-    AlocacoesServicosModel model = new AlocacoesServicosModel();
+    AlocacoesServicosModel model ;
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -42,6 +42,6 @@ public class AlocacoesServicosController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new AlocacoesServicosModel(vo,persistenceEvent.getJdbcWrapper());
     }
 }

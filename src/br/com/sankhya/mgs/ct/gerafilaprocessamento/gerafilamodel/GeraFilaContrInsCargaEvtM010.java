@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
 import com.sankhya.util.TimeUtils;
 
@@ -10,14 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsCargaEvtM010 extends GeraFilaSuper implements GeraFila {
-    public  GeraFilaContrInsCargaEvtM010() {
-        super();
+    public GeraFilaContrInsCargaEvtM010(JdbcWrapper jdbcWrapper) {
+        super(jdbcWrapper);
     }
     @Override
     public boolean executarFilho() throws Exception {
         
 
-        FilaDAO filaDAO = new FilaDAO();
+        FilaDAO filaDAO = new FilaDAO(this.jdbcWrapper);
 
         BigDecimal defasagem = (BigDecimal) parametrosMetrica.get("DEFASAGEM");
         Timestamp dataReferenciaCarga = new Timestamp(TimeUtils.add(getParametroTimestamp("dataReferencia").getTime(), defasagem.intValue(), Calendar.MONTH));

@@ -26,14 +26,12 @@ public class EdicaoCompetenciaAcao extends EdicaoAcaoSuper implements AcaoRotina
             String nomeusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
-                if( linha.getCampo("INTEGRACAO_LANC") == null ){
-                    EdicaoCompetenciaModel edicaoCompetenciaModel = new EdicaoCompetenciaModel();
-                    edicaoCompetenciaModel.setParametro("COMPFATU",compfatu);
-                    edicaoCompetenciaModel.setParametro("DTLCCUSTO",dtlccusto);
-                    edicaoCompetenciaModel.setParametro("LOGIN",nomeusu);
-                    edicaoCompetenciaModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
-                    edicaoCompetenciaModel.executar();
-                }
+                EdicaoCompetenciaModel edicaoCompetenciaModel = new EdicaoCompetenciaModel();
+                edicaoCompetenciaModel.setParametro("COMPFATU",compfatu);
+                edicaoCompetenciaModel.setParametro("DTLCCUSTO",dtlccusto);
+                edicaoCompetenciaModel.setParametro("LOGIN",nomeusu);
+                edicaoCompetenciaModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                edicaoCompetenciaModel.executar();
             }
         }
     }

@@ -11,8 +11,8 @@ public class GeraFilaContrInsLancFaturaPortal extends GeraFilaSuper implements G
     }
 
     @Override
-    public boolean executar() throws Exception {
-        super.executar();
+    public boolean executarFilho() throws Exception {
+        
 
         FilaDAO filaDAO = new FilaDAO();
 

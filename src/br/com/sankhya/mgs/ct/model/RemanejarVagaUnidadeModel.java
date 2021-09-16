@@ -1,7 +1,6 @@
 package br.com.sankhya.mgs.ct.model;
 
 
-import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
@@ -47,15 +46,6 @@ public class RemanejarVagaUnidadeModel {
 
         if (validaVagaAlocada.proximo()){
             disparaErro("Vaga alocada para o periodo selecionado");
-        }
-
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA");
-        nativeSqlDecorator.setParametro("CODVAGA", vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
-        nativeSqlDecorator.proximo();
-        Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
-
-        if (!vagaLivre) {
-            ErroUtils.disparaErro("Vaga vinculada a uma contratacao e não pode ser alocada!");
         }
 
         NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql");

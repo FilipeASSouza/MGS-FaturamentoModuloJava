@@ -92,8 +92,8 @@ public class IntegracaoLancamentoCustoModel {
                     nativeSqlDecorator.atualizar();
                 }
             } finally {
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
+                //JapeSession.close(hnd);
+                //JdbcWrapper.closeSession(jdbc);
             }
             return true;
 

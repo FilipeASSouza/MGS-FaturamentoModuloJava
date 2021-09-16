@@ -5,8 +5,6 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
-import br.com.sankhya.modelcore.auth.AuthenticationInfo;
-import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -67,49 +65,17 @@ public class AlocacoesPostoModel {
     }
 
     public void validaDadosInsert() throws Exception {
-
-        vo.setProperty("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
-        vo.setProperty("DTINS", TimeUtils.getNow() );
-        if( vo.asString("STATUSALOCACAO") == null ){
-            vo.setProperty("STATUSALOCACAO", "S");
-        }
-
-        validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
-
         validaDataFinalMenorQueInicial();
         validaEncavalamentoPeriodosVaga();
         validaEncavalamentoPeriodosMatricula();
         validaStatusContratacaoVaga();
-
-        if( vo.asBigDecimal("MATRICULA") != null ){
-            BigDecimal codigoCargo = null;
-
-            NativeSqlDecorator consultarCargo = new NativeSqlDecorator("SELECT CODCARGO + 0 AS CODCARGO FROM mgsvctempregadorh where MATRICULA = :MATRICULA");
-            consultarCargo.setParametro("MATRICULA", vo.asBigDecimal("MATRICULA"));
-            if(consultarCargo.proximo()){
-                codigoCargo = consultarCargo.getValorBigDecimal("CODCARGO");
-            }
-            vo.setProperty("CODCARGO", codigoCargo);
-        }
     }
 
     public void validaDadosUpdate() throws Exception {
         validaDataFinalMenorQueInicial();
-        validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
-
-        vo.setProperty("USUUPD", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));
-        vo.setProperty("DHUPD", TimeUtils.getNow() );
-
-        if( vo.asString("STATUSALOCACAO").equalsIgnoreCase("N")){
-            if( vo.asTimestamp("DTFIM") == null ){
-                vo.setProperty("DTFIM", vo.asTimestamp("DTINICIO"));
-            }
-            vo.setProperty("STATUSALOCACAO", "N");
-        }else{
-            validaEncavalamentoPeriodosVaga();
-            validaEncavalamentoPeriodosMatricula();
-            validaStatusContratacaoVaga();
-        }
+        validaEncavalamentoPeriodosVaga();
+        validaEncavalamentoPeriodosMatricula();
+        validaStatusContratacaoVaga();
     }
 
     private void validaDataFinalMenorQueInicial() throws Exception {
@@ -117,36 +83,6 @@ public class AlocacoesPostoModel {
         if (dataFimPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
                 ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
-            }
-        }
-    }
-
-    private void validaDataeContratoAtivo(BigDecimal numeroContrato, BigDecimal unidade ) throws Exception{
-        NativeSqlDecorator validaContratoAtivo = new NativeSqlDecorator("select " +
-                " codtipsituacao " +
-                " from mgstctcontrato\n" +
-                " where numcontrato = :numcontrato");
-        validaContratoAtivo.setParametro("numcontrato", numeroContrato);
-        if(validaContratoAtivo.proximo()){
-            if (!validaContratoAtivo.getValorBigDecimal("codtipsituacao").equals(BigDecimal.ONE)){
-                ErroUtils.disparaErro("Contrato não está ativo, fineza verificar!");
-            }
-        }
-
-        Timestamp dataFimContrato = null;
-
-        NativeSqlDecorator validaEncerramentoContrato = new NativeSqlDecorator("select " +
-                " dtfim " +
-                " from mgstctcontrcent\n" +
-                " where codsite = :codsite");
-        validaEncerramentoContrato.setParametro("codsite", unidade );
-        if(validaEncerramentoContrato.proximo()){
-            dataFimContrato = validaEncerramentoContrato.getValorTimestamp("dtfim");
-        }
-
-        if(dataFimContrato != null ){
-            if(dataFimContrato.compareTo(TimeUtils.getNow()) < 0){
-                ErroUtils.disparaErro("Unidade de faturamento encerrada, fineza verificar!");
             }
         }
     }
@@ -287,6 +223,7 @@ public class AlocacoesPostoModel {
 
             NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "sql/" + consulta);
 
+
             nativeSqlDecorator.setParametro("MATRICULA", matricula);
             nativeSqlDecorator.setParametro("DTI", dataInicio);
             if (dataFim != null) {
@@ -296,7 +233,7 @@ public class AlocacoesPostoModel {
             if (nativeSqlDecorator.proximo()) {
                 vo.setProperty("NUALOCAPSPRINC", nativeSqlDecorator.getValorBigDecimal("NUALOCAPS"));
             } else {
-                ErroUtils.disparaErro("Não é possível alocar! Necessário vinculação de um posto de serviço para esse empregado. Favor verificar!");
+                ErroUtils.disparaErro("Não é possível alocar! Necessário vinculação a posto de serviço regular. Favor verificar!");
             }
         }
     }

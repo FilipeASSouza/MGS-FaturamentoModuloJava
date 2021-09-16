@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
+import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
@@ -12,67 +13,89 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessarSuper implements Processar {
+public class ProcessarSuper implements Processar, Runnable {
     protected FilaDAO.RegistroFila registroFila;
     protected BigDecimal numeroUnicoFilaProcessamento;
     protected BigDecimal numeroUnicoIntegracao;
     protected JapeSession.SessionHandle hnd = null;
     protected JdbcWrapper jdbc = null;
     protected String mensagem;
+    
     protected ProcessarSuper() {
-
+    
     }
-
+    
     @Override
     public boolean executar() throws Exception {
         try {
             this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
-
+            
             hnd = JapeSession.open();
             final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
             jdbc = dwfFacade.getJdbcWrapper();
             jdbc.openSession();
-
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-
-    public void finalizar(){
-        JapeSession.close(hnd);
-        JdbcWrapper.closeSession(jdbc);
-    }
-
+    
     @Override
     public String getMensagem() {
         return mensagem;
     }
-
+    
     @Override
     public void setNumeroUnicoFilaProcessamento(BigDecimal numeroUnicoFilaProcessamento) {
         this.numeroUnicoFilaProcessamento = numeroUnicoFilaProcessamento;
     }
-
+    
     protected Map<String, String> getParametrosExecutacao() {
         Map<String, String> mapParametros = new HashMap<String, String>();
         String[] parametrosLista = registroFila.getCHAVE().split(";");
-
+        
         for (String parametro : parametrosLista) {
             String[] chaveValor = parametro.split("=");
             mapParametros.put(chaveValor[0], chaveValor[1]);
         }
         return mapParametros;
-
+        
     }
-
+    
     protected String getLogin() throws Exception {
         DynamicVO vo = JapeFactory.dao("Usuario").findByPK(registroFila.getCODUSU());
         return vo.asString("NOMEUSU");
     }
-
+    
     protected void geraIntegrcaoDetalheCusto() {
-
+    
     }
-
+    
+    @Override
+    public void run() {
+        FilaDAO filaDAO = new FilaDAO();
+        try {
+            boolean executado = PerformanceMonitor.INSTANCE.measureReturnJava("ProcessamentoFilaModel." , () -> {
+                return executar();
+            });
+            if (executado) {
+                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
+                        "OK. " + getMensagem());
+            } else {
+                filaDAO.atualizaFilaErro(
+                        numeroUnicoFilaProcessamento,
+                        "Erro ao executar processamento: " + getMensagem());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                filaDAO.atualizaFilaErro(
+                        numeroUnicoFilaProcessamento,
+                        "Erro ao executar processamento: " + e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }

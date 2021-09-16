@@ -59,11 +59,9 @@ public class GeraFilaLancamentoCustoModel {
         consultaListaCodigoSites.setParametro("CODSITEI", unidadeFaturamentoInicial);
         consultaListaCodigoSites.setParametro("CODSITEF", unidadeFaturamentoFinal);
         consultaListaCodigoSites.setParametro("NUMCONTRATO", numeroContrato);
-        consultaListaCodigoSites.setParametro("NUMODALIDADE", numeroUnicoModalidade);
 
         while (consultaListaCodigoSites.proximo()) {
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODSITE");
-
             gerarFilaPorUnidadeFaturamento(codigoUnidadeFaturamento);
         }
 
@@ -72,7 +70,7 @@ public class GeraFilaLancamentoCustoModel {
 
     private void gerarFilaPorUnidadeFaturamento(BigDecimal unidadeFaturamento) throws Exception {
         GeraFila geraFila = geraFilaFactory.getGeraFila("CONTR_INS_LANC_CUSTO_UP");
-        if(geraFila != null) {
+        if (geraFila != null) {
             geraFila.setParametroExecucao("numeroUnidadeFaturamento", unidadeFaturamento);
             geraFila.setParametroExecucao("dataReferencia", dataReferencia);
             geraFila.setParametroExecucao("dataCusto", dataCusto);

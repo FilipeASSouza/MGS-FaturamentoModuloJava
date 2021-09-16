@@ -150,7 +150,7 @@ public class PrevisoesContratoModel {
     private BigDecimal getPrecoPosto() throws Exception {
         BigDecimal valorUnitario;
         JapeWrapper mgsct_valores_eventosDAO = JapeFactory.dao("MGSCT_Valores_Eventos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoPostoPrevisaoeAlocacao.sql");
+        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoPosto.sql");
         nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator.setParametro("CODTIPOPOSTO", vo.asBigDecimal("CODTIPOPOSTO"));
@@ -180,7 +180,7 @@ public class PrevisoesContratoModel {
         BigDecimal valorUnitario;
 
         JapeWrapper mgsct_valores_produtosDAO = JapeFactory.dao("MGSCT_Valores_Produtos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql");
+        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterial.sql");
         nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));

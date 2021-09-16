@@ -16,7 +16,7 @@ public class VagasPrevisaoContratoEvento implements EventoProgramavelJava {
 
     @Override
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
-        controller.beforeInsert(persistenceEvent);
+
     }
 
     @Override

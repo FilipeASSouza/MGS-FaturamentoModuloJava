@@ -8,7 +8,6 @@ import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
 import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,12 +18,10 @@ import java.util.Collection;
  */
 
 public class ImportarValoresModel {
-
     private BigDecimal numerUnico;
     private String tipoArquio;
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Importacao_Valores");
     private DynamicVO vo;
-
 
     public void setNumerUnico(BigDecimal numerUnico) {
         this.numerUnico = numerUnico;
@@ -107,9 +104,9 @@ public class ImportarValoresModel {
             valoresProdutosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresProdutosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
             valoresProdutosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
-            valoresProdutosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(15,RoundingMode.UP));
+            valoresProdutosFCVO.set("VLRTOTAL",planilha.getValorBigDecimal("VLRTOTAL"));
             valoresProdutosFCVO.set("DTREFERCCT",planilha.getValorTimestamp("DTREFERCCT"));
-            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM").setScale(15,RoundingMode.UP));
+            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM"));
             valoresProdutosFCVO.save();
         }
     }
@@ -131,9 +128,8 @@ public class ImportarValoresModel {
 
 
         while(planilha.proximo()) {
-            int valoresEventosNumeroRegstrosIguais = valoresEventosDAO.find("NUMCONTRATO =? AND CODTIPOPOSTO = ? AND CODTPN = ? AND CODEVENTO = ? AND ALIQISS = ? AND DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
+            int valoresEventosNumeroRegstrosIguais = valoresEventosDAO.find("NUMCONTRATO =? AND CODTPN = ? AND CODEVENTO = ? AND ALIQISS = ? AND DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
                     planilha.getValorBigDecimal("NUMCONTRATO"),
-                    planilha.getValorBigDecimal("CODTIPOPOSTO"),
                     planilha.getValorBigDecimal("CODTPN"),
                     planilha.getValorBigDecimal("CODEVENTO"),
                     planilha.getValorBigDecimal("ALIQISS"),
@@ -154,8 +150,8 @@ public class ImportarValoresModel {
             valoresEventosFCVO.set("NROOCORRENCIA",planilha.getValorBigDecimal("NROOCORRENCIA"));
             valoresEventosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresEventosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
-            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal2("ALIQISS"));
-            valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(4,RoundingMode.UP));
+            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
+            valoresEventosFCVO.set("VLRTOTAL",planilha.getValorBigDecimal("VLRTOTAL"));
             valoresEventosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM"));
             valoresEventosFCVO.save();
         }

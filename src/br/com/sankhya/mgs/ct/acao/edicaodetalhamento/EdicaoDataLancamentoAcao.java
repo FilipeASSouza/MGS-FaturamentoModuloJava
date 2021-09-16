@@ -24,14 +24,11 @@ public class EdicaoDataLancamentoAcao extends EdicaoAcaoSuper implements AcaoRot
             String nomeusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
-
-                if( linha.getCampo("INTEGRACAO_LANC") == null ){
-                    EdicaoDataLancamentoModel edicaoDataLancamentoModel = new EdicaoDataLancamentoModel();
-                    edicaoDataLancamentoModel.setParametro("DTLCCUSTO",dtlccusto);
-                    edicaoDataLancamentoModel.setParametro("LOGIN",nomeusu);
-                    edicaoDataLancamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
-                    edicaoDataLancamentoModel.executar();
-                }
+                EdicaoDataLancamentoModel edicaoDataLancamentoModel = new EdicaoDataLancamentoModel();
+                edicaoDataLancamentoModel.setParametro("DTLCCUSTO",dtlccusto);
+                edicaoDataLancamentoModel.setParametro("LOGIN",nomeusu);
+                edicaoDataLancamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                edicaoDataLancamentoModel.executar();
             }
         }
     }

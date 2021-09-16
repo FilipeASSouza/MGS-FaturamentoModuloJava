@@ -18,9 +18,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
     public boolean executar() throws Exception {
         Boolean executado = false;//todo refatorar pra super
         try {
-            super.executar();
-
-            System.out.println("Executando processamento = ");
+            
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
@@ -43,8 +41,6 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
                 }
                 sucesso = caller.resultAsBigDecimal("SUCESSO");
                 if (BigDecimal.ONE.equals(sucesso)) {
-
-                    System.out.println("Falta executar o papel ln 47 geraFilaAnexo");
                     executado = true;
                     mensagem = "OK";
                     IntegracaoLancamentoCustoGestorModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
@@ -58,7 +54,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancCustoUP: " + e);
         } finally {
-            super.finalizar();
+
         }
         return executado;
     }
@@ -67,7 +63,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_LANC_CUSTO_UP_GESTOR");
 
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO        IN NUMBER,
-        caller.addInputParameter(parametrosExecutacao.get("V_DTLCCUSTO"));//V_DTLCCUSTO       IN DATE,
+        caller.addInputParameter(TimeUtils.getYearMonth(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd")));//V_DTLCCUSTO       IN DATE,
         caller.addInputParameter(parametrosExecutacao.get("V_UNIDADEFAT"));//V_UNIDADEFAT      IN NUMBER,
         caller.addInputParameter(parametrosExecutacao.get("V_TIPOFATU"));//V_TIPOFATU        IN NUMBER,
         caller.addInputParameter(numeroUnicoIntegracao);//V_CODINTLC        IN NUMBER,

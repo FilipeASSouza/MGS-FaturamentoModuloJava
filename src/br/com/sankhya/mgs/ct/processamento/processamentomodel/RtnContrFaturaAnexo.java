@@ -1,10 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
-import br.com.sankhya.bh.utils.ErroUtils;
-import br.com.sankhya.bh.utils.NativeSqlDecorator;
-import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
-import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -30,7 +26,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
         Boolean executado = false;//todo refatorar pra super
         int numeroPaginasGerado;
         try {
-            super.executar();
+            
 
             final Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
@@ -69,13 +65,6 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
             if (numeroPaginasGerado > 0) {
 
                 JapeWrapper dao = JapeFactory.dao("MGSCT_Fatura_Anexo");//MGSTCTFTRANEXO
-
-                NativeSqlDecorator verificarAnexo = new NativeSqlDecorator("SELECT NUFATURA FROM MGSTCTFTRANEXO WHERE NUFATURA = :NUFATURA");
-                verificarAnexo.setParametro("NUFATURA", parametrosExecutacao.get("NUFATURA"));
-                if(verificarAnexo.proximo()){
-                    ErroUtils.disparaErro("Fatura já enviada para o site!");
-                }
-
                 final FluidCreateVO relatorioAnexoFCVO = dao.create();
 
                 relatorioAnexoFCVO.set("NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
@@ -83,12 +72,6 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
                 relatorioAnexoFCVO.set("DHINS", TimeUtils.getNow());
                 relatorioAnexoFCVO.set("USUINS", getLogin());
                 relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
-
-                hnd = JapeSession.open();
-                final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-                jdbc = dwfFacade.getJdbcWrapper();
-                jdbc.openSession();
-
                 hnd.execWithTX(new JapeSession.TXBlock() {
                     public void doWithTx() throws Exception {
                         DynamicVO save = relatorioAnexoFCVO.save();
@@ -99,9 +82,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrFaturaAnexo: " + e);
         } finally {
-            JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
-            super.finalizar();
+
         }
         return executado;
     }

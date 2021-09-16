@@ -16,7 +16,7 @@ public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Proce
     public boolean executar() throws Exception {
         Boolean executado = false;//todo refatorar pra super
         try {
-            super.executar();
+            
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
@@ -40,10 +40,11 @@ public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Proce
                 mensagem = "Erro PrcContrInsLancFaturaPortal: [" +sucesso.toString() +"]"+ log;
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
             }
+
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancFaturaPortal: " + e);
         } finally {
-            super.finalizar();
+
         }
         return executado;
     }

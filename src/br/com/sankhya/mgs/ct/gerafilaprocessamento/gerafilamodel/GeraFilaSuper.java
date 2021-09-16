@@ -1,29 +1,47 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
+import com.sankhya.util.FinalWrapper;
 import com.sankhya.util.TimeUtils;
-import org.apache.commons.lang.StringUtils;
+import kotlin.Unit;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class GeraFilaSuper implements GeraFila {
+public abstract class GeraFilaSuper implements GeraFila {
 /*    protected BigDecimal numeroUnicoMetrica;
     protected BigDecimal numeroUnidadeFaturamento;
-
+b
     protected Timestamp dataReferencia;
     protected String nomeProcessamento;
     protected BigDecimal numeroContrato;*/
     protected Map<String, Object> parametrosMetrica;
     protected Map<String, Object> parametrosExecucao = new HashMap<String, Object>();
-
-    @Override
+    
     public boolean executar() throws Exception {
-        getParametrosMetricas();
-        return false;
+        FinalWrapper<Boolean> resultado = new FinalWrapper<>();
+        FinalWrapper<Exception> exceptionFinalWrapper = new FinalWrapper<>();
+        PerformanceMonitor.INSTANCE.measureReturn("GeraFilaSuper",null,()->{
+            try {
+                getParametrosMetricas();
+                resultado.setWrapperReference(executarFilho());
+            }catch (Exception e){
+                exceptionFinalWrapper.setWrapperReference(e);
+            }
+            return Unit.INSTANCE;
+        });
+        if(exceptionFinalWrapper.getWrapperReference()!=null){
+        
+        }
+        return resultado.getWrapperReference();
     }
+    
+  
+    public abstract boolean executarFilho() throws Exception;
 
 
 

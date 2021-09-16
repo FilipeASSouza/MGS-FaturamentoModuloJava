@@ -134,24 +134,6 @@ public class LerArquivoDeDadosDecorator {
         }
     }
 
-    public BigDecimal getValorBigDecimal2(String campo) throws Exception {
-        try {
-            BigDecimal valor = null;
-            Cell cell = getCell(campo);
-            if (cell == null)
-                return null;
-
-            if (cell.toString().trim().equals(""))
-                return null;
-
-            valor = BigDecimal.valueOf(cell.getNumericCellValue());
-            return valor;
-        } catch (Exception e) {
-            throw new Exception("Linha "+linhaSelecionada+" Campo " + campo + ": " + e);
-        }
-    }
-
-
     public String getValorString(String campo) throws Exception {
         try {
             String valor = null;

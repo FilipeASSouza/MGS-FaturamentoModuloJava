@@ -1,7 +1,6 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
-import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -59,23 +58,11 @@ public class VagasPrevisaoUnidadeModel {
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
         Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
         Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
-        String vagaAlocada = null;
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
                 ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
             }
-        }
-
-        NativeSqlDecorator verificarAlocacaoSQL = new NativeSqlDecorator("select codvaga from mgstctalocacaops where codvaga = :codvaga and (TRUNC(DTFIM) >= TRUNC(SYSDATE)  OR DTFIM  IS NULL)");
-        verificarAlocacaoSQL.setParametro("codvaga", vo.asString("CODVAGA"));
-
-        if(verificarAlocacaoSQL.proximo()){
-            vagaAlocada = verificarAlocacaoSQL.getValorString("codvaga");
-        }
-
-        if( vagaAlocada != null ){
-            ErroUtils.disparaErro("Vaga com alocação, fineza verificar!");
         }
 
         if (dataFimAntigoPreenchido && !dataFimNovoPreenchido){

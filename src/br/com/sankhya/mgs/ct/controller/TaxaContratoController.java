@@ -20,7 +20,7 @@ public class TaxaContratoController {
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-//        model.validaDadosInsert();
+        //model.validaDadosInsert();
         //model.preencheCamposCalculados();
     }
 

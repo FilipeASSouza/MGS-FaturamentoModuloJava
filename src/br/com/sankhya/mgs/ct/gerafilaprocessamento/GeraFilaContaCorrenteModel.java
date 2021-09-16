@@ -51,7 +51,7 @@ public class GeraFilaContaCorrenteModel {
 
     public void gerarFila() throws Exception {
 
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"BuscaListaUnidadeFaturamentoParaDetalhamento.sql");
+        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"BuscaListaUnidadeFaturamentoParaProcessamento.sql");
         consultaListaCodigoSites.setParametro("CODSITEI",unidadeFaturamentoInicial);
         consultaListaCodigoSites.setParametro("CODSITEF",unidadeFaturamentoFinal);
         consultaListaCodigoSites.setParametro("NUMCONTRATO",numeroContrato);

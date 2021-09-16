@@ -15,18 +15,17 @@ public class DetalhamentoCustoController {
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.validaDadosInsert();
+        //model.validaDadosInsert();
         model.preencheCamposCalculados();
     }
-
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.validaDadosModificados(persistenceEvent.getModifingFields());
-        model.validaDadosUpdate();
+        //model.validaDadosUpdate();
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         //model.validaDadosUpdate(oldVO);
         model.recalculaCamposCalculados();
+
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
@@ -41,7 +40,7 @@ public class DetalhamentoCustoController {
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.validaDelete();
+        //model.validaDelete();
     }
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {

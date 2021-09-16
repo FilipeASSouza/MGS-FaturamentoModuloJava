@@ -29,7 +29,7 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
         Boolean executado = false;//todo refatorar pra super
         int numeroPaginasGerado;
         try {
-            super.executar();
+            
 
             final Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
@@ -88,9 +88,9 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
                 relatorioAnexoFCVO.set("ANEXO", arquivoBytes);
 
 
-                hnd = JapeSession.open();
+                JapeSession.SessionHandle hnd = JapeSession.open();
                 final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-                jdbc = dwfFacade.getJdbcWrapper();
+                JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
                 jdbc.openSession();
 
                 final BigDecimal numeroUnicoRelatorioAnexo = BigDecimal.ZERO;
@@ -111,12 +111,15 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
 
                     }
                 });
+                JapeSession.close(hnd);
+                JdbcWrapper.closeSession(jdbc);
+
             }
             executado = true;
         } catch (Exception e) {
             throw new Exception("Erro ao executar rotina Java RtnContrInsLancCustoUPAnexo: " + e);
         } finally {
-            super.finalizar();
+
         }
         return executado;
     }

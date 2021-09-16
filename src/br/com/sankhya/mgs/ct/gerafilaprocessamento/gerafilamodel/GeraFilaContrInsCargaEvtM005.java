@@ -14,8 +14,7 @@ public class GeraFilaContrInsCargaEvtM005 extends GeraFilaSuper implements GeraF
         super();
     }
     @Override
-    public boolean executar() throws Exception {
-        super.executar();
+    public boolean executarFilho() throws Exception {
 
         FilaDAO filaDAO = new FilaDAO();
 

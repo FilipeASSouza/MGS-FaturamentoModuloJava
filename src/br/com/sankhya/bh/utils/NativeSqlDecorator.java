@@ -97,6 +97,15 @@ public class NativeSqlDecorator {
         nativeSql.executeUpdate();
 
     }
+    
+    public void close() throws Exception {
+        if(resultSet!=null){
+            resultSet.close();
+        }
+        if(nativeSql!=null){
+            NativeSql.releaseResources(nativeSql);
+        }
+    }
 
 
     private String getSqlResource(Object objetobase, String arquivo) throws Exception {

@@ -44,11 +44,8 @@ public class GeraFilaFatura implements AcaoRotinaJava {
         geraFilaFaturaModel.setCodigoUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
         geraFilaFaturaModel.setAprovadas(aprovadas);
 
-        if( aprovadas.equalsIgnoreCase(String.valueOf("S")) ){
-            geraFilaFaturaModel.gerarFilaAprovados();
-        }else{
-            geraFilaFaturaModel.gerarFila();
-        }
+        geraFilaFaturaModel.gerarFila();
+
 
     }
 }

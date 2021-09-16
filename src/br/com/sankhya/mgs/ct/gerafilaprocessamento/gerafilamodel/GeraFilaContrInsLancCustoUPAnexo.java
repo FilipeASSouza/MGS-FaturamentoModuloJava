@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsLancCustoUPAnexo extends GeraFilaSuper implements GeraFila {
-    public boolean executar() throws Exception {
-        super.executar();
+    public boolean executarFilho() throws Exception {
+        
         setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPAnexo");
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();

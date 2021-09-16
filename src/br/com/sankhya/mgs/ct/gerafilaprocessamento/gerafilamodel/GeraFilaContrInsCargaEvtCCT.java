@@ -15,9 +15,7 @@ public class GeraFilaContrInsCargaEvtCCT extends GeraFilaSuper implements GeraFi
     }
 
     @Override
-    public boolean executar() throws Exception {
-        super.executar();
-
+    public boolean executarFilho() throws Exception {
         FilaDAO filaDAO = new FilaDAO();
 
         BigDecimal defasagem = (BigDecimal) parametrosMetrica.get("DEFASAGEM");

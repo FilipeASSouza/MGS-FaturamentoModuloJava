@@ -22,6 +22,7 @@ public class EdicaoUnidadeFaturamentoAcao extends EdicaoAcaoSuper implements Aca
             String nomeusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
+                if( linha.getCampo("INTEGRACAO_LANC") == null ){
                 EdicaoUnidadeFaturamentoModel edicaoUnidadeFaturamentoModel = new EdicaoUnidadeFaturamentoModel();
                 edicaoUnidadeFaturamentoModel.setParametro("CODUNIDADEFATUR",codunidadefatur);
                 edicaoUnidadeFaturamentoModel.setParametro("LOGIN",nomeusu);
@@ -30,4 +31,5 @@ public class EdicaoUnidadeFaturamentoAcao extends EdicaoAcaoSuper implements Aca
             }
         }
     }
+}
 }

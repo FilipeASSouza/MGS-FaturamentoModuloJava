@@ -30,51 +30,51 @@ public class PrevisaoValidator {
                 if (!postoPreechido)
                     erro += "Posto deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
+                    erro += "Serviço/Material não pode ser preenchido. ";
                 if (!quantidadePreenchido)
-                    erro += "Quantidade deve ser preechida. ";
+                    erro += "Quantidade deve ser preenchida. ";
                 if (valorPreechido)
-                    erro += "Valor não pode ser preechido. ";
+                    erro += "Valor não pode ser preenchido. ";
                 break;
             case "C"://contrato
                 if (postoPreechido)
                     erro += "Posto não deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
+                    erro += "Serviço/Material não pode ser preenchido. ";
                 if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
+                    erro += "Quantidade não pode ser preenchida. ";
                 if (!valorPreechido)
-                    erro += "Valor deve ser preechido. ";
+                    erro += "Valor deve ser preenchido. ";
                 break;
             case "R"://rescisao
                 if (postoPreechido)
                     erro += "Posto não deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Serviço/Material não pode ser preechido. ";
+                    erro += "Serviço/Material não pode ser preenchido. ";
                 if (quantidadePreenchido)
-                    erro += "Quantidade não pode ser preechida. ";
+                    erro += "Quantidade não pode ser preenchida. ";
                 if (valorPreechido)
-                    erro += "Valor não pode ser preechido. ";
+                    erro += "Valor não pode ser preenchido. ";
                 break;
             case "S1"://serviceo/material controle 1
             case "S2"://serviceo/material controle 2
                 if (postoPreechido)
                     erro += "Posto não deve ser preenchido. ";
                 if (!servicoMaterialPreechido)
-                    erro += "Serviço/Material deve ser preechido. ";
+                    erro += "Serviço/Material deve ser preenchido. ";
                 if (!valorPreechido)
-                    erro += "Valor deve ser preechido. ";
+                    erro += "Valor deve ser preenchido. ";
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4
                 if (postoPreechido)
                     erro += "Posto não deve ser preenchido. ";
                 if (!servicoMaterialPreechido)
-                    erro += "Serviço/Material deve ser preechido. ";
+                    erro += "Serviço/Material deve ser preenchido. ";
                 if (!quantidadePreenchido)
-                    erro += "Quantidade deve ser preechida. ";
+                    erro += "Quantidade deve ser preenchida. ";
                 if (valorPreechido)
-                    erro += "Valor nao pode ser preechido. ";
+                    erro += "Valor nao pode ser preenchido. ";
                 break;
             default:
                 erro = "Regra não definida para Tipo de Evento: " + regraValidacao;
@@ -84,7 +84,7 @@ public class PrevisaoValidator {
         }
 
         if (postoPreechido && servicoMaterialPreechido) {
-            ErroUtils.disparaErro("Campos Tipos do Posto e Serviço/Material não podem ser preechidos no mesmo lançamento!");
+            ErroUtils.disparaErro("Campos Tipos do Posto e Serviço/Material não podem ser preenchidos no mesmo lançamento!");
         }
     }
 

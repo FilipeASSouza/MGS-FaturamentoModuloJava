@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -27,6 +28,7 @@ public class GeraFilaContrInsLancCustoUP extends GeraFilaSuper implements GeraFi
             String chave = geraChave(mapParametrosChave);
 
             FilaDAO filaDAO = new FilaDAO();
+
             filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
             return true;
         } else {
@@ -38,9 +40,15 @@ public class GeraFilaContrInsLancCustoUP extends GeraFilaSuper implements GeraFi
         DynamicVO tipoProcessamentoVO = JapeFactory
                 .dao("MGSCT_Tipo_Processamento")
                 .findOne("NOME = ?", getParametroString("nomeProcessamento"));
+
         if (tipoProcessamentoVO == null) {
             return false;
         }
+
+        /*
+        MGSTCTINTEGRADC
+        Motivo: Retirado para quando houver somente lançamentos manuais no detalhamento, ir para planilha de fiscal.
+        29/07/2021
 
         JapeWrapper integrDetalhaCustoDAO = JapeFactory.dao("MGSCT_Integr_Detalha_Custo");
         DynamicVO integrDetalhaCustoVO = integrDetalhaCustoDAO.findOne("NUMCONTRATO = ? and CODUNIDADEFATUR = ? and INTCOMPETENCIA = ?",
@@ -51,6 +59,7 @@ public class GeraFilaContrInsLancCustoUP extends GeraFilaSuper implements GeraFi
         if (integrDetalhaCustoVO == null) {
             return false;
         }
+        */
 
         return true;
     }

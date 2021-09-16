@@ -37,12 +37,18 @@ import java.util.Collection;
 
     }
 
-    private void validaDadosInsert() throws Exception {
-
+    public void validaDadosInsert() throws Exception {
+        if ( vo.asTimestamp("DTFIM") != null ){
+                vo.setProperty("ATIVO", "N");
+    }
     }
 
-    private void validaDadosUpdate() throws Exception {
-
+    public void validaDadosUpdate() throws Exception {
+        if( !vo.asString("ATIVO").equalsIgnoreCase("N") ){
+            if ( vo.asTimestamp("DTFIM") != null ){
+                vo.setProperty("ATIVO", "N");
+            }
+        }
     }
 
     private void preencheCamposCalculados() throws Exception {

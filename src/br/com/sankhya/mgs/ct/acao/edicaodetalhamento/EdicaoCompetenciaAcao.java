@@ -26,6 +26,7 @@ public class EdicaoCompetenciaAcao extends EdicaoAcaoSuper implements AcaoRotina
             String nomeusu = usuario.asString("NOMEUSU");
 
             for (Registro linha : linhas) {
+                if( linha.getCampo("INTEGRACAO_LANC") == null ){
                 EdicaoCompetenciaModel edicaoCompetenciaModel = new EdicaoCompetenciaModel();
                 edicaoCompetenciaModel.setParametro("COMPFATU",compfatu);
                 edicaoCompetenciaModel.setParametro("DTLCCUSTO",dtlccusto);
@@ -35,4 +36,5 @@ public class EdicaoCompetenciaAcao extends EdicaoAcaoSuper implements AcaoRotina
             }
         }
     }
+}
 }

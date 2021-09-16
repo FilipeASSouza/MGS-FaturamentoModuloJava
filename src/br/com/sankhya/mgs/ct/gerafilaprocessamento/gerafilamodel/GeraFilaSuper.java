@@ -3,9 +3,7 @@ package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import com.sankhya.util.FinalWrapper;
 import com.sankhya.util.TimeUtils;
-import kotlin.Unit;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -13,43 +11,31 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public abstract class GeraFilaSuper implements GeraFila {
-/*    protected BigDecimal numeroUnicoMetrica;
-    protected BigDecimal numeroUnidadeFaturamento;
-b
-    protected Timestamp dataReferencia;
-    protected String nomeProcessamento;
-    protected BigDecimal numeroContrato;*/
+    /*    protected BigDecimal numeroUnicoMetrica;
+        protected BigDecimal numeroUnidadeFaturamento;
+    
+        protected Timestamp dataReferencia;
+        protected String nomeProcessamento;
+        protected BigDecimal numeroContrato;*/
     protected Map<String, Object> parametrosMetrica;
     protected Map<String, Object> parametrosExecucao = new HashMap<String, Object>();
     
     public boolean executar() throws Exception {
-        FinalWrapper<Boolean> resultado = new FinalWrapper<>();
-        FinalWrapper<Exception> exceptionFinalWrapper = new FinalWrapper<>();
-        PerformanceMonitor.INSTANCE.measureReturn("GeraFilaSuper",null,()->{
-            try {
-                getParametrosMetricas();
-                resultado.setWrapperReference(executarFilho());
-            }catch (Exception e){
-                exceptionFinalWrapper.setWrapperReference(e);
-            }
-            return Unit.INSTANCE;
+        return PerformanceMonitor.INSTANCE.measureReturnJava("GeraFilaSuper", null, () -> {
+            getParametrosMetricas();
+            return executarFilho();
         });
-        if(exceptionFinalWrapper.getWrapperReference()!=null){
-        
-        }
-        return resultado.getWrapperReference();
     }
     
-  
+    
     public abstract boolean executarFilho() throws Exception;
-
-
-
+    
+    
     @Override
     public String getMensagem() {
         return null;
     }
-
+    
     @Override
     public void setParametroExecucao(String nome, Object parametro) {
         if (nome == "dataReferencia") {
@@ -89,14 +75,14 @@ b
     public void setNumeroContrato(BigDecimal numeroContrato) {
         this.numeroContrato = numeroContrato;
     }*/
-
+    
     protected void getParametrosMetricas() throws Exception {
         BigDecimal numeroUnicoMetrica = getParametroBigDecimal("numeroUnicoMetrica");
         if (numeroUnicoMetrica != null) {
             Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", numeroUnicoMetrica);
-
+            
             parametrosMetrica = new HashMap<String, Object>();
-
+            
             for (DynamicVO parametroMetricaVO : parametroMetricaVOS) {
                 String tipo = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.TIPO");
                 String descricaoParametro = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.DESCRPARAM");
@@ -106,12 +92,12 @@ b
             }
         }
     }
-
-    private Object converteParametro(String valor, String tipo){
-        switch(tipo){
+    
+    private Object converteParametro(String valor, String tipo) {
+        switch (tipo) {
             case "D"://Data
                 return null;
-
+            
             case "F"://Número Decimal
                 return new BigDecimal(valor);
             case "H"://Data e Hora
@@ -125,26 +111,26 @@ b
         }
         return null;
     }
-
+    
     protected String geraChave(Map<String, String> mapParametrosChave) {
         List<String> listaParametros = new ArrayList();
-
+        
         for (String key : mapParametrosChave.keySet()) {
             String value = mapParametrosChave.get(key);
             listaParametros.add(key + "=" + value);
         }
         return StringUtils.join(listaParametros, ";");
     }
-
-    protected BigDecimal getParametroBigDecimal(String nome){
-        return (BigDecimal)parametrosExecucao.get(nome);
+    
+    protected BigDecimal getParametroBigDecimal(String nome) {
+        return (BigDecimal) parametrosExecucao.get(nome);
     }
-
-    protected Timestamp getParametroTimestamp(String nome){
-        return (Timestamp)parametrosExecucao.get(nome);
+    
+    protected Timestamp getParametroTimestamp(String nome) {
+        return (Timestamp) parametrosExecucao.get(nome);
     }
-
-    protected String getParametroString(String nome){
-        return (String)parametrosExecucao.get(nome);
+    
+    protected String getParametroString(String nome) {
+        return (String) parametrosExecucao.get(nome);
     }
 }

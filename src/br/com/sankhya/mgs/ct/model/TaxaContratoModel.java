@@ -38,7 +38,6 @@ public class TaxaContratoModel {
     }
 
     private void validaDadosInsert() throws Exception {
-
     }
 
     private void validaDadosUpdate() throws Exception {

@@ -15,7 +15,7 @@ public class DeletaDetalhamentoModel extends DeletaModelSuper {
         BigDecimal retorno = null;
         retorno = caller.resultAsBigDecimal("RET");
 
-         sucesso = BigDecimal.ONE.equals(retorno);
+        sucesso = BigDecimal.valueOf(2L).equals(retorno);
 
         super.finalizaExecutar();
     }

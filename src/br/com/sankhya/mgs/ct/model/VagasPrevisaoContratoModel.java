@@ -1,16 +1,20 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
+import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
+import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Entidade: MGSCT_Vagas_Previsao_Contrato
@@ -21,6 +25,7 @@ import java.util.Collection;
 public class VagasPrevisaoContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
     private DynamicVO vo;
+    private BigDecimal quantidadeVagasDisponiveis;
     private Boolean subtrairVagaPrevisaoContrato = false;
 
     public VagasPrevisaoContratoModel() {
@@ -58,13 +63,38 @@ public class VagasPrevisaoContratoModel {
         return new BigDecimal(size);
     }
 
+    public void validaDadosInsert() throws Exception{
+
+        /*BigDecimal usuario = AuthenticationInfo.getCurrent().getUserID();
+
+        if(usuario != BigDecimal.ZERO){
+            ErroUtils.disparaErro("As vagas não podem ser inseridas pelo <b>Usuário</b>" +
+                    "<br>Somente a rotina irá <b>cadastrar</b> as Vagas!");
+        }*/
+    }
+
+    public void validaUpdate() throws Exception{
+
+        DynamicVO vagaPrev = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findByPK(vo.asBigDecimal("NUCONTRVAGA"));
+        if(vagaPrev.asTimestamp("DTFIM") != null){
+            ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada!");
+        }
+
+        if( vo.asString("PREVUNID").equalsIgnoreCase(String.valueOf("S")) ){
+            ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada esta vinculada a uma unidade!");
+        }
+
+        subtrairVagaPrevisaoContrato = true;
+    }
+
+    //descontinuado - Sugestão do Juliano para que se a data estiver diferente de nulo alerta
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
        Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
        Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
+                ErroUtils.disparaErro("Data final não pode ser menor que a data inicial!");
             }
         }
 
@@ -79,12 +109,11 @@ public class VagasPrevisaoContratoModel {
             }
 
             if (vagaAtivaPrevisaoUnidade()){
-                ErroUtils.disparaErro("Vaga ainda se encontra ativa na previsao da undiade, deve ser desabilitado primeiro!");
+                ErroUtils.disparaErro("Vaga ainda se encontra ativa na previsao da unidade, deve ser desabilitado primeiro!");
             }
 
             subtrairVagaPrevisaoContrato = true;
         }
-
     }
 
     public boolean vagaAtivaPrevisaoUnidade() throws Exception {
@@ -114,5 +143,16 @@ public class VagasPrevisaoContratoModel {
             }
         }
         return  vagaLivresVOs;
+    }
+
+    public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
+        String mensagemErro = "";
+
+        //todo melhorar a descricao do campo pegando do dicionario de dados
+        if( campos.containsKey("CODVAGA") ){mensagemErro += "<b>Vaga</b> não pode ser alterada!";}
+
+        if (mensagemErro != "") {
+            ErroUtils.disparaErro(mensagemErro);
+        }
     }
 }

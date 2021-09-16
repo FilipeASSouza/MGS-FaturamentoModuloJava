@@ -6,6 +6,6 @@ import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 public class ProcessamentoFilaAcaoFatura implements AcaoRotinaJava {
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
-        ProcessamentoFilaModelFatura.getInstance().executar();
+        ProcessamentoFilaModel.getInstance("fatura").executar();
     }
 }

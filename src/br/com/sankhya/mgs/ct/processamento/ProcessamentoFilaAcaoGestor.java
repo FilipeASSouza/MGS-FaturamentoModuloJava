@@ -21,8 +21,8 @@ public class ProcessamentoFilaAcaoGestor implements AcaoRotinaJava {
                 quantidadeExecucao = verificarQuantidadeProcessosSQL.getValorBigDecimal("QTD");
             }
 
-            if( quantidadeExecucao.compareTo(BigDecimal.valueOf(40L)) < 0 ){
-                ProcessamentoFilaModelGestor.getInstance().executar();
+            if( BigDecimal.valueOf(40L).compareTo(quantidadeExecucao) > 0 ){
+                ProcessamentoFilaModel.getInstance("gestor").executar();
             }
 
         }catch(Exception e){

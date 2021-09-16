@@ -9,33 +9,43 @@ import br.com.sankhya.mgs.ct.gerafilaprocessamento.GeraFilaLancamentoCustoGestor
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
+
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
         Registro[] linhas = contextoAcao.getLinhas();
         if (linhas.length == 0){
             contextoAcao.setMensagemRetorno("Favor seleciona pelo menos um contrato");
         } else {
-            Timestamp dataCusto = Timestamp.valueOf(contextoAcao.getParam("DTCUSTO").toString());
+            Timestamp dataCusto = Timestamp.valueOf( contextoAcao.getParam("DTCUSTO").toString() );
 
             BigDecimal codigoUnidadeFaturamento = null;
-            if (contextoAcao.getParam("CODSITE") != null) {
+            BigDecimal codigoUnidadeFaturamentoFinal = null;
+            if (contextoAcao.getParam("CODSITE") != null || contextoAcao.getParam("CODSITEF") != null ) {
                 codigoUnidadeFaturamento = new BigDecimal(contextoAcao.getParam("CODSITE").toString());
-                DynamicVO siteVO = JapeFactory.dao("Site").findByPK(codigoUnidadeFaturamento);
+                codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
+                Collection <DynamicVO> sitesVO = JapeFactory.dao("Site").find("CODSITE BETWEEN ? AND ?"
+                        , new Object[]{codigoUnidadeFaturamento, codigoUnidadeFaturamentoFinal});
+                for(DynamicVO siteVO : sitesVO){
                 if (siteVO != null){
                     if (siteVO.asString("ANALITICO") == "S"){
                         codigoUnidadeFaturamento = siteVO.asBigDecimal("CODSITEPAI");
                     }
                 }
             }
+            }
+
+            System.out.println("INICIANDO FILA GESTOR BOTAO DE ACAO");
 
             for (Registro linha : linhas) {
                 GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel();
                 geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
                 geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
-                geraFilaLancamentoCustoGestorModel.setDataCusto(dataCusto);
-                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento(codigoUnidadeFaturamento);
+                geraFilaLancamentoCustoGestorModel.setDataCusto( dataCusto );
+                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento( codigoUnidadeFaturamento );
+                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
 
                 geraFilaLancamentoCustoGestorModel.gerarFila();
             }

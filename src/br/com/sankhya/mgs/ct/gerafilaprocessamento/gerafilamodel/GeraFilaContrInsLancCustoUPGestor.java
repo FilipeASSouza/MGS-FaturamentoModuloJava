@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class GeraFilaContrInsLancCustoUPGestor extends GeraFilaSuper implements GeraFila {
     public boolean executarFilho() throws Exception {
+    
+        System.out.println(" INICIANDO A EXECUCAO PARA INSERIR GESTOR ");
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
 
@@ -22,6 +24,10 @@ public class GeraFilaContrInsLancCustoUPGestor extends GeraFilaSuper implements 
 
             FilaDAO filaDAO = new FilaDAO();
             filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
+
+            System.out.println("FILA INICIALIZADA CHAVE =" + chave + " parametro processamento = " + getParametroString("nomeProcessamento"));
             return true;
     }
+
+
 }

@@ -21,7 +21,7 @@ public class PrcContrInsCargaEvtDVSub extends ProcessarSuper implements Processa
     public boolean executar() throws Exception {
         Boolean executado = false;
         try {
-            
+            super.executar();
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();
 
@@ -54,12 +54,10 @@ public class PrcContrInsCargaEvtDVSub extends ProcessarSuper implements Processa
                     IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
-
-
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsCargaEvtDVSub: " + e);
         } finally {
-
+            super.finalizar();
         }
         return executado;
     }

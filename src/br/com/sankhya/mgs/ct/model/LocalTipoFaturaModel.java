@@ -56,13 +56,13 @@ public class LocalTipoFaturaModel {
 
     public void validaDelete() throws Exception {
         if (posuiRegistroFilho()){
-            ErroUtils.disparaErro("Registro não pode ser excluido. O mesmo passui registros dependentes");
+            ErroUtils.disparaErro("Registro não pode ser excluido. O mesmo possui registros dependentes");
         }
     }
 
     public void validaUpdate(HashMap<String, Object[]> campos) throws Exception {
         if (posuiRegistroFilho()){
-            ErroUtils.disparaErro("Registro não pode ser Alterado. O mesmo passui registros dependentes");
+            ErroUtils.disparaErro("Registro não pode ser Alterado. O mesmo possui registros dependentes");
         }
     }
 

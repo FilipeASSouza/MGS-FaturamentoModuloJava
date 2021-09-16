@@ -95,7 +95,6 @@ public class NativeSqlDecorator {
 
     public void atualizar() throws Exception {
         nativeSql.executeUpdate();
-
     }
     
     public void close() throws Exception {

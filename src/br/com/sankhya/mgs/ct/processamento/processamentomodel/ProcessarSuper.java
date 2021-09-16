@@ -1,6 +1,5 @@
 package br.com.sankhya.mgs.ct.processamento.processamentomodel;
 
-import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.EntityFacade;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
@@ -13,32 +12,30 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessarSuper implements Processar, Runnable {
+public class ProcessarSuper implements Processar {
     protected FilaDAO.RegistroFila registroFila;
     protected BigDecimal numeroUnicoFilaProcessamento;
     protected BigDecimal numeroUnicoIntegracao;
     protected JapeSession.SessionHandle hnd = null;
     protected JdbcWrapper jdbc = null;
     protected String mensagem;
-    
+    final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
     protected ProcessarSuper() {
     
     }
     
     @Override
     public boolean executar() throws Exception {
-        try {
             this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
-            
             hnd = JapeSession.open();
-            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
             jdbc = dwfFacade.getJdbcWrapper();
             jdbc.openSession();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return false;
+    }
+    
+    public void finalizar(){
+        JapeSession.close(hnd);
+        JdbcWrapper.closeSession(jdbc);
     }
     
     @Override
@@ -72,30 +69,4 @@ public class ProcessarSuper implements Processar, Runnable {
     
     }
     
-    @Override
-    public void run() {
-        FilaDAO filaDAO = new FilaDAO();
-        try {
-            boolean executado = PerformanceMonitor.INSTANCE.measureReturnJava("ProcessamentoFilaModel." , () -> {
-                return executar();
-            });
-            if (executado) {
-                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
-                        "OK. " + getMensagem());
-            } else {
-                filaDAO.atualizaFilaErro(
-                        numeroUnicoFilaProcessamento,
-                        "Erro ao executar processamento: " + getMensagem());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                filaDAO.atualizaFilaErro(
-                        numeroUnicoFilaProcessamento,
-                        "Erro ao executar processamento: " + e);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 }

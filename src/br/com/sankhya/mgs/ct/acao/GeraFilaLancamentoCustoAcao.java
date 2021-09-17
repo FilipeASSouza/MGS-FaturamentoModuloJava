@@ -23,13 +23,13 @@ public class GeraFilaLancamentoCustoAcao implements AcaoRotinaJava {
             BigDecimal codigoTipoFatura = new BigDecimal(contextoAcao.getParam("CODTIPOFATURA").toString());//todo corrigir tipo fatura
 
 
-            BigDecimal codigoUnidadeFaturamentoInicial = null;
+            BigDecimal codigoUnidadeFaturamentoInicial;
             if (contextoAcao.getParam("CODSITEI") != null) {
                 codigoUnidadeFaturamentoInicial = new BigDecimal(contextoAcao.getParam("CODSITEI").toString());
             } else {
                 codigoUnidadeFaturamentoInicial = BigDecimal.ZERO;
             }
-            BigDecimal codigoUnidadeFaturamentoFinal = null;
+            BigDecimal codigoUnidadeFaturamentoFinal;
             if (contextoAcao.getParam("CODSITEF") != null) {
                 codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
             } else {

@@ -194,28 +194,14 @@ public class AlocacoesServicosModel {
         nativeSqlDDecorator.setParametro("CODTPN", codigoModalidade );
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", codigoServMaterial);
         nativeSqlDDecorator.setParametro("CODEVENTO", codigoEvento);
-
-        BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator.proximo()) {
-            numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
-            if (numeroUnicoValoresProdutos == null) {
-                numeroUnicoValoresProdutos = BigDecimal.ZERO;
-            }
-        }
-
-        if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
-        DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
-        if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
+    
+        DynamicVO mgsct_valores_produtosVO = Utils.validaPreco(nativeSqlDDecorator,mgsct_valores_produtosDAO);
+    
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL").setScale(4,BigDecimal.ROUND_DOWN);
         return valorUnitario;
     }
-
+    
+    
     private void criaRegistrosDerivados() throws Exception {
 
     }

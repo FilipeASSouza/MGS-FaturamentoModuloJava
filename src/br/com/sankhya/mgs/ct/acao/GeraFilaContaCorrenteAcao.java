@@ -18,20 +18,20 @@ public class GeraFilaContaCorrenteAcao implements AcaoRotinaJava {
             contextoAcao.setMensagemRetorno("Favor seleciona pelo menos um contrato");
         } else {
             Timestamp dataReferencia = Timestamp.valueOf(contextoAcao.getParam("DTREF").toString());
-            BigDecimal codigoUnidadeFaturamentoInicial = null;
+            BigDecimal codigoUnidadeFaturamentoInicial;
             if (contextoAcao.getParam("CODSITEI") != null) {
                 codigoUnidadeFaturamentoInicial = new BigDecimal(contextoAcao.getParam("CODSITEI").toString());
             } else {
                 codigoUnidadeFaturamentoInicial = BigDecimal.ZERO;
             }
-            BigDecimal codigoUnidadeFaturamentoFinal = null;
+            BigDecimal codigoUnidadeFaturamentoFinal;
             if (contextoAcao.getParam("CODSITEF") != null) {
                 codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
             } else {
                 codigoUnidadeFaturamentoFinal = BigDecimal.ZERO;
             }
 
-            BigDecimal tipoDeProcessamento = null;
+            BigDecimal tipoDeProcessamento;
             if (contextoAcao.getParam("NUTIPOPROC") != null) {
                 tipoDeProcessamento = new BigDecimal(contextoAcao.getParam("NUTIPOPROC").toString());
             } else {

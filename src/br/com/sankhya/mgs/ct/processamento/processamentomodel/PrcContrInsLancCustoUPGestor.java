@@ -19,7 +19,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
 
@@ -90,8 +90,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
         dadosIntegracao.setCodigoUnidadeFaturamento(new BigDecimal(parametrosExecutacao.get("V_UNIDADEFAT")));
         dadosIntegracao.setCodigoTipoFatura(new BigDecimal(parametrosExecutacao.get("V_TIPOFATU")));
         dadosIntegracao.setDataCusto(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));
-
-        Boolean integracaoSalva = integracaoLancamentoCustoGestorModel.salvarIntegracao(dadosIntegracao);
+    
+        boolean integracaoSalva = integracaoLancamentoCustoGestorModel.salvarIntegracao(dadosIntegracao);
         numeroUnicoIntegracao = integracaoLancamentoCustoGestorModel.getNumeroUnicoIntegracao();
         return integracaoSalva;
     }

@@ -50,7 +50,7 @@ private BigDecimal numeroUnicoEventoMensal;
 
         caller.execute(jdbc.getConnection());
 
-        BigDecimal retorno = null;
+        BigDecimal retorno;
         retorno = caller.resultAsBigDecimal("RET");
 
         sucesso = BigDecimal.ONE.equals(retorno);

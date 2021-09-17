@@ -194,23 +194,8 @@ public class PrevisoesContratoModel {
         nativeSqlDDecorator2.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator2.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
         nativeSqlDDecorator2.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
-
-        BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator2.proximo()) {
-            numeroUnicoValoresProdutos = nativeSqlDDecorator2.getValorBigDecimal("NUCONTRMATSRV");
-            if (numeroUnicoValoresProdutos == null) {
-                numeroUnicoValoresProdutos = BigDecimal.ZERO;
-            }
-        }
-
-        if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
-        DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
-        if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
+    
+        DynamicVO mgsct_valores_produtosVO = Utils.validaPreco(nativeSqlDDecorator2,mgsct_valores_produtosDAO);
 
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL");
         return valorUnitario;

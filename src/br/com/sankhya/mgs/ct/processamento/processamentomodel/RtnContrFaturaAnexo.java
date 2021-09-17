@@ -27,7 +27,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        boolean executado = false;//todo refatorar pra super
         int numeroPaginasGerado;
         try {
             super.executar();

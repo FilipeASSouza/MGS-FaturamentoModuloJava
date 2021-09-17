@@ -17,7 +17,7 @@ public class PrcContrInsCargaEvtM010 extends ProcessarSuper implements Processar
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;
+        boolean executado = false;
         try {
             super.executar();
             model = new IntegracaoDetalhaCustoModel(jdbc);
@@ -85,7 +85,7 @@ public class PrcContrInsCargaEvtM010 extends ProcessarSuper implements Processar
         dadosIntegracao.setCodigoUsuarioInsercao(registroFila.getCODUSU());
         dadosIntegracao.setCodigoCompetencia(new BigDecimal(parametrosExecutacao.get("MES_CARGA")));
         dadosIntegracao.setCodigoPeriodo(new BigDecimal(parametrosExecutacao.get("MES_FAT")));
-        Boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
+        boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
         numeroUnicoIntegracao = model.getNumeroUnicoIntegracao();
         return integracaoSalva;
     }

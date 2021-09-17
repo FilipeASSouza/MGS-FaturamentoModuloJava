@@ -14,7 +14,7 @@ public class PrcContrInsLancFatura extends ProcessarSuper implements Processar {
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
             model = new IntegracaoDetalhaCustoModel(jdbc);

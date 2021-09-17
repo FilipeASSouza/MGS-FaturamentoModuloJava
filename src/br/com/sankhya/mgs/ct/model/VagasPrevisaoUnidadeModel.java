@@ -62,8 +62,8 @@ public class VagasPrevisaoUnidadeModel {
     }
 
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
-        Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
-        Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
+        boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
+        boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
         String vagaAlocada = null;
 
         if (dataFimNovoPreenchido){

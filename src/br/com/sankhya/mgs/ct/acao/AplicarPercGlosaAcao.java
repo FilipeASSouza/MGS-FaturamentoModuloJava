@@ -21,7 +21,7 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
 
         BigDecimal valorTaxaAdministracao = null;
         BigDecimal valorTotalEvento = null;
-        BigDecimal numeroReferenciaGlosa = null;
+        BigDecimal numeroReferenciaGlosa;
 
 
 

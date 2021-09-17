@@ -63,7 +63,7 @@ public class RemanejarVagaUnidadeModel {
         nativeSqlDecorator.cleanParameters();
         nativeSqlDecorator.setParametro("CODVAGA", vagasPrevisaoUnidadeOrigemVO.asString("CODVAGA"));
         nativeSqlDecorator.proximo();
-        Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
+        boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
 
         if (!vagaLivre) {
             ErroUtils.disparaErro("Vaga vinculada a uma contratacao e não pode ser alocada!");

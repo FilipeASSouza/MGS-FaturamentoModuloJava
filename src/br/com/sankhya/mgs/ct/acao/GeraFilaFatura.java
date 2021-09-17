@@ -19,13 +19,13 @@ public class GeraFilaFatura implements AcaoRotinaJava {
 
         BigDecimal codigoTipoFatura = new BigDecimal(contextoAcao.getParam("CODTIPOFATURA").toString());
 
-        BigDecimal codigoUnidadeFaturamentoInicial = null;
+        BigDecimal codigoUnidadeFaturamentoInicial;
         if (contextoAcao.getParam("CODSITEI") != null) {
             codigoUnidadeFaturamentoInicial = new BigDecimal(contextoAcao.getParam("CODSITEI").toString());
         } else {
             codigoUnidadeFaturamentoInicial = BigDecimal.ZERO;
         }
-        BigDecimal codigoUnidadeFaturamentoFinal = null;
+        BigDecimal codigoUnidadeFaturamentoFinal;
         if (contextoAcao.getParam("CODSITEF") != null) {
             codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
         } else {

@@ -12,7 +12,7 @@ public class DeletaFaturaModel extends DeletaModelSuper {
         caller.execute(jdbc.getConnection());
 
 
-        BigDecimal retorno = null;
+        BigDecimal retorno;
         retorno = caller.resultAsBigDecimal("RET");
 
         sucesso = BigDecimal.ONE.equals(retorno);

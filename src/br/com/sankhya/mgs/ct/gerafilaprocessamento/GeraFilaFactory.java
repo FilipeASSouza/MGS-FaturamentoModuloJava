@@ -48,7 +48,7 @@ public class GeraFilaFactory {
 
         System.out.println(" INICIANDO SWITCH GERA FILA COM TEXTO CHAVE " + textoChave);
 
-        GeraFila geraFila = null;
+        GeraFila geraFila;
         switch (textoChave) {
             case "CONTR_INS_CARGA_EVT_M_001":
                 geraFila = new GeraFilaContrInsCargaEvtM001(jdbcWrapper);

@@ -14,7 +14,7 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
             model = new IntegracaoLancamentoCustoModel(jdbc);
@@ -87,8 +87,8 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
         dadosIntegracao.setCodigoUnidadeFaturamento(new BigDecimal(parametrosExecutacao.get("V_UNIDADEFAT")));
         dadosIntegracao.setCodigoTipoFatura(new BigDecimal(parametrosExecutacao.get("V_TIPOFATU")));
         dadosIntegracao.setDataCusto(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));
-
-        Boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
+    
+        boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
         numeroUnicoIntegracao = model.getNumeroUnicoIntegracao();
         return integracaoSalva;
     }

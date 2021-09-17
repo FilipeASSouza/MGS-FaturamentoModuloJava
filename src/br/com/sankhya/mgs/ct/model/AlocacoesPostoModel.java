@@ -133,7 +133,7 @@ public class AlocacoesPostoModel {
     }
 
     private void validaDataFinalMenorQueInicial() throws Exception {
-        Boolean dataFimPreenchido = vo.asTimestamp("DTFIM") != null;
+        boolean dataFimPreenchido = vo.asTimestamp("DTFIM") != null;
         if (dataFimPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
                 ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
@@ -309,7 +309,7 @@ public class AlocacoesPostoModel {
         nativeSqlDecorator.cleanParameters();
         nativeSqlDecorator.setParametro("CODVAGA", codigoVaga);
         nativeSqlDecorator.proximo();
-        Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
+        boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
 
         if (!vagaLivre) {
             ErroUtils.disparaErro("Vaga vinculada a uma contratacao e não pode ser alocada!");

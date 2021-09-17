@@ -275,10 +275,8 @@ public class PrevisoesUnidadeModel {
 
         BigDecimal quantidadeContratadaUnidadesTotal = consultaQuantidadePrevisaoUnidade().add(vo.asBigDecimalOrZero("QTDCONTRATADA"));
         BigDecimal quantidadePrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA");
-
-        Boolean validado = quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
-
-        return validado;
+    
+        return quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
     }
 
     private boolean validaValorTotalUnidadesPeloContrato() throws Exception {
@@ -291,10 +289,8 @@ public class PrevisoesUnidadeModel {
 
         BigDecimal valorContratadaUnidadesTotal = valorContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA").multiply(vo.asBigDecimalOrZero("VLRUNITARIO")));
         BigDecimal valorPrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA").multiply(previsoesContratoVO.asBigDecimalOrZero("VLRUNITARIO"));
-
-        Boolean validado = valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
-
-        return validado;
+    
+        return valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
     }
 
     private boolean validaValorTotalUnidadesPeloContratoAtualizacao() throws Exception {
@@ -318,10 +314,8 @@ public class PrevisoesUnidadeModel {
 
         valorContratadaUnidadesTotal = valorContratadaOutrasUnidades.add(vo.asBigDecimalOrZero("QTDCONTRATADA").multiply(vo.asBigDecimalOrZero("VLRUNITARIO")));
         BigDecimal valorPrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("QTDCONTRATADA").multiply(previsoesContratoVO.asBigDecimalOrZero("VLRUNITARIO"));
-
-        Boolean validado = valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
-
-        return validado;
+    
+        return valorContratadaUnidadesTotal.compareTo(valorPrevisaoContrato) <= 0;
     }
 
     public void preencheCamposCalculados() throws Exception {
@@ -387,8 +381,7 @@ public class PrevisoesUnidadeModel {
 
             }else {
                 ArrayList<DynamicVO> vagaLivresVOs = vagasPrevisaoContratoModel.getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
-
-                int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
+                
                 BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
 
                 BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel(jdbcWrapper).quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
@@ -474,7 +467,7 @@ public class PrevisoesUnidadeModel {
             mensagemErro += "Campo Tipo do Posto não pode ser modificado. ";
         }
 
-        if (mensagemErro != "") {
+        if (!mensagemErro.equals("")) {
             ErroUtils.disparaErro(mensagemErro);
         }
     }

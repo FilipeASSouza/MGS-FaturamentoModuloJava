@@ -3,10 +3,12 @@ package br.com.sankhya.mgs.ct.acao.edicaodetalhamento;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoDataLancamentoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.sql.Timestamp;
 
@@ -22,17 +24,17 @@ public class EdicaoDataLancamentoAcao extends EdicaoAcaoSuper implements AcaoRot
 
             DynamicVO usuario = JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID());
             String nomeusu = usuario.asString("NOMEUSU");
-
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
             for (Registro linha : linhas) {
 
                 if( linha.getCampo("INTEGRACAO_LANC") == null ){
-                    EdicaoDataLancamentoModel edicaoDataLancamentoModel = new EdicaoDataLancamentoModel();
-                    edicaoDataLancamentoModel.setParametro("DTLCCUSTO",dtlccusto);
-                    edicaoDataLancamentoModel.setParametro("LOGIN",nomeusu);
-                    edicaoDataLancamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
-                    edicaoDataLancamentoModel.executar();
-                }
+                EdicaoDataLancamentoModel edicaoDataLancamentoModel = new EdicaoDataLancamentoModel(jdbcWrapper);
+                edicaoDataLancamentoModel.setParametro("DTLCCUSTO",dtlccusto);
+                edicaoDataLancamentoModel.setParametro("LOGIN",nomeusu);
+                edicaoDataLancamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                edicaoDataLancamentoModel.executar();
             }
         }
     }
+}
 }

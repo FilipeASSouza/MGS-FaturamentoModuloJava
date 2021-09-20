@@ -11,13 +11,10 @@ import br.com.sankhya.mgs.ct.model.VagasPrevisaoContratoModel;
  */
 
 public class VagasPrevisaoContratoController {
-    VagasPrevisaoContratoModel model = new VagasPrevisaoContratoModel();
+    VagasPrevisaoContratoModel model;
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
-//        DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         inicializaVariaveis(persistenceEvent);
-//        model.validaDadosUpdate(oldVO);
-        //model.diminuirUmQuantidadeContrata();
         model.validaUpdate();
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
     }
@@ -40,6 +37,6 @@ public class VagasPrevisaoContratoController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent){
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new VagasPrevisaoContratoModel(vo,persistenceEvent.getJdbcWrapper());
     }
 }

@@ -1,15 +1,9 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
-import br.com.sankhya.bh.utils.NativeSqlDecorator;
-import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
-import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
-import br.com.sankhya.modelcore.auth.AuthenticationInfo;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
-import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

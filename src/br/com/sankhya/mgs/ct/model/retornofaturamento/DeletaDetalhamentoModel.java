@@ -12,7 +12,7 @@ public class DeletaDetalhamentoModel extends DeletaModelSuper {
         caller.addOutputParameter(2, "RET");
         caller.execute(jdbc.getConnection());
 
-        BigDecimal retorno = null;
+        BigDecimal retorno;
         retorno = caller.resultAsBigDecimal("RET");
 
         sucesso = BigDecimal.valueOf(2L).equals(retorno);

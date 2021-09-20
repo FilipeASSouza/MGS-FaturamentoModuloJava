@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model.edicaodetalhamento;
 
 
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -16,9 +17,12 @@ public class EdicaoSituacaoModel extends EdicaoDetalhamentoModelSuper{
     private JapeWrapper detalhamentoCustoDAO = JapeFactory.dao("MGSCT_Detalhamento_Custo");
     private int indiceInicial = 0;
     private int indiceFinal = 0;
-
+    
+    public EdicaoSituacaoModel(JdbcWrapper jdbc) throws Exception {
+        super("updateSituacao.sql", jdbc);
+    }
+    
     public void executar() throws Exception {
-        scriptsql = "updateSituacao.sql";
         super.inicializarExecutar();
         nativeSqlDecorator.setParametro("V_SIT", BigDecimal.valueOf(Long.parseLong(parametros.get("SITLANC").toString())));//0 é ativo, 1 é inativo
         super.finalizaExecutar();

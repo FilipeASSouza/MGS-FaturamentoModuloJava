@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -20,6 +21,7 @@ import java.util.Collection;
 public class VagasPrevisaoUnidadeModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Unidade");
     private DynamicVO vo;
+    private JdbcWrapper jdbcWrapper;
 
 
     /**
@@ -30,16 +32,21 @@ public class VagasPrevisaoUnidadeModel {
     private DynamicVO mestrevo;
 
     private Boolean subtrairVagaPrevisaoUnidade = false;
-    public VagasPrevisaoUnidadeModel()  {
-    }
-
-    public VagasPrevisaoUnidadeModel(BigDecimal numeroUnico) throws Exception {//Chave: NUUNIDPREVVAGA
-        this.vo = dao.findByPK(numeroUnico);
+    NativeSqlDecorator verificarAlocacaoSQL;
+    public VagasPrevisaoUnidadeModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
-    public VagasPrevisaoUnidadeModel(DynamicVO dynamicVO) throws Exception {
+    public VagasPrevisaoUnidadeModel(BigDecimal numeroUnico, JdbcWrapper jdbc) throws Exception {//Chave: NUUNIDPREVVAGA
+        this.vo = dao.findByPK(numeroUnico);
+        this.jdbcWrapper = jdbc;
+        inicialzaVariaveis();
+    }
+
+    public VagasPrevisaoUnidadeModel(DynamicVO dynamicVO,JdbcWrapper jdbc) throws Exception {
         this.vo = dynamicVO;
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
@@ -50,15 +57,13 @@ public class VagasPrevisaoUnidadeModel {
 
     private void inicialzaVariaveis()throws Exception {
         mestrevo = JapeFactory.dao("MGSCT_Previsoes_Unidade").findByPK(vo.asBigDecimal("NUUNIDPREV"));
-    }
-
-    private void validaDadosInsert() throws Exception {
-
+        verificarAlocacaoSQL = new NativeSqlDecorator("select codvaga from mgstctalocacaops where codvaga = :codvaga and (TRUNC(DTFIM) >= TRUNC(SYSDATE)  OR DTFIM  IS NULL)",this.jdbcWrapper);
+        
     }
 
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
-        Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
-        Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
+        boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
+        boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
         String vagaAlocada = null;
 
         if (dataFimNovoPreenchido){
@@ -66,8 +71,8 @@ public class VagasPrevisaoUnidadeModel {
                 ErroUtils.disparaErro("Data final não pode ser menor que a data incial!");
             }
         }
-
-        NativeSqlDecorator verificarAlocacaoSQL = new NativeSqlDecorator("select codvaga from mgstctalocacaops where codvaga = :codvaga and (TRUNC(DTFIM) >= TRUNC(SYSDATE)  OR DTFIM  IS NULL)");
+    
+        verificarAlocacaoSQL.cleanParameters();
         verificarAlocacaoSQL.setParametro("codvaga", vo.asString("CODVAGA"));
 
         if(verificarAlocacaoSQL.proximo()){
@@ -100,11 +105,7 @@ public class VagasPrevisaoUnidadeModel {
     public void preencheCamposCalculados() throws Exception {
         vo.setProperty("NUCONTRCENT", mestrevo.asBigDecimalOrZero("NUCONTRCENT"));
     }
-
-    private void criaRegistrosDerivados() throws Exception {
-
-    }
-
+    
     public void validaDelete() throws Exception {
         ErroUtils.disparaErro("Vaga não pode ser deletada!");
     }
@@ -120,7 +121,7 @@ public class VagasPrevisaoUnidadeModel {
 
     public void alteraDadosDerivados() throws Exception {
         if(subtrairVagaPrevisaoUnidade){
-            PrevisoesUnidadeModel previsoesUnidadeModel = new PrevisoesUnidadeModel(vo.asBigDecimal("NUUNIDPREV"));
+            PrevisoesUnidadeModel previsoesUnidadeModel = new PrevisoesUnidadeModel(vo.asBigDecimal("NUUNIDPREV"),jdbcWrapper);
             previsoesUnidadeModel.diminuirUmQuantidadeContrata();
             subtrairVagaPrevisaoUnidade = false;
         }

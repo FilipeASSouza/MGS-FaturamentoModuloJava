@@ -12,23 +12,21 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class PrcContrInsCargaEvtM022 extends ProcessarSuper implements Processar {
-
-    public PrcContrInsCargaEvtM022() {
-        super();
-    }
+    
+    IntegracaoDetalhaCustoModel model;
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;
+        boolean executado = false;
         try {
             super.executar();
-
+            model = new IntegracaoDetalhaCustoModel(jdbc);
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();
 
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
 
             if (!integracaoSalva) {
-                IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");
+                model.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
                 mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
@@ -47,11 +45,11 @@ public class PrcContrInsCargaEvtM022 extends ProcessarSuper implements Processar
                 if (BigDecimal.ONE.equals(sucesso)) {
                     executado = true;
                     mensagem = log;
-                    IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
+                    model.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
                 } else {
                     executado = false;
                     mensagem = "Erro prcContrInsCargaEvtM022: " + log;
-                    IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
+                    model.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
         } catch (Exception e) {
@@ -80,16 +78,15 @@ public class PrcContrInsCargaEvtM022 extends ProcessarSuper implements Processar
     }
 
     private boolean geraIntegracao(Map<String, String> parametrosExecutacao) throws Exception {
-        IntegracaoDetalhaCustoModel integracaoDetalhaCustoModel = new IntegracaoDetalhaCustoModel();
-        IntegracaoDetalhaCustoModel.IntegracaoDetalhaCustoPOJO dadosIntegracao = integracaoDetalhaCustoModel.getPojo();
+        IntegracaoDetalhaCustoModel.IntegracaoDetalhaCustoPOJO dadosIntegracao = model.getPojo();
         dadosIntegracao.setNumeroContrato(new BigDecimal(parametrosExecutacao.get("V_CONTRATO")));
         dadosIntegracao.setCodigpUnidadeFaturamento(new BigDecimal(parametrosExecutacao.get("UP")));
         dadosIntegracao.setCodigoOrigem(registroFila.getNUTIPOPROC());
         dadosIntegracao.setCodigoUsuarioInsercao(registroFila.getCODUSU());
         dadosIntegracao.setCodigoCompetencia(new BigDecimal(parametrosExecutacao.get("MES_CARGA")));
         dadosIntegracao.setCodigoPeriodo(new BigDecimal(parametrosExecutacao.get("MES_FAT")));
-        Boolean integracaoSalva = integracaoDetalhaCustoModel.salvarIntegracao(dadosIntegracao);
-        numeroUnicoIntegracao = integracaoDetalhaCustoModel.getNumeroUnicoIntegracao();
+        boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
+        numeroUnicoIntegracao = model.getNumeroUnicoIntegracao();
         return integracaoSalva;
     }
 }

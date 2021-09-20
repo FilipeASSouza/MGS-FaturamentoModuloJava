@@ -11,7 +11,7 @@ import br.com.sankhya.mgs.ct.model.MovimentacaoFinanceiraModel;
  */
 
 public class MovimentacaoFinanceiraController {
-    MovimentacaoFinanceiraModel model = new MovimentacaoFinanceiraModel();
+    MovimentacaoFinanceiraModel model;
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -47,6 +47,7 @@ public class MovimentacaoFinanceiraController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
+        model = new MovimentacaoFinanceiraModel(persistenceEvent.getJdbcWrapper());
         model.setVo(vo);
     }
 }

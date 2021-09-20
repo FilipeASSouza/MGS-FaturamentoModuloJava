@@ -11,7 +11,7 @@ import br.com.sankhya.mgs.ct.model.DetalhamentoCustoModel;
  */
 
 public class DetalhamentoCustoController {
-    DetalhamentoCustoModel model = new DetalhamentoCustoModel();
+    DetalhamentoCustoModel model ;
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -22,7 +22,7 @@ public class DetalhamentoCustoController {
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.validaDadosModificados(persistenceEvent.getModifingFields());
+        model.validaDadosModificados();
         model.validaDadosUpdate();
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
         //model.validaDadosUpdate(oldVO);
@@ -46,6 +46,6 @@ public class DetalhamentoCustoController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new DetalhamentoCustoModel(vo, persistenceEvent.getJdbcWrapper());
     }
 }

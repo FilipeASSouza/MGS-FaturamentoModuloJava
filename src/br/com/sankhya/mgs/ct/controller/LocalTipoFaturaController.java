@@ -16,7 +16,7 @@ public class LocalTipoFaturaController {
         inicializaVariaveis(persistenceEvent);
 
         if( persistenceEvent.getModifingFields().isModifing("CODTIPOFATURA") ){
-            model.validaUpdate(persistenceEvent.getModifingFields());
+        model.validaUpdate(persistenceEvent.getModifingFields());
         }
         //model.recalculaCamposCalculados();
     }

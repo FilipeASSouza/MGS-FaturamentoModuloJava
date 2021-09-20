@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -19,19 +20,23 @@ import java.util.ArrayList;
 public class ApoioVagasModel {
     private JapeWrapper dao;
     private DynamicVO vo;
-
-    public ApoioVagasModel() {
+    NativeSqlDecorator nativeSqlDecorator;
+    private JdbcWrapper jdbcWrapper;
+    public ApoioVagasModel(JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
 
-    public ApoioVagasModel(DynamicVO dynamicVO) {
+    public ApoioVagasModel(DynamicVO dynamicVO, JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
         this.vo = dynamicVO;
     }
 
     private void inicialzaVariaveis() {
         dao = JapeFactory.dao("MGSCT_Apoio_Vagas");
+        nativeSqlDecorator = new NativeSqlDecorator("SELECT MAX(NUMSEQ) AS NUMSEQ FROM MGSTCTVAGAS WHERE SIGLA = :SIGLA",this.jdbcWrapper);
     }
 
     /**
@@ -61,7 +66,7 @@ public class ApoioVagasModel {
     }
 
     private BigDecimal getUltimoNumeroSequencial(String siglaTipo) throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT MAX(NUMSEQ) AS NUMSEQ FROM MGSTCTVAGAS WHERE SIGLA = :SIGLA");
+        nativeSqlDecorator.cleanParameters();
         nativeSqlDecorator.setParametro("SIGLA", siglaTipo);
         nativeSqlDecorator.proximo();
         BigDecimal numseq = nativeSqlDecorator.getValorBigDecimal("NUMSEQ");

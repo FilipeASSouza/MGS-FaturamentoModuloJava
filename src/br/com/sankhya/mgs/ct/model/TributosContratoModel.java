@@ -40,7 +40,7 @@ import java.util.Collection;
     public void validaDadosInsert() throws Exception {
         if ( vo.asTimestamp("DTFIM") != null ){
                 vo.setProperty("ATIVO", "N");
-        }
+    }
     }
 
     public void validaDadosUpdate() throws Exception {

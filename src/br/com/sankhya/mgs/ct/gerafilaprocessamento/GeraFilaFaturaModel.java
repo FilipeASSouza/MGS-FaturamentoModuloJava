@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento;
 
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.GeraFila;
 
 import java.math.BigDecimal;
@@ -15,9 +16,16 @@ public class GeraFilaFaturaModel {
     private BigDecimal codigoUnidadeFaturamentoInicial;
     private BigDecimal codigoUnidadeFaturamentoFinal;
     private String aprovadas;
-    private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
-
-
+    private GeraFilaFactory geraFilaFactory;
+    private JdbcWrapper jdbcWrapper;
+    NativeSqlDecorator consultaListaCodigoSites;
+    
+    public GeraFilaFaturaModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        geraFilaFactory = new GeraFilaFactory(jdbcWrapper);
+        consultaListaCodigoSites = new NativeSqlDecorator(this, "BuscaListaUnidadeFaturamentoFaturaAprovadas.sql",this.jdbcWrapper);
+    }
+    
     public void setDataReferencia(Timestamp dataReferencia) {
         this.dataReferencia = dataReferencia;
     }
@@ -50,8 +58,9 @@ public class GeraFilaFaturaModel {
         this.aprovadas = aprovadas;
     }
     public void gerarFila() throws Exception {
-
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this, "BuscaListaUnidadeFaturamentoFatura.sql");
+    
+    
+        consultaListaCodigoSites.cleanParameters();
         consultaListaCodigoSites.setParametro("CODSITEI", codigoUnidadeFaturamentoInicial);
         consultaListaCodigoSites.setParametro("CODSITEF", codigoUnidadeFaturamentoFinal);
         consultaListaCodigoSites.setParametro("CODTIPOFATURA", codigoTipoFatura);
@@ -68,8 +77,8 @@ public class GeraFilaFaturaModel {
     }
 
     public void gerarFilaAprovados() throws Exception {
-
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this, "BuscaListaUnidadeFaturamentoFaturaAprovadas.sql");
+    
+        consultaListaCodigoSites.cleanParameters();
         consultaListaCodigoSites.setParametro("CODSITEI", codigoUnidadeFaturamentoInicial);
         consultaListaCodigoSites.setParametro("CODSITEF", codigoUnidadeFaturamentoFinal);
         consultaListaCodigoSites.setParametro("CODTIPOFATURA", codigoTipoFatura);

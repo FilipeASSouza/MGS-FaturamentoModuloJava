@@ -10,7 +10,7 @@ import br.com.sankhya.mgs.ct.model.AlocacoesPostoModel;
  * Chave: NUALOCAPS
  */
 public class AlocacoesPostoController {
-    AlocacoesPostoModel model = new AlocacoesPostoModel();
+    AlocacoesPostoModel model ;
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
@@ -44,6 +44,6 @@ public class AlocacoesPostoController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new AlocacoesPostoModel(vo,persistenceEvent.getJdbcWrapper());
     }
 }

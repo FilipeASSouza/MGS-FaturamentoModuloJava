@@ -11,7 +11,7 @@ import br.com.sankhya.mgs.ct.model.VagasPrevisaoUnidadeModel;
  */
 
 public class VagasPrevisaoUnidadeController {
-    VagasPrevisaoUnidadeModel model = new VagasPrevisaoUnidadeModel();
+    VagasPrevisaoUnidadeModel model;
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
@@ -37,6 +37,6 @@ public class VagasPrevisaoUnidadeController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new VagasPrevisaoUnidadeModel(vo, persistenceEvent.getJdbcWrapper());
     }
 }

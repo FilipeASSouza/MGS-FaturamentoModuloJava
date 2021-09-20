@@ -5,8 +5,9 @@ import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
-import br.com.sankhya.extensions.flow.ContextoTarefa;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.model.AplicarPercGlosaModel;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
 
         BigDecimal valorTaxaAdministracao = null;
         BigDecimal valorTotalEvento = null;
-        BigDecimal numeroReferenciaGlosa = null;
+        BigDecimal numeroReferenciaGlosa;
 
 
 
@@ -54,14 +55,16 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
         if (linhas.length == 0) {
             contextoAcao.setMensagemRetorno("Favor seleciona pelo menos um contrato");
         } else {
+            JdbcWrapper jdbc = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+            NativeSqlDecorator referenciaGlosaSQL = new NativeSqlDecorator("SELECT " +
+                    " VLRTXADM," +
+                    " VALOR_TOTAL " +
+                    " FROM MGSVCTDETALHACUSTO WHERE NUEVTMENSAL = :NUEVTMENSAL",jdbc);
             for (Registro linha : linhas) {
 
                 numeroReferenciaGlosa = (BigDecimal) linha.getCampo("NUEVTMENSAL");
-
-                NativeSqlDecorator referenciaGlosaSQL = new NativeSqlDecorator("SELECT " +
-                " VLRTXADM," +
-                " VALOR_TOTAL " +
-                " FROM MGSVCTDETALHACUSTO WHERE NUEVTMENSAL = :NUEVTMENSAL");
+    
+                referenciaGlosaSQL.cleanParameters();
                 referenciaGlosaSQL.setParametro("NUEVTMENSAL", numeroReferenciaGlosa );
 
                 if( referenciaGlosaSQL.proximo() ){
@@ -95,22 +98,24 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
                 }else if( valorTaxaAdministracao != BigDecimal.ZERO
                     || valorTaxaAdministracao != null ){
 
-                    BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
+                BigDecimal numeroUnicoEventoMensal = (BigDecimal) linha.getCampo("NUEVTMENSAL");
 
-                    AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
+                AplicarPercGlosaModel aplicarPercGlosaModel = new AplicarPercGlosaModel();
 
-                    aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
-                    aplicarPercGlosaModel.setCompetencia(competencia);
-                    aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
-                    aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
-                    aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
-                    aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
-                    aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
-                    aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
-                    aplicarPercGlosaModel.executar();
+                aplicarPercGlosaModel.setNumeroUnicoEventoMensal(numeroUnicoEventoMensal);
+                aplicarPercGlosaModel.setCompetencia(competencia);
+                aplicarPercGlosaModel.setDataLancamentoCusto(dataLancamentoCusto);
+                aplicarPercGlosaModel.setCodigoTipoPosto(codigoTipoPosto);
+                aplicarPercGlosaModel.setCodigoServicosMaterial(codigoServicosMaterial);
+                aplicarPercGlosaModel.setCodigoEvento(codigoEvento);
+                aplicarPercGlosaModel.setPercTotEvento(percTotEvento);
+                aplicarPercGlosaModel.setPercTxAdm(percTxAdm);
+                aplicarPercGlosaModel.executar();
 
                 }
             }
+            
+            referenciaGlosaSQL.close();
         }
     }
 }

@@ -18,10 +18,16 @@ public class GeraFilaLancamentoCustoGestorModel {
     private BigDecimal numeroUnicoModalidade;
     private BigDecimal codigoUnidadeFaturamento;
     private BigDecimal codigoUnidadeFaturamentoFinal;
-    private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
-
+    private GeraFilaFactory geraFilaFactory;
+    private JdbcWrapper jdbcWrapper;
     //Verificar a Fila de Processamento
-
+    NativeSqlDecorator consultaListaCodigoSites;
+    
+    public GeraFilaLancamentoCustoGestorModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        geraFilaFactory = new GeraFilaFactory(jdbcWrapper);
+        consultaListaCodigoSites = new NativeSqlDecorator(this, "GeraFilaLancamentoCustoGestorConsulta.sql",this.jdbcWrapper);
+    }
     private BigDecimal numeroContratoVerificacao;
     private BigDecimal dataContratoVerificacao;
 
@@ -55,7 +61,7 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         System.out.println("INSERINDO NA ANEXOCAD");
 
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
+        consultaListaCodigoSites.cleanParameters();
         consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
         consultaListaCodigoSites.setParametro("CODUNIDADEFATURFIN", this.codigoUnidadeFaturamentoFinal);
 
@@ -172,7 +178,7 @@ public class GeraFilaLancamentoCustoGestorModel {
         caller.addInputParameter( BigDecimal.ONE );
         caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO             OUT NUMBER
-
+        
         caller.execute(jdbc.getConnection());
 
         String log = "";

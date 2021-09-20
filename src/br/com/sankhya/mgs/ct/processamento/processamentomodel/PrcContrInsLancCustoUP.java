@@ -10,22 +10,20 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar {
-    public PrcContrInsLancCustoUP() {
-        super();
-    }
+    IntegracaoLancamentoCustoModel model;
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
-
+            model = new IntegracaoLancamentoCustoModel(jdbc);
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super
 
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
 
             if (!integracaoSalva) {
-                IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");
+                model.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
                 mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
@@ -46,12 +44,12 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
                     System.out.println("ENTROU AQUI MAS NAO GEROU PAPEL LN 46 geraFilaAnexo PrcContrInsLancCustoUp");
                     executado = true;
                     mensagem = "OK";
-                    IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
+                    model.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
                     geraFilaAnexo(parametrosExecutacao);
                 } else {
                     executado = false;
                     mensagem = "Erro PrcContrInsLancCustoUP: " + log;
-                    IntegracaoLancamentoCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
+                    model.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
                 }
             }
         } catch (Exception e) {
@@ -80,8 +78,8 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
     }
 
     private boolean geraIntegracao(Map<String, String> parametrosExecutacao) throws Exception {
-        IntegracaoLancamentoCustoModel integracaoLancamentoCustoModel = new IntegracaoLancamentoCustoModel();
-        IntegracaoLancamentoCustoModel.IntegracaoDetalhaCustoPOJO dadosIntegracao = integracaoLancamentoCustoModel.getPojo();
+  
+        IntegracaoLancamentoCustoModel.IntegracaoDetalhaCustoPOJO dadosIntegracao = model.getPojo();
         dadosIntegracao.setNumeroContrato(new BigDecimal(parametrosExecutacao.get("V_CONTRATO")));
         dadosIntegracao.setNumeroUnicoModalidade(new BigDecimal(parametrosExecutacao.get("V_MODALIDADE")));
         dadosIntegracao.setCodigoCompetencia(new BigDecimal(parametrosExecutacao.get("V_MESFATURAMENTO")));
@@ -89,14 +87,14 @@ public class PrcContrInsLancCustoUP extends ProcessarSuper implements Processar 
         dadosIntegracao.setCodigoUnidadeFaturamento(new BigDecimal(parametrosExecutacao.get("V_UNIDADEFAT")));
         dadosIntegracao.setCodigoTipoFatura(new BigDecimal(parametrosExecutacao.get("V_TIPOFATU")));
         dadosIntegracao.setDataCusto(TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));
-
-        Boolean integracaoSalva = integracaoLancamentoCustoModel.salvarIntegracao(dadosIntegracao);
-        numeroUnicoIntegracao = integracaoLancamentoCustoModel.getNumeroUnicoIntegracao();
+    
+        boolean integracaoSalva = model.salvarIntegracao(dadosIntegracao);
+        numeroUnicoIntegracao = model.getNumeroUnicoIntegracao();
         return integracaoSalva;
     }
 
     private void geraFilaAnexo(Map<String, String> parametrosExecutacao) throws Exception {
-        GeraFilaContrInsLancCustoUPAnexo geraFilaContrInsLancCustoUPAnexo = new GeraFilaContrInsLancCustoUPAnexo();//todo arrumar para usar itnerface java e classe fabrica
+        GeraFilaContrInsLancCustoUPAnexo geraFilaContrInsLancCustoUPAnexo = new GeraFilaContrInsLancCustoUPAnexo(jdbc);//todo arrumar para usar itnerface java e classe fabrica
 
         geraFilaContrInsLancCustoUPAnexo.setParametroExecucao("dataCusto",TimeUtils.toTimestamp(parametrosExecutacao.get("V_DTLCCUSTO"),"yyyyMMdd"));
         geraFilaContrInsLancCustoUPAnexo.setParametroExecucao("numeroContrato",new BigDecimal(parametrosExecutacao.get("V_CONTRATO")));

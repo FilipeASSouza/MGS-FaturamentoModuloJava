@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -31,27 +32,50 @@ public class AlocacoesServicosModel {
     private BigDecimal qtdContratada = null;
     private BigDecimal qtdalocacaoUnidade = null;
     private BigDecimal qtdTotalAlocacao = null;
-
-    public AlocacoesServicosModel()  {
+    private JdbcWrapper jdbcWrapper;
+    NativeSqlDecorator previsoesUnidadeServicoSQL;
+    NativeSqlDecorator qtdalocadaSQL;
+    NativeSqlDecorator nativeSqlDDecorator;
+    NativeSqlDecorator previsoesUnidadeServicoSQL2;
+    
+    public AlocacoesServicosModel(JdbcWrapper jdbc) throws Exception {
+       this.jdbcWrapper = jdbc;
+       inicialzaVariaveis();
     }
 
-    public AlocacoesServicosModel(BigDecimal numeroUnico) throws Exception {//Chave: NUALOCASERV
+    public AlocacoesServicosModel(BigDecimal numeroUnico, JdbcWrapper jdbc) throws Exception {//Chave: NUALOCASERV
         this.vo = dao.findByPK(numeroUnico);
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
-    public AlocacoesServicosModel(DynamicVO dynamicVO) throws Exception {
+    public AlocacoesServicosModel(DynamicVO dynamicVO, JdbcWrapper jdbc) throws Exception {
         this.vo = dynamicVO;
+        this.jdbcWrapper = jdbc;
         inicialzaVariaveis();
     }
 
-    public void setVo(DynamicVO vo) throws Exception {
+    public void setVo(DynamicVO vo, JdbcWrapper jdbc) throws Exception {
         this.vo = vo;
         inicialzaVariaveis();
     }
 
     private void inicialzaVariaveis()throws Exception {
-
+        previsoesUnidadeServicoSQL = new NativeSqlDecorator("SELECT CODTPN, " +
+                " CODEVENTO, " +
+                " NUMCONTRATO, " +
+                " CODCONTROLE, " +
+                " CODSERVMATERIAL, " +
+                " DTINICIO, " +
+                " QTDCONTRATADA " +
+                " FROM MGSVCTUNIDADEPREVSERV " +
+                " WHERE NUUNIDPREV = :NUUNIDPREV AND ROWNUM <= 1",this.jdbcWrapper);
+        qtdalocadaSQL = new NativeSqlDecorator("SELECT SUM(QTDEALOCACAO) QTDEALOCACAO FROM MGSTCTALOCACAOSERV WHERE NUUNIDPREV = :NUUNIDPREV " +
+                " AND ( DTFIM IS NULL OR DTFIM >= SYSDATE ) ",this.jdbcWrapper);
+        nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql",this.jdbcWrapper);
+        previsoesUnidadeServicoSQL2 = new NativeSqlDecorator("SELECT QTDCONTRATADA " +
+                " FROM MGSVCTUNIDADEPREVSERV " +
+                " WHERE NUUNIDPREV = :NUUNIDPREV AND ROWNUM <= 1",this.jdbcWrapper);
     }
 
     public void validaDadosInsert() throws Exception {
@@ -77,16 +101,8 @@ public class AlocacoesServicosModel {
 
         BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
         BigDecimal quantidade = vo.asBigDecimalOrZero("QTDEALOCACAO");
-
-        NativeSqlDecorator previsoesUnidadeServicoSQL = new NativeSqlDecorator("SELECT CODTPN, " +
-                " CODEVENTO, " +
-                " NUMCONTRATO, " +
-                " CODCONTROLE, " +
-                " CODSERVMATERIAL, " +
-                " DTINICIO, " +
-                " QTDCONTRATADA " +
-                " FROM MGSVCTUNIDADEPREVSERV " +
-                " WHERE NUUNIDPREV = :NUUNIDPREV AND ROWNUM <= 1");
+    
+        previsoesUnidadeServicoSQL.cleanParameters();
         previsoesUnidadeServicoSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
 
         if( previsoesUnidadeServicoSQL.proximo()){
@@ -99,8 +115,8 @@ public class AlocacoesServicosModel {
             qtdContratada = previsoesUnidadeServicoSQL.getValorBigDecimal("QTDCONTRATADA");
         }
 
-        NativeSqlDecorator qtdalocadaSQL = new NativeSqlDecorator("SELECT SUM(QTDEALOCACAO) QTDEALOCACAO FROM MGSTCTALOCACAOSERV WHERE NUUNIDPREV = :NUUNIDPREV " +
-                " AND ( DTFIM IS NULL OR DTFIM >= SYSDATE ) ");
+       
+        qtdalocadaSQL.cleanParameters();
         qtdalocadaSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
 
         if(qtdalocadaSQL.proximo()){
@@ -172,41 +188,28 @@ public class AlocacoesServicosModel {
         BigDecimal valorUnitario;
 
         JapeWrapper mgsct_valores_produtosDAO = JapeFactory.dao("MGSCT_Valores_Produtos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql");
+        
+        nativeSqlDDecorator.cleanParameters();
         nativeSqlDDecorator.setParametro("NUMCONTRATO", numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", codigoModalidade );
         nativeSqlDDecorator.setParametro("CODSERVMATERIAL", codigoServMaterial);
         nativeSqlDDecorator.setParametro("CODEVENTO", codigoEvento);
-
-        BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator.proximo()) {
-            numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
-            if (numeroUnicoValoresProdutos == null) {
-                numeroUnicoValoresProdutos = BigDecimal.ZERO;
-            }
-        }
-
-        if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
-        DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
-        if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
+    
+        DynamicVO mgsct_valores_produtosVO = Utils.validaPreco(nativeSqlDDecorator,mgsct_valores_produtosDAO);
+    
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL").setScale(4,BigDecimal.ROUND_DOWN);
         return valorUnitario;
     }
-
+    
+    
     private void criaRegistrosDerivados() throws Exception {
 
     }
 
     public void validaDelete() throws Exception {
         if(vo.asBigDecimal("NUALOCASERV") != null){
-            ErroUtils.disparaErro("Registro não pode excluido!");
-        }
+        ErroUtils.disparaErro("Registro não pode excluido!");
+    }
     }
 
     public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
@@ -222,14 +225,13 @@ public class AlocacoesServicosModel {
         if (campos.containsKey("DTINS")) {mensagemErro += "Campo Dt. Inserção não pode ser modificado. ";}
 
         BigDecimal qtdAlocacao = vo.asBigDecimal("QTDEALOCACAO");
+    
+    
+        previsoesUnidadeServicoSQL2.cleanParameters();
+        previsoesUnidadeServicoSQL2.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
 
-        NativeSqlDecorator previsoesUnidadeServicoSQL = new NativeSqlDecorator("SELECT QTDCONTRATADA " +
-                " FROM MGSVCTUNIDADEPREVSERV " +
-                " WHERE NUUNIDPREV = :NUUNIDPREV AND ROWNUM <= 1");
-        previsoesUnidadeServicoSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
-
-        if(previsoesUnidadeServicoSQL.proximo()){
-            qtdContratada = previsoesUnidadeServicoSQL.getValorBigDecimal("QTDCONTRATADA");
+        if(previsoesUnidadeServicoSQL2.proximo()){
+            qtdContratada = previsoesUnidadeServicoSQL2.getValorBigDecimal("QTDCONTRATADA");
         }
 
         if ( qtdAlocacao.compareTo(qtdContratada) > 0 ){

@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -34,17 +35,20 @@ public class PrevisoesContratoModel {
     private String regraVadalicao = "";
     private BigDecimal codigoModelidade;
     private BigDecimal numeroContrato;
-
-    public PrevisoesContratoModel() {
-    }
-
-    public PrevisoesContratoModel(BigDecimal numeroUnico) throws Exception {//Chave: NUCONTRPREV
+    private JdbcWrapper jdbcWrapper;
+    private NativeSqlDecorator nativeSqlDDecorator;
+    NativeSqlDecorator nativeSqlDDecorator2;
+    VagasPrevisaoContratoModel vagasPrevisaoContratoModel;
+    ApoioVagasModel modelApoio;
+    public PrevisoesContratoModel(BigDecimal numeroUnico,JdbcWrapper jdbcWrapper) throws Exception {//Chave: NUCONTRPREV
         this.vo = dao.findByPK(numeroUnico);
+        this.jdbcWrapper = jdbcWrapper;
         inicialzaVariaveis();
     }
 
-    public PrevisoesContratoModel(DynamicVO dynamicVO) throws Exception {
+    public PrevisoesContratoModel(DynamicVO dynamicVO,JdbcWrapper jdbcWrapper) throws Exception {
         this.vo = dynamicVO;
+        this.jdbcWrapper = jdbcWrapper;
         inicialzaVariaveis();
     }
 
@@ -58,6 +62,10 @@ public class PrevisoesContratoModel {
         codigoModelidade = mestrevo.asBigDecimal("CODTPN");
         numeroContrato = mestrevo.asBigDecimal("NUMCONTRATO");
         regraVadalicao = "";
+        nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoPostoPrevisaoeAlocacao.sql",jdbcWrapper);
+        nativeSqlDDecorator2 = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql",jdbcWrapper);
+        vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel(vo,jdbcWrapper);
+        modelApoio = new ApoioVagasModel(vo,jdbcWrapper);
     }
 
     public void validaDadosInsert() throws Exception {
@@ -150,7 +158,8 @@ public class PrevisoesContratoModel {
     private BigDecimal getPrecoPosto() throws Exception {
         BigDecimal valorUnitario;
         JapeWrapper mgsct_valores_eventosDAO = JapeFactory.dao("MGSCT_Valores_Eventos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoPostoPrevisaoeAlocacao.sql");
+        
+        nativeSqlDDecorator.cleanParameters();
         nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
         nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
         nativeSqlDDecorator.setParametro("CODTIPOPOSTO", vo.asBigDecimal("CODTIPOPOSTO"));
@@ -180,28 +189,13 @@ public class PrevisoesContratoModel {
         BigDecimal valorUnitario;
 
         JapeWrapper mgsct_valores_produtosDAO = JapeFactory.dao("MGSCT_Valores_Produtos");
-        NativeSqlDecorator nativeSqlDDecorator = new NativeSqlDecorator(this, "sql/BuscaNumeroUnicoPrecoServicoMaterialPrevisaoeAlocacao.sql");
-        nativeSqlDDecorator.setParametro("NUMCONTRATO", this.numeroContrato);
-        nativeSqlDDecorator.setParametro("CODTPN", this.codigoModelidade);
-        nativeSqlDDecorator.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
-        nativeSqlDDecorator.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
-
-        BigDecimal numeroUnicoValoresProdutos = BigDecimal.ZERO;
-        if (nativeSqlDDecorator.proximo()) {
-            numeroUnicoValoresProdutos = nativeSqlDDecorator.getValorBigDecimal("NUCONTRMATSRV");
-            if (numeroUnicoValoresProdutos == null) {
-                numeroUnicoValoresProdutos = BigDecimal.ZERO;
-            }
-        }
-
-        if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
-
-        DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
-        if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
-        }
+        
+        nativeSqlDDecorator2.setParametro("NUMCONTRATO", this.numeroContrato);
+        nativeSqlDDecorator2.setParametro("CODTPN", this.codigoModelidade);
+        nativeSqlDDecorator2.setParametro("CODSERVMATERIAL", vo.asBigDecimal("CODSERVMATERIAL"));
+        nativeSqlDDecorator2.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+    
+        DynamicVO mgsct_valores_produtosVO = Utils.validaPreco(nativeSqlDDecorator2,mgsct_valores_produtosDAO);
 
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL");
         return valorUnitario;
@@ -224,7 +218,7 @@ public class PrevisoesContratoModel {
         BigDecimal numeroUnicoPreviesoContrato = vo.asBigDecimal("NUCONTRPREV");
 
 
-        BigDecimal quantidadeVagasAtivas = new VagasPrevisaoContratoModel().quantidadeVagasAtivas(numeroUnicoPreviesoContrato, sigla);
+        BigDecimal quantidadeVagasAtivas =vagasPrevisaoContratoModel.quantidadeVagasAtivas(numeroUnicoPreviesoContrato, sigla);
 
         if (quantidadeContratada.compareTo(quantidadeVagasAtivas) < 0) {
             ErroUtils.disparaErro("A quantidade de vagas não pode ser diminuida!");
@@ -233,14 +227,14 @@ public class PrevisoesContratoModel {
         BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtivas);
 
 
-        ArrayList<DynamicVO> dynamicVOS = new ApoioVagasModel().criaVagas(quantidadeCriarNovasVagas, sigla);
+        ArrayList<DynamicVO> dynamicVOS = modelApoio.criaVagas(quantidadeCriarNovasVagas, sigla);
 
         return dynamicVOS;
 
     }
 
     private void criaPrevisaoVagas(ArrayList<DynamicVO> vagaVOs) throws Exception {
-        VagasPrevisaoContratoModel vagasPrevisaoContratoModel = new VagasPrevisaoContratoModel();
+
         for (DynamicVO vagaVO : vagaVOs) {
             BigDecimal numeroUnicoPrevisoesContrato = vo.asBigDecimal("NUCONTRPREV");
             String codigoVaga = vagaVO.asString("CODVAGA");

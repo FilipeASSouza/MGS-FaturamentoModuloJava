@@ -27,4 +27,4 @@ AND TRUNC(SYSDATE) BETWEEN TRUNC(DTINICIO) AND TRUNC(DTFIM)
                    AND MGSTCTCONTRCENT.CODSITE = :v_codunidadefatura
                    and mgstctlocaltipofat.codtipofatura  = :v_codtipofatura) , 0 )
 
-                          ) WHERE NROOCORRENCIA = MAXNROOCORRENCIA
+) WHERE NROOCORRENCIA = MAXNROOCORRENCIA

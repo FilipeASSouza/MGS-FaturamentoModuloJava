@@ -13,7 +13,7 @@ import br.com.sankhya.mgs.ct.model.PrevisoesContratoModel;
 public class PrevisoesContratoController {
     PrevisoesContratoModel model;
     public PrevisoesContratoController() {
-        model = new PrevisoesContratoModel();
+    
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
@@ -44,6 +44,6 @@ public class PrevisoesContratoController {
 
     private void inicializaVariaveis(PersistenceEvent persistenceEvent) throws Exception {
         DynamicVO vo = (DynamicVO) persistenceEvent.getVo();
-        model.setVo(vo);
+        model = new PrevisoesContratoModel(vo,persistenceEvent.getJdbcWrapper());
     }
 }

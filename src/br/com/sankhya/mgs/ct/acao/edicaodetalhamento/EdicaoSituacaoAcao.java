@@ -5,13 +5,13 @@ import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
+import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoSituacaoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 
 public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJava {
-
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
         Registro[] linhas = contextoAcao.getLinhas();
@@ -43,11 +43,11 @@ public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJav
                     atualizarDetalhamentoSQL.setParametro("V_NUEVTMENSAL", linha.getCampo("NUEVTMENSAL"));
                     atualizarDetalhamentoSQL.atualizar();
 
-                    EdicaoSituacaoModel edicaoSituacaoModel = new EdicaoSituacaoModel();
-                    edicaoSituacaoModel.setParametro("SITLANC",sitlanc);
+                EdicaoSituacaoModel edicaoSituacaoModel = new EdicaoSituacaoModel();
+                edicaoSituacaoModel.setParametro("SITLANC",sitlanc);
                     edicaoSituacaoModel.setParametro("LOGIN",codusu);
-                    edicaoSituacaoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
-                    edicaoSituacaoModel.executar();
+                edicaoSituacaoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                edicaoSituacaoModel.executar();
                     */
 
             }

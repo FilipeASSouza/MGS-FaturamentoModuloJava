@@ -1,15 +1,18 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
-import br.com.sankhya.mgs.ct.processamento.ProcessamentoFilaParaleloModel;
 import com.sankhya.util.TimeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implements GeraFila {
-    public boolean executar() throws Exception {
-        super.executar();
+    public GeraFilaContrInsLancCustoUPGestorAnexo(JdbcWrapper jdbcWrapper) {
+        super(jdbcWrapper);
+    }
+    public boolean executarFilho() throws Exception {
+        
         setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPGestorAnexo");
 
 
@@ -24,7 +27,7 @@ public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implem
 
         System.out.println("EXECUTANDO GeraFilaContrInsLancCustoUPGestorAnexo CHAVE = " + chave);
 
-        FilaDAO filaDAO = new FilaDAO();
+        FilaDAO filaDAO = new FilaDAO(this.jdbcWrapper);
         filaDAO.setComControleTransacao(true);
         filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
         filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));

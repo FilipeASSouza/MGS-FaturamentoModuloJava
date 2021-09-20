@@ -1,20 +1,21 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsLancFaturaPortal extends GeraFilaSuper implements GeraFila {
-    public GeraFilaContrInsLancFaturaPortal() {
-        super();
+    public GeraFilaContrInsLancFaturaPortal(JdbcWrapper jdbcWrapper) {
+        super(jdbcWrapper);
     }
 
     @Override
-    public boolean executar() throws Exception {
-        super.executar();
+    public boolean executarFilho() throws Exception {
+        
 
-        FilaDAO filaDAO = new FilaDAO();
+        FilaDAO filaDAO = new FilaDAO(this.jdbcWrapper);
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
 

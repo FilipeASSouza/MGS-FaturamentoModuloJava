@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
 import com.sankhya.util.TimeUtils;
 
@@ -7,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsLancFatura extends GeraFilaSuper implements GeraFila {
-    public GeraFilaContrInsLancFatura() {
-        super();
+    public GeraFilaContrInsLancFatura(JdbcWrapper jdbcWrapper) {
+        super(jdbcWrapper);
     }
+    
 
     @Override
-    public boolean executar() throws Exception {
-        super.executar();
+    public boolean executarFilho() throws Exception {
 
-        FilaDAO filaDAO = new FilaDAO();
+        FilaDAO filaDAO = new FilaDAO(this.jdbcWrapper);
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
 

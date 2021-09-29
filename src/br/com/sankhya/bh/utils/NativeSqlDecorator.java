@@ -31,12 +31,22 @@ public class NativeSqlDecorator {
         this.jdbcWrapper = jdbc;
         iniciar();
         nativeSql.appendSql(sql);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
     }
 //    public NativeSqlDecorator(String sql){
 //        EntityFacadeFactory.getDWFFacade().getJdbcWrapper()
 //        iniciar();
 //        nativeSql.appendSql(sql);
 //    }
+    
+    public NativeSqlDecorator(Object objetobase, String arquivo, JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        iniciar();
+        
+        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
+        nativeSql.loadSql(objetobase.getClass(), arquivo);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
+    }
     
     
     public boolean proximo() throws Exception {
@@ -51,30 +61,17 @@ public class NativeSqlDecorator {
         return proximo();
     }
     
-    public NativeSqlDecorator(Object objetobase, String arquivo, JdbcWrapper jdbc) throws Exception {
-        this.jdbcWrapper = jdbc;
-        iniciar();
-        
-        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
-        nativeSql.loadSql(objetobase.getClass(), arquivo);
-    }
-    
-    //    public NativeSqlDecorator(Object objetobase, String arquivo) throws Exception {]
-//
-//        iniciar();
-//
-//        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
-//        nativeSql.loadSql(objetobase.getClass(), arquivo);
-//    }
+
     public void cleanParameters() throws SQLException {
         if (resultSet != null) {
             resultSet.close();
+            aberto = false;
         }
         nativeSql.cleanParameters();
     }
     
     public NativeSqlDecorator setParametro(String nome, Object valor) {
-        aberto = false;
+        
         nativeSql.setNamedParameter(nome, valor);
         return this;
     }
@@ -106,6 +103,7 @@ public class NativeSqlDecorator {
     
     private void iniciar() {
         nativeSql = new NativeSql(jdbcWrapper);
+        nativeSql.setReuseStatements(true);
     }
     
     public void executar() throws Exception {
@@ -126,6 +124,7 @@ public class NativeSqlDecorator {
         if (nativeSql != null) {
             NativeSql.releaseResources(nativeSql);
         }
+        System.out.println("finalizado " + this + "jdbc=" + this.jdbcWrapper.toString());
     }
     
     

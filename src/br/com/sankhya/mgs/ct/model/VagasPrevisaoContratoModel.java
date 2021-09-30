@@ -6,14 +6,11 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
-import br.com.sankhya.jape.wrapper.fluid.FluidUpdateVO;
-import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -58,8 +55,41 @@ public class VagasPrevisaoContratoModel {
     }
 
     public BigDecimal quantidadeVagasAtivas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
-        Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato, codigoVaga);
-        int size = dynamicVOS.size();
+        //Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato, codigoVaga);
+
+        NativeSqlDecorator verificarVagasAtivas = new NativeSqlDecorator("SELECT\n" +
+                "COUNT(*) QTD\n" +
+                "FROM \n" +
+                "( SELECT\n" +
+                "    (\n" +
+                "        CASE\n" +
+                "            WHEN EXISTS (\n" +
+                "                SELECT\n" +
+                "                    codvaga\n" +
+                "                FROM\n" +
+                "                    mgstctunidprevvaga\n" +
+                "                WHERE\n" +
+                "                    codvaga = mgstctcontratovaga.codvaga\n" +
+                "                    AND   (\n" +
+                "                        trunc(dtfim) >= trunc(SYSDATE)\n" +
+                "                        OR    dtfim IS NULL\n" +
+                "                    )\n" +
+                "            ) THEN 'S'\n" +
+                "            ELSE 'N'\n" +
+                "        END\n" +
+                "    ) PREVUNID\n" +
+                "FROM mgstctcontratovaga\n" +
+                "WHERE NUCONTRPREV = :NUCONTRPREV\n" +
+                "AND SUBSTR(CODVAGA,1,3) = :CODVAGA\n" +
+                "AND DTFIM IS NULL ) VAGA\n" +
+                "WHERE\n" +
+                "VAGA.PREVUNID = 'N'");
+        verificarVagasAtivas.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato);
+        verificarVagasAtivas.setParametro("CODVAGA", codigoVaga);
+        int size = 0;
+        if (verificarVagasAtivas.proximo()){
+            size = verificarVagasAtivas.getValorInt("QTD");
+        }
         return new BigDecimal(size);
     }
 
@@ -135,12 +165,35 @@ public class VagasPrevisaoContratoModel {
     }
 
     public ArrayList<DynamicVO> getVagasLivres(BigDecimal numeroUnicoPrevisaoContrato) throws Exception {
-        ArrayList<DynamicVO> vagaVOs = (ArrayList<DynamicVO>) dao.find("NUCONTRPREV = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato);
+        NativeSqlDecorator verificandoVagasLivresSQL = new NativeSqlDecorator("SELECT\n" +
+                "NUCONTRVAGA\n" +
+                "FROM ( SELECT \n" +
+                "NUCONTRVAGA\n" +
+                ", (\n" +
+                "  CASE\n" +
+                "    WHEN EXISTS\n" +
+                "      (SELECT CODVAGA\n" +
+                "      FROM MGSTCTUNIDPREVVAGA\n" +
+                "      WHERE CODVAGA      = MGSTCTCONTRATOVAGA.CODVAGA\n" +
+                "      AND (TRUNC(DTFIM) >= TRUNC(SYSDATE)\n" +
+                "      OR DTFIM          IS NULL)\n" +
+                "      )\n" +
+                "    THEN 'S'\n" +
+                "    ELSE 'N'\n" +
+                "  END) PREVUNID\n" +
+                "FROM MGSTCTCONTRATOVAGA\n" +
+                "WHERE\n" +
+                "NUCONTRPREV = :NUCONTRPREV\n" +
+                "AND DTFIM IS NULL ) F\n" +
+                "WHERE\n" +
+                "F.PREVUNID = 'N'");
+        verificandoVagasLivresSQL.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato);
         ArrayList<DynamicVO> vagaLivresVOs = new ArrayList();
-        for (DynamicVO vagaVO:vagaVOs){
-            if ("N".equals(vagaVO.asString("PREVUNID"))){
-                vagaLivresVOs.add(vagaVO);
-            }
+        while(verificandoVagasLivresSQL.proximo()){
+            BigDecimal numeroUnicoVaga = verificandoVagasLivresSQL.getValorBigDecimal("NUCONTRVAGA");
+            JapeWrapper mgsct_vagas_previsao_contrato = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
+            DynamicVO vagaLivre = mgsct_vagas_previsao_contrato.findByPK(numeroUnicoVaga);
+            vagaLivresVOs.add(vagaLivre);
         }
         return  vagaLivresVOs;
     }

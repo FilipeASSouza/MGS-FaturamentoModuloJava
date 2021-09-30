@@ -66,6 +66,7 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
+            e.printStackTrace();
         } finally {
             quantidadeThreads--;
             JapeSession.close(hnd);

@@ -302,8 +302,12 @@ public class AlocacoesPostoModel {
     }
 
     private void validaStatusContratacaoVaga() throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND COD_VAGA = :CODVAGA");
+        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("SELECT COUNT(*) AS QTD FROM MV_CONTRATACAO@DLINK_MGS WHERE STATUS_MOVIMENTACAO IN (2,3) AND \n" +
+                "COD_VAGA = :CODVAGA and not exists ( select 1 from rhpess_contrato@dlink_mgs\n" +
+                "                                    where rhpess_contrato.codigo+0 = :MATRICULA\n" +
+                "                                    and situacao_contrato = 'D' )");
         nativeSqlDecorator.setParametro("CODVAGA", codigoVaga);
+        nativeSqlDecorator.setParametro("MATRICULA", matricula);
         nativeSqlDecorator.proximo();
         Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
 

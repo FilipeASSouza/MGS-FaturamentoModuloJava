@@ -144,8 +144,15 @@ public class ImportarEventoMensalModel {
 
             //ERRO CURSOR
 
-            NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :codevento and ROWNUM < 2");
-            consultaCustoFaturaSQL.setParametro("codevento", planilha.getValorBigDecimal("CODEVENTO"));
+            NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :CODEVENTO and ROWNUM < 2 " +
+                    "AND NVL(\n" +
+                    "  (SELECT MAX(MX.NUMCONTRATO)\n" +
+                    "  FROM MGSTCTEVTCUS MX\n" +
+                    "  WHERE MX.CODEVENTO = :CODEVENTO\n" +
+                    "  AND MX.NUMCONTRATO = :NUMCONTRATO\n" +
+                    "  ),9)               = NVL(MGSTCTEVTCUS.NUMCONTRATO,9)");
+            consultaCustoFaturaSQL.setParametro("CODEVENTO", planilha.getValorBigDecimal("CODEVENTO"));
+            consultaCustoFaturaSQL.setParametro("NUMCONTRATO", numeroContrato );
             if(consultaCustoFaturaSQL.proximo()){
                 codCusto = consultaCustoFaturaSQL.getValorBigDecimal("CODCUSTO");
                 codTipoFatura = consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA");

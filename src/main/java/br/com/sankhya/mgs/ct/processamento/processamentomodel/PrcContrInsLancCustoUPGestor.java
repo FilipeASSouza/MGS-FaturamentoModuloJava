@@ -56,7 +56,8 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
                 }
             }
         } catch (Exception e) {
-            throw new Exception("Erro ao executar procedure PrcContrInsLancCustoUP: " + e);
+            System.out.println("Erro ao executar procedure PrcContrInsLancCustoUP: "+this.getParametrosExecutacao()+"\n");
+            e.printStackTrace();
         } finally {
             super.finalizar();
         }

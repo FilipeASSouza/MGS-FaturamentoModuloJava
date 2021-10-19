@@ -21,7 +21,6 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();
 
-            System.out.println("Parametros de execução PrcContrInsCargaEvtM001 " + parametrosExecutacao.toString());
 
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
 
@@ -60,7 +59,6 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
     }
 
     private ProcedureCaller getProcedureCaller(JdbcWrapper jdbc, Map<String, String> parametrosExecutacao) throws Exception {
-        System.out.println("Parametros de execução PrcContrInsCargaEvtM001 " + parametrosExecutacao.toString());
         ProcedureCaller caller = new ProcedureCaller("CONTR_INS_CARGA_EVT_M_001");
         caller.addInputParameter(parametrosExecutacao.get("V_CONTRATO"));//V_CONTRATO       IN NUMBER,
         caller.addInputParameter(null);//VTP_VAGA         IN VARCHAR2,

@@ -37,8 +37,6 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
                 }
             }
 
-            System.out.println("INICIANDO FILA GESTOR BOTAO DE ACAO");
-
             for (Registro linha : linhas) {
                 GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel();
                 geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));

@@ -31,8 +31,6 @@ public class ProcessamentoFilaModelFatura implements Runnable{
 
     public void executar() {
 
-        System.out.println("iniciando ContratoCorporativoFilaProcessamentoFatura ln 34");
-
         if (thread == null) {
             if (threadAnterior != null) {
                 threadAnterior.stop();
@@ -54,8 +52,6 @@ public class ProcessamentoFilaModelFatura implements Runnable{
             if (quantidadeExecucaoParalela == null) {
                 quantidadeExecucaoParalela = new BigDecimal(1);
             }
-
-            System.out.println("executando ContratoCorporativoFilaProcessamentoFatura ln 56");
 
             NativeSqlDecorator consultaFila = null;
             try {

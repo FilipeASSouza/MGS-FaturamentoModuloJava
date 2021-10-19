@@ -52,8 +52,6 @@ public class ProcessamentoFilaModelFiscal implements Runnable{
                 quantidadeExecucaoParalela = new BigDecimal(1);
             }
 
-            System.out.println("Executando o run ProcessamentoFilaModelFiscal ln 55");
-
             NativeSqlDecorator consultaFila = null;
             try {
                 BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter("QTDEXECFILAFISC");
@@ -102,7 +100,6 @@ public class ProcessamentoFilaModelFiscal implements Runnable{
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
-                        System.out.println("Execuções paralelas ProcessamentoFilaModelFiscal ln 97");
                         Thread.sleep(10);
                     }
                 }

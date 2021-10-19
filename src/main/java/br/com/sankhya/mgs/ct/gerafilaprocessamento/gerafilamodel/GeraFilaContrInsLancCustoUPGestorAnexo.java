@@ -21,16 +21,13 @@ public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implem
 
             String chave = geraChave(mapParametrosChave);
 
-            System.out.println("EXECUTANDO GeraFilaContrInsLancCustoUPGestorAnexo CHAVE = " + chave);
-
             FilaDAO filaDAO = new FilaDAO();
             filaDAO.setComControleTransacao(true);
             filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
             filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
-            System.out.println("FINALIZADO GeraFilaContrInsLancCustoUPGestorAnexo CHAVE = " + chave + " NOME PROCESSAMENTO = " + getParametroString("nomeProcessamento") );
 
         }catch(Exception e){
-            System.out.println("ERRO AO INICIA A FILA GeraFilaContrInsLancCustoUPGestorAnexo");
+            System.out.println("ERRO AO INICIA A FILA GeraFilaContrInsLancCustoUPGestorAnexo" + e);
             e.printStackTrace();
         }
         return true;

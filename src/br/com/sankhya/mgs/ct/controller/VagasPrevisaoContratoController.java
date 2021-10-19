@@ -20,6 +20,7 @@ public class VagasPrevisaoContratoController {
         //model.diminuirUmQuantidadeContrata();
         model.validaUpdate();
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
+        model.alteraDadosDerivados();
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception{
@@ -29,7 +30,7 @@ public class VagasPrevisaoContratoController {
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        model.alteraDadosDerivados();
+
 
     }
 

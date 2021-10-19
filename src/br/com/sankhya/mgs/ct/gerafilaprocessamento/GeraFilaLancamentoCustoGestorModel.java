@@ -49,17 +49,11 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         aprovaRelatorioFiscal(); // fiscal
 
-        System.out.println("INSERINDO RELATORIO FISCAL");
-
         gerarTabelaTemporaria(); // anexocad
-
-        System.out.println("INSERINDO NA ANEXOCAD");
 
         NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
         consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
         consultaListaCodigoSites.setParametro("CODUNIDADEFATURFIN", this.codigoUnidadeFaturamentoFinal);
-
-        System.out.println("INICIANDO A VERIFICACAO FILA DE PROCESSAMENTO");
 
         while (consultaListaCodigoSites.proximo()) {
 
@@ -99,10 +93,6 @@ public class GeraFilaLancamentoCustoGestorModel {
                 geraFila.executar();
             }
         }
-
-        System.out.println("GEROU TODAS AS UNIDADES FILA GESTOR");
-        /*  */
-
     }
 
     private void aprovaRelatorioFiscal() throws Exception {//RELATORIO_ANEXOS_APROVA(V_MESFATURAMENTO, V_CONTRATO);
@@ -112,10 +102,6 @@ public class GeraFilaLancamentoCustoGestorModel {
         jdbc.openSession();
 
         ProcedureCaller caller = new ProcedureCaller("RELATORIO_ANEXOS_APROVA");
-
-        System.out.println("data de custo = "+ dataCusto.toString() +"numero contrato ="
-                + numeroContrato
-                + "unidade pai = " + codigoUnidadeFaturamento);
 
         caller.addInputParameter(TimeUtils.getYearMonth(dataCusto));//V_MESFATURAMENTO   IN     NUMBER,
         caller.addInputParameter(numeroContrato);//V_CONTRATO         IN     NUMBER

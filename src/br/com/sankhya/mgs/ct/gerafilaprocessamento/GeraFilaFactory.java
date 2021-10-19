@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 public class GeraFilaFactory {
     public GeraFila getGeraFilaContaCorrente(BigDecimal numeroUnicoTipoMetrica, BigDecimal tipoDeProcessamento) throws Exception {
 
-        System.out.println("INICIANDO GERACAO DA FILA CONTA CORRENTE");
-
         DynamicVO mgsct_apoio_metrica = JapeFactory.dao("MGSCT_Apoio_Metrica").findByPK(numeroUnicoTipoMetrica);
 
         //Object o = Class.forName("pacote.pacote1.nomeDaClasse").newIstance();
@@ -40,8 +38,6 @@ public class GeraFilaFactory {
     }
 
     public GeraFila getGeraFila(String textoChave) {
-
-        System.out.println(" INICIANDO SWITCH GERA FILA COM TEXTO CHAVE " + textoChave);
 
         GeraFila geraFila = null;
         switch (textoChave) {

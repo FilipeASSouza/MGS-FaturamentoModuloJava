@@ -377,7 +377,13 @@ public class PrevisoesUnidadeModel {
                 ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(numeroUnicoPrevisaoContrato);
 
                 int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
-                BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
+
+                NativeSqlDecorator consultaQuantidadeContratadaSQL = new NativeSqlDecorator("SELECT QTDCONTRATADA FROM MGSTCTUNIDADEPREV WHERE NUUNIDPREV = :NUUNIDPREV");
+                consultaQuantidadeContratadaSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
+                BigDecimal quantidadeContratada = null;
+                if(consultaQuantidadeContratadaSQL.proximo()){
+                    quantidadeContratada = consultaQuantidadeContratadaSQL.getValorBigDecimal("QTDCONTRATADA");
+                }
 
                 BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel().quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
 
@@ -396,6 +402,7 @@ public class PrevisoesUnidadeModel {
                 }
             }
             criaPrevisaoVagas(vagaVOs);
+            new VagasPrevisaoUnidadeModel().alteraDadosDerivados();
         }
     }
 

@@ -10,8 +10,6 @@ public class GeraFilaContrInsLancCustoUPGestor extends GeraFilaSuper implements 
     public boolean executar() throws Exception {
         super.executar();
 
-        System.out.println(" INICIANDO A EXECUCAO PARA INSERIR GESTOR ");
-
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
 
             mapParametrosChave.put("V_CONTRATO", getParametroBigDecimal("numeroContrato").toString());//V_CONTRATO IN NUMBER
@@ -26,7 +24,6 @@ public class GeraFilaContrInsLancCustoUPGestor extends GeraFilaSuper implements 
             FilaDAO filaDAO = new FilaDAO();
             filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
 
-            System.out.println("FILA INICIALIZADA CHAVE =" + chave + " parametro processamento = " + getParametroString("nomeProcessamento"));
             return true;
     }
 

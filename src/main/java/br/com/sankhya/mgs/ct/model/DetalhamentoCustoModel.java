@@ -193,7 +193,7 @@ public class DetalhamentoCustoModel {
             calcularValorPosto();
             calcularValorServico();
         }
-        vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
+        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTINIEVENTO")));
     }
 
     private BigDecimal getPrecoEvento() throws Exception {

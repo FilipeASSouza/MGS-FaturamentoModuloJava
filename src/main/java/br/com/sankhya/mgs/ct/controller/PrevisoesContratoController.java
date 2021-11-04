@@ -20,23 +20,21 @@ public class PrevisoesContratoController {
         inicializaVariaveis(persistenceEvent);
         model.validaDadosInsert();
         model.preencheCamposCalculados();
-        model.criaRegistrosDerivados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
         model.recalculaCamposCalculados();
-        model.criaRegistrosDerivados();
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-
+        model.criaRegistrosDerivados();
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-
+        model.criaRegistrosDerivados();
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {

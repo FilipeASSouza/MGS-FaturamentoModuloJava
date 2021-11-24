@@ -80,8 +80,7 @@ public class ImportarValoresModel {
         planilha.setColuna("DTFIM", 6);
         planilha.setColuna("ALIQISS", 7);
         planilha.setColuna("VLRTOTAL", 8);
-        planilha.setColuna("DTREFERCCT", 9);
-        planilha.setColuna("ALIQADM", 10);
+        planilha.setColuna("ALIQADM", 9);
 
         while(planilha.proximo()) {
             int valoresProdutosNumeroRegstrosIguais = valoresProdutosDAO.find("NUMCONTRATO = ? AND CODSERVMATERIAL = ? AND CODEVENTO = ? AND ALIQISS = ? AND  DTINICIO = ? AND DTFIM = ? AND NROOCORRENCIA = ?",
@@ -106,10 +105,9 @@ public class ImportarValoresModel {
             valoresProdutosFCVO.set("NROOCORRENCIA",planilha.getValorBigDecimal("NROOCORRENCIA"));
             valoresProdutosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresProdutosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
-            valoresProdutosFCVO.set("ALIQISS",planilha.getValorBigDecimal("ALIQISS"));
-            valoresProdutosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(15,RoundingMode.UP));
-            valoresProdutosFCVO.set("DTREFERCCT",planilha.getValorTimestamp("DTREFERCCT"));
-            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM").setScale(15,RoundingMode.UP));
+            valoresProdutosFCVO.set("ALIQISS",planilha.getValorBigDecimal2("ALIQISS").setScale(2,RoundingMode.HALF_EVEN));
+            valoresProdutosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal2("VLRTOTAL").setScale(15,RoundingMode.UP));
+            valoresProdutosFCVO.set("ALIQADM",planilha.getValorBigDecimal2("ALIQADM").setScale(15,RoundingMode.UP));
             valoresProdutosFCVO.save();
         }
     }
@@ -154,9 +152,9 @@ public class ImportarValoresModel {
             valoresEventosFCVO.set("NROOCORRENCIA",planilha.getValorBigDecimal("NROOCORRENCIA"));
             valoresEventosFCVO.set("DTINICIO",planilha.getValorTimestamp("DTINICIO"));
             valoresEventosFCVO.set("DTFIM",planilha.getValorTimestamp("DTFIM"));
-            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal2("ALIQISS"));
-            valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal("VLRTOTAL").setScale(4,RoundingMode.UP));
-            valoresEventosFCVO.set("ALIQADM",planilha.getValorBigDecimal("ALIQADM"));
+            valoresEventosFCVO.set("ALIQISS",planilha.getValorBigDecimal2("ALIQISS").setScale(2,RoundingMode.HALF_EVEN));
+            valoresEventosFCVO.set("VLRTOTAL", planilha.getValorBigDecimal2("VLRTOTAL").setScale(4,RoundingMode.UP));
+            valoresEventosFCVO.set("ALIQADM",planilha.getValorBigDecimal2("ALIQADM").setScale(4,RoundingMode.UP));
             valoresEventosFCVO.save();
         }
     }

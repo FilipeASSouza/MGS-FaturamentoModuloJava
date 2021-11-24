@@ -74,6 +74,28 @@ public class AlocacoesPostoModel {
             vo.setProperty("STATUSALOCACAO", "S");
         }
 
+        /*
+            Data: 05/11/2021
+            Inserindo a validação do percentual informado na previsão sejá o mesmo cadastrado no arterh
+         */
+
+        if( mestrevo.asBigDecimal("CODEVENTO").equals(BigDecimal.valueOf(-3L))
+                || mestrevo.asBigDecimal("CODEVENTO").equals(BigDecimal.valueOf(-4L)) ){
+
+            NativeSqlDecorator validarPercentualSQL = new NativeSqlDecorator("SELECT AR.C_LIVRE_VALOR01 PERC FROM CRHH.RHSEGU_RES_AREA_CONTR@DLINK_MGS RES\n" +
+                    "INNER JOIN CRHH.RHSEGU_AREA_RISCO@DLINK_MGS AR ON RES.CODIGO_AREA_RISCO = AR.CODIGO\n" +
+                    "WHERE RES.CODIGO_CONTRATO = LPAD(:MATRICULA,15,'0') AND ROWNUM < 2 AND\n" +
+                    ":DATAREF BETWEEN RES.DATA_INI_VIGENCIA AND NVL(RES.DATA_FIM_VIGENCIA, :DATAREF )");
+            validarPercentualSQL.setParametro("MATRICULA", vo.asBigDecimal("MATRICULA") );
+            validarPercentualSQL.setParametro("DATAREF", vo.asTimestamp("DTINICIO") );
+            if( validarPercentualSQL.proximo() ){
+
+                if(!validarPercentualSQL.getValorBigDecimal("PERC").equals(mestrevo.asBigDecimalOrZero("PERCINSALUBRIDADE"))){
+                    ErroUtils.disparaErro("O percentual de insalubridade do empregado é diferente do percentual que consta no posto de serviço!");
+                }
+            }
+        }
+
         validaDataeContratoAtivo( mestrevo.asBigDecimal("NUMCONTRATO"), mestrevo.asBigDecimal("CODSITE"));
 
         validaDataFinalMenorQueInicial();

@@ -65,13 +65,15 @@ public class GeraFilaContaCorrenteModel {
     private void gerarFilaPorUnidadeFaturamento(BigDecimal unidadeFaturamento) throws Exception {
         Collection<DynamicVO> metricasContratoVOS = JapeFactory.dao("MGSCT_Metricas").find("NUMCONTRATO = ?", numeroContrato);
         for (DynamicVO metricasContratoVO : metricasContratoVOS){
-            GeraFila geraFila = geraFilaFactory.getGeraFilaContaCorrente(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"), tipoDeProcessamento);
-            if (geraFila != null) {
-                geraFila.setParametroExecucao("numeroUnicoMetrica",metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
-                geraFila.setParametroExecucao("numeroUnidadeFaturamento",unidadeFaturamento);
-                geraFila.setParametroExecucao("dataReferencia",dataReferencia);
-                geraFila.setParametroExecucao("numeroContrato",numeroContrato);
-                geraFila.executar();
+            if( metricasContratoVO.asString("ATIVO").equals(String.valueOf("S")) ){
+                GeraFila geraFila = geraFilaFactory.getGeraFilaContaCorrente(metricasContratoVO.asBigDecimal("NUTIPOMETRICA"), tipoDeProcessamento);
+                if (geraFila != null) {
+                    geraFila.setParametroExecucao("numeroUnicoMetrica",metricasContratoVO.asBigDecimal("NUCONTRMETRICA"));
+                    geraFila.setParametroExecucao("numeroUnidadeFaturamento",unidadeFaturamento);
+                    geraFila.setParametroExecucao("dataReferencia",dataReferencia);
+                    geraFila.setParametroExecucao("numeroContrato",numeroContrato);
+                    geraFila.executar();
+                }
             }
         }
     }

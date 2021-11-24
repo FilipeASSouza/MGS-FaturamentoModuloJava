@@ -21,7 +21,7 @@ public class MovimentacaoFinanceiraController {
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         //model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        model.validaDadosUpdate(persistenceEvent);
+        //model.validaDadosUpdate(persistenceEvent);
         model.deletarPagamentoFatura(persistenceEvent);
 //        DynamicVO oldVO = (DynamicVO) persistenceEvent.getOldVO();
 //        model.validaDadosUpdate(oldVO);

@@ -105,15 +105,19 @@ public class LerArquivoDeDadosDecorator {
 
     private Cell getCell(String campo) throws Exception {
         Cell cell = null;
-        switch (extensao.toLowerCase()) {
-            case "xls":
-                cell = planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
-                break;
-            case "xlsx":
-                cell = planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
-                break;
+        try {
+            switch (extensao.toLowerCase()) {
+                case "xls":
+                    cell = planilhaXsl.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
+                    break;
+                case "xlsx":
+                    cell = planilhaXslx.getRow(linhaSelecionada).getCell(mapaDeColunas.get(campo));
+                    break;
+            }
+            return cell;
+        }catch (Exception e){
+            return null;
         }
-        return cell;
     }
 
 

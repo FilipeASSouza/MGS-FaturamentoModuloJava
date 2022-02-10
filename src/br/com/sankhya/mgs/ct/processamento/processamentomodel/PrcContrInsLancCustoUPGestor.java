@@ -14,15 +14,16 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
     IntegracaoDetalhaCustoModel model;
     public PrcContrInsLancCustoUPGestor() throws Exception {
         super();
-        model = new IntegracaoDetalhaCustoModel(jdbc);
+    
     }
 
     @Override
     public boolean executar() throws Exception {
+
         boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
-
+            model = new IntegracaoDetalhaCustoModel(jdbc);
             System.out.println("Executando processamento = ");
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();//todo refatorar colocando na super

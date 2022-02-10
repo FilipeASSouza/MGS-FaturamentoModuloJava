@@ -9,13 +9,11 @@ import java.util.Map;
 
 public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Processar {
     IntegracaoDetalhaCustoModel model;
-    public PrcContrInsLancFaturaPortal() throws Exception {
-        super();
-        model = new IntegracaoDetalhaCustoModel(jdbc);
-    }
+  
 
     @Override
     public boolean executar() throws Exception {
+        model = new IntegracaoDetalhaCustoModel(jdbc);
         boolean executado = false;//todo refatorar pra super
         try {
             super.executar();

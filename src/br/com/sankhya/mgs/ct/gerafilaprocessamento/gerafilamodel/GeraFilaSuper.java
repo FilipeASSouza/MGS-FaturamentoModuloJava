@@ -22,7 +22,7 @@ public abstract class GeraFilaSuper implements GeraFila {
     }
     
     public boolean executar() throws Exception {
-        return PerformanceMonitor.INSTANCE.measureReturnJava("GeraFilaSuper", null, () -> {
+        return PerformanceMonitor.INSTANCE.measureReturnJava("GeraFilaSuper"+getClass().getName(), null, () -> {
             getParametrosMetricas();
             return executarFilho();
         });

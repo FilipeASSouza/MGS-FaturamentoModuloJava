@@ -22,7 +22,7 @@ public class ImportarEventoMensalAcao implements AcaoRotinaJava {
             JapeSession.SessionHandle topMostHnd = JapeSession.getCurrentSession().getTopMostHandle();
             topMostHnd.setReuseJDBCConnection(true);
             for (Registro linha : linhas) {
-                PerformanceMonitor.INSTANCE.measureJava("ImportarEventoMensalAcao",()->{
+                PerformanceMonitor.INSTANCE.measureJava("ImportarEventoMensalAcao", ()->{
                     ImportarEventoMensalModel importarEventoMensalModel = new ImportarEventoMensalModel(jdbcWrapper);
                     importarEventoMensalModel.setNumeroUnico((BigDecimal) linha.getCampo("NUIMPEVTMENSAL"));
                     importarEventoMensalModel.setNumeroContrato((BigDecimal) linha.getCampo("NUMCONTRATO"));

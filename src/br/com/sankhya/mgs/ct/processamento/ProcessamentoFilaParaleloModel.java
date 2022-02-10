@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.processamento;
 
+import br.com.lugh.performance.ExtensaoLogger;
 import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
@@ -32,13 +33,15 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
             final JapeSession.SessionHandle hndFinal = hnd;
             JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
             FilaDAO filaDAO = new FilaDAO(jdbcWrapper);
-            try {
-                
-                PerformanceMonitor.INSTANCE.measureJava(nomeFila + ":" + tipoFila, () -> {
+            PerformanceMonitor.INSTANCE.measureJava(nomeFila + ":" + tipoFila, () -> {
+                ExtensaoLogger logger = ExtensaoLogger.getLogger();
+                try {
+                    
+                    
                     hndFinal.execWithTX(() -> {
                         processamento.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
                         
-                        boolean executado = processamento.executar();
+                        boolean executado = processamento.execute();
                         
                         if (executado) {
                             filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
@@ -50,20 +53,21 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
                         }
                         
                     });
-                });
-                
-                
-            } catch (Exception e) {
-                try {
-                    hnd.execWithTX(() -> {
-                        filaDAO.atualizaFilaErro(
-                                numeroUnicoFilaProcessamento,
-                                "Erro ao executar processamento: " + e);
-                    });
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                    
+                    
+                } catch (Exception e) {
+                    logger.severe("Erro ao executar planilha"+e.getMessage(),e);
+                    try {
+                        hndFinal.execWithTX(() -> {
+                            filaDAO.atualizaFilaErro(
+                                    numeroUnicoFilaProcessamento,
+                                    "Erro ao executar processamento: " + e);
+                        });
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
-            }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

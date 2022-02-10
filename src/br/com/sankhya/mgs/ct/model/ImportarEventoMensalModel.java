@@ -141,6 +141,12 @@ public class ImportarEventoMensalModel {
         }
     }
     
+    private BigDecimal getBigDecimalScale(BigDecimal b,int scale) {
+        if (b == null)
+            return null;
+        return b.setScale(0, RoundingMode.HALF_UP);
+    }
+    
     private void processaPlanilha(String arquivo) throws Exception {
         
         
@@ -174,7 +180,7 @@ public class ImportarEventoMensalModel {
         
         planilha.setColuna("CODTIPOFATURA", 23);
         final FinalWrapper<BigDecimal> i = new FinalWrapper<>();
-        i.setWrapperReference(pegaCodigoTGFNUM(jdbcWrapper,"NUEVTMENSAL", "MGSCT_Detalhamento_Custo", "MGSTCTEVTMENSAL", "MGSTCTEVTMENSAL", BigDecimal.ONE));
+        i.setWrapperReference(pegaCodigoTGFNUM(jdbcWrapper, "NUEVTMENSAL", "MGSCT_Detalhamento_Custo", "MGSTCTEVTMENSAL", "MGSTCTEVTMENSAL", BigDecimal.ONE));
         while (planilha.proximo()) {
             i.setWrapperReference(i.getWrapperReference().add(BigDecimal.ONE));
             //ERRO CURSOR
@@ -199,14 +205,14 @@ public class ImportarEventoMensalModel {
                 detalhamentoCustoFCVO.set("MTVCARGA", motivoCarga);//pedir para o usuário digitar o motivo
                 detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
                 detalhamentoCustoFCVO.set("USUINS", daoUser.findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usuário que inseriu
-                detalhamentoCustoFCVO.set("CODUNIDADEFATUR", planilha.getValorBigDecimal("CODUNIDADEFATUR").setScale(0, RoundingMode.HALF_UP));
+                detalhamentoCustoFCVO.set("CODUNIDADEFATUR", getBigDecimalScale(planilha.getValorBigDecimal("CODUNIDADEFATUR"),0));
                 detalhamentoCustoFCVO.set("CODVAGA", planilha.getValorString("CODVAGA"));
-                detalhamentoCustoFCVO.set("CODSERVMATERIAL", planilha.getValorBigDecimal("CODSERVMATERIAL").setScale(0, RoundingMode.HALF_UP));
-                detalhamentoCustoFCVO.set("CODTIPOPOSTO", planilha.getValorBigDecimal("CODTIPOPOSTO") != null ? planilha.getValorBigDecimal("CODTIPOPOSTO").setScale(0, RoundingMode.HALF_UP) : null);
-                detalhamentoCustoFCVO.set("CODCARGO", planilha.getValorBigDecimal("CODCARGO") != null ? planilha.getValorBigDecimal("CODCARGO").setScale(0, RoundingMode.HALF_UP) : null);
-                detalhamentoCustoFCVO.set("CODPRONTUARIO", planilha.getValorBigDecimal("CODPRONTUARIO") != null ? planilha.getValorBigDecimal("CODPRONTUARIO").setScale(0, RoundingMode.HALF_UP) : null);
+                detalhamentoCustoFCVO.set("CODSERVMATERIAL", getBigDecimalScale(planilha.getValorBigDecimal("CODSERVMATERIAL"),0));
+                detalhamentoCustoFCVO.set("CODTIPOPOSTO", getBigDecimalScale(planilha.getValorBigDecimal("CODTIPOPOSTO"),0));
+                detalhamentoCustoFCVO.set("CODCARGO", getBigDecimalScale(planilha.getValorBigDecimal("CODCARGO"),0));
+                detalhamentoCustoFCVO.set("CODPRONTUARIO", getBigDecimalScale(planilha.getValorBigDecimal("CODPRONTUARIO"),0));
                 detalhamentoCustoFCVO.set("NOME", planilha.getValorString("NOME"));
-                detalhamentoCustoFCVO.set("CODEVENTO", planilha.getValorBigDecimal("CODEVENTO").setScale(0, RoundingMode.HALF_UP));
+                detalhamentoCustoFCVO.set("CODEVENTO", getBigDecimalScale(planilha.getValorBigDecimal("CODEVENTO"),0));
                 detalhamentoCustoFCVO.set("DTINIEVENTO", planilha.getValorTimestamp("DTINIEVENTO"));
                 detalhamentoCustoFCVO.set("DTFIMEVENTO", planilha.getValorTimestamp("DTFIMEVENTO"));
                 detalhamentoCustoFCVO.set("DSCEVENTO", planilha.getValorString("DSCEVENTO"));
@@ -214,9 +220,9 @@ public class ImportarEventoMensalModel {
                 detalhamentoCustoFCVO.set("VLRUNIEVENTO", valorUnitario);
                 detalhamentoCustoFCVO.set("QTDEVENTO", arredondaValor(planilha.getValorBigDecimal("QTDEVENTO")));
                 detalhamentoCustoFCVO.set("VLRTOTEVENTO", arredondaValor(planilha.getValorBigDecimal("VLRTOTEVENTO")));
-                detalhamentoCustoFCVO.set("COMPEVENTO", planilha.getValorBigDecimal("COMPEVENTO").setScale(0, RoundingMode.HALF_UP));
-                detalhamentoCustoFCVO.set("COMPLANC", planilha.getValorBigDecimal("COMPLANC").setScale(0, RoundingMode.HALF_UP));
-                detalhamentoCustoFCVO.set("COMPFATU", planilha.getValorBigDecimal("COMPFATU").setScale(0, RoundingMode.HALF_UP));
+                detalhamentoCustoFCVO.set("COMPEVENTO", getBigDecimalScale(planilha.getValorBigDecimal("COMPEVENTO"),0));
+                detalhamentoCustoFCVO.set("COMPLANC", getBigDecimalScale(planilha.getValorBigDecimal("COMPLANC"),0));
+                detalhamentoCustoFCVO.set("COMPFATU", getBigDecimalScale(planilha.getValorBigDecimal("COMPFATU"),0));
                 detalhamentoCustoFCVO.set("PERCITF", arredondaValor(planilha.getValorBigDecimal("PERCITF")));
                 detalhamentoCustoFCVO.set("PERCTXADM", arredondaValor(planilha.getValorBigDecimal("PERCTXADM")));
                 detalhamentoCustoFCVO.set("VLRTXADM", arredondaValor(planilha.getValorBigDecimal("VLRTXADM")));

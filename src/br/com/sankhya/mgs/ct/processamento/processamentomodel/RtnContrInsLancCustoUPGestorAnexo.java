@@ -22,15 +22,12 @@ import java.util.Map;
 public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements Processar {
     IntegracaoDetalhaCustoModel model;
     NativeSqlDecorator nativeSqlDecorator;
-    public RtnContrInsLancCustoUPGestorAnexo() throws Exception {
-        super();
-        model = new IntegracaoDetalhaCustoModel(jdbc);
-        nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql",jdbc);
-    }
     
     
     @Override
     public boolean executar() throws Exception {
+        model = new IntegracaoDetalhaCustoModel(jdbc);
+        nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql",jdbc);
         boolean executado = false;//todo refatorar pra super
         int numeroPaginasGerado;
         try {

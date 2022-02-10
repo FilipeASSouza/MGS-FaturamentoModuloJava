@@ -6,13 +6,15 @@ import br.com.sankhya.bh.utils.FilaUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.processamento.processamentomodel.Processar;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import br.com.sankhya.modelcore.util.MGECoreParameter;
+import com.sankhya.util.FinalWrapper;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -22,18 +24,22 @@ public class ProcessamentoFilaModel {
     BlockingThreadPoolExecutor tp;
     private String nomeFila;
     private String nomeConsulta;
+    private String nomeParametro;
     private JdbcWrapper jdbcWrapper;
-    public void stop(){
+    final Set<FilaPojo> fila = new HashSet<>();
+    
+    public void stop() {
         tp.shutdownNow();
     }
-    public static void stopAll(){
+    
+    public static void stopAll() {
         for (Map.Entry<String, ProcessamentoFilaModel> model : instancias.entrySet()) {
             model.getValue().stop();
         }
     }
     
-    private ProcessamentoFilaModel(String fila,JdbcWrapper jdbc) {
-        this.jdbcWrapper = jdbc;
+    private ProcessamentoFilaModel(String fila, JdbcWrapper jdbc) {
+        this.jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
         nomeFila = fila;
         switch (fila) {
             case "normal":
@@ -47,6 +53,16 @@ public class ProcessamentoFilaModel {
                 break;
             case "fiscal":
                 nomeConsulta = "buscaFilaProcessamentoFiscal.sql";
+                break;
+        }
+        switch (fila) {
+            case "normal":
+            case "fatura":
+            case "gestor":
+                nomeParametro = "MGSQTDEXECFILA";
+                break;
+            case "fiscal":
+                nomeParametro = "QTDEXECFILAFISC";
                 break;
         }
         BigDecimal quantidadeExecucaoParalela;
@@ -63,7 +79,7 @@ public class ProcessamentoFilaModel {
     }
     
     public static synchronized ProcessamentoFilaModel getInstance(String fila, JdbcWrapper jdbc) throws Exception {
-        return instancias.computeIfAbsent(fila, s -> new ProcessamentoFilaModel(fila,jdbc));
+        return instancias.computeIfAbsent(fila, s -> new ProcessamentoFilaModel(fila, jdbc));
     }
     
     public void executar() throws Exception {
@@ -71,19 +87,20 @@ public class ProcessamentoFilaModel {
     }
     
     public void run() throws Exception {
+        this.jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
         ProcessamentoFilaFactory processamentoFilaFactory = new ProcessamentoFilaFactory();
         
-        final List<FilaPojo> fila = new ArrayList<>();
-        PerformanceMonitor.INSTANCE.measureJava("Carrega Fila "+nomeFila, () -> {
+        
+        PerformanceMonitor.INSTANCE.measureJava("Carrega Fila " + nomeFila, () -> {
             NativeSqlDecorator consultaFila = null;
             try {
                 System.out.println("Executando o run ProcessamentoFilaModel" + nomeFila);
-                BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter("MGSQTDEXECFILA");
+                BigDecimal quantidadeExecucaoFila = (BigDecimal) MGECoreParameter.getParameter(nomeParametro);
                 if (quantidadeExecucaoFila == null) {
                     quantidadeExecucaoFila = new BigDecimal(10);
                 }
-    
-                consultaFila = new NativeSqlDecorator(this, nomeConsulta,this.jdbcWrapper);
+                
+                consultaFila = new NativeSqlDecorator(this, nomeConsulta, this.jdbcWrapper);
                 consultaFila.setParametro("QTDEXECFILA", quantidadeExecucaoFila);
                 while (consultaFila.proximo()) {
                     fila.add(new FilaPojo(consultaFila.getValorBigDecimal("NUFILAPROC"), consultaFila.getValorBigDecimal("NUTIPOPROC"), consultaFila.getValorString("CHAVE"), consultaFila.getValorString("NOME")));
@@ -95,14 +112,11 @@ public class ProcessamentoFilaModel {
                     consultaFila.close();
             }
         });
-        
+        atualizarFilaeAguardarcommit();
         try {
-            PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento "+nomeFila, () -> {
+            PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
                 FilaUtils filaUtils = new FilaUtils(jdbcWrapper);
                 for (FilaPojo filaCod : fila) {
-    
-                    filaUtils.atualizarStatusFila(filaCod.getNUFILAPROC(), "A");
-                    
                     
                     Processar processamento = processamentoFilaFactory.getProcessamento(filaCod.NOME);
                     
@@ -112,13 +126,41 @@ public class ProcessamentoFilaModel {
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(filaCod.getNUFILAPROC());
                     processamentoFilaParaleloModel.setNomeFila(nomeFila);
                     processamentoFilaParaleloModel.setTipoFila(filaCod.NOME);
+                    q.put(processamentoFilaParaleloModel);
                     tp.execute(processamentoFilaParaleloModel);
                     
                 }
             });
+            if (tp.getQueue().isEmpty()) {
+                System.out.println("Finalizado");
+            }
         } catch (Exception e) {
             throw new Exception("Erro ao percorrer consulta busca fila processamento: " + e);
         }
+    }
+    
+    private void atualizarFilaeAguardarcommit() throws Exception {
+        FinalWrapper<Exception> exc = new FinalWrapper<>();
+        Thread t = new Thread(() -> {
+            try {
+                PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
+                    JdbcWrapper jdbc = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+                    FilaUtils filaUtils = new FilaUtils(jdbc);
+                    for (FilaPojo filaCod : fila) {
+                        filaUtils.atualizarStatusFila(filaCod.getNUFILAPROC(), "A");
+                    }
+                });
+                if (tp.getQueue().isEmpty()) {
+                    System.out.println("Finalizado");
+                }
+            } catch (Exception e) {
+                exc.setWrapperReference(new Exception("Erro ao percorrer consulta busca fila processamento: " + e));
+            }
+        });
+        t.start();
+        t.join();
+        if (exc.getWrapperReference() != null)
+            throw exc.getWrapperReference();
     }
     
     

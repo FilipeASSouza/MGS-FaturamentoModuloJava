@@ -20,9 +20,19 @@ public class ProcessarSuper implements Processar {
     protected JdbcWrapper jdbc = null;
     protected String mensagem;
     final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-    
+    Map<String, String> mapParametros = new HashMap<String, String>();
     protected ProcessarSuper() {
     
+    }
+    
+    @Override
+    public boolean execute() throws Exception {
+        try {
+            return executar();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Falha ao executar fila Parametros" + mapParametros);
+        }
     }
     
     @Override
@@ -57,6 +67,7 @@ public class ProcessarSuper implements Processar {
             String[] chaveValor = parametro.split("=");
             mapParametros.put(chaveValor[0], chaveValor[1]);
         }
+        this.mapParametros = mapParametros;
         return mapParametros;
         
     }

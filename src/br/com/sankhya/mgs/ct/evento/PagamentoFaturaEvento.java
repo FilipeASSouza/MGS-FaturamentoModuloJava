@@ -15,7 +15,9 @@ public class PagamentoFaturaEvento implements EventoProgramavelJava {
     }
 
     @Override
-    public void beforeInsert(PersistenceEvent persistenceEvent) { }
+    public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
+        controller.beforeInsert(persistenceEvent);
+    }
 
     @Override
     public void beforeDelete(PersistenceEvent persistenceEvent) { }

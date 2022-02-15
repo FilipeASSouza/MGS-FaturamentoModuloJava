@@ -15,7 +15,7 @@ public class PagamentoFaturaController {
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDadosInsert();
+        model.validaDadosInsert();
         //model.preecheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {

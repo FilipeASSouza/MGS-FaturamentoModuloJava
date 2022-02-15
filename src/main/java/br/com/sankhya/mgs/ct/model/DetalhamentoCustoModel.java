@@ -163,6 +163,7 @@ public class DetalhamentoCustoModel {
         if( vo.asString("TIPLANCEVENTO") == null
         || vo.asString("TIPLANCEVENTO").equalsIgnoreCase(String.valueOf("A"))){
             vo.setProperty("TIPLANCEVENTO", "M");
+            vo.setProperty("CODINTEGRACAODC", null);
         }
     }
     //inutilizado
@@ -285,7 +286,7 @@ public class DetalhamentoCustoModel {
         calcularValorPostoAtualizacao();
         calcularValorServicoAtualizacao();
 
-        vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
+        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTINIEVENTO")));
     }
 
     public void calcularValorPosto() throws Exception{

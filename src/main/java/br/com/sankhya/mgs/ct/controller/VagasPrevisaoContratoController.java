@@ -20,6 +20,7 @@ public class VagasPrevisaoContratoController {
         //model.diminuirUmQuantidadeContrata();
         model.validaUpdate();
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
+
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception{

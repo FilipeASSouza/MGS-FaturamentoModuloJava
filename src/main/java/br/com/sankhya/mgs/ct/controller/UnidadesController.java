@@ -13,21 +13,25 @@ public class UnidadesController {
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         this.inicializaVariaveis(persistenceEvent);
         this.model.preecheCamposCalculados();
+        this.model.criaRegistrosDerivados();
+        model.validaDadosInsert();
     }
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         this.inicializaVariaveis(persistenceEvent);
 //        DynamicVO oldVO = (DynamicVO)persistenceEvent.getOldVO();
+        this.model.criaRegistrosDerivados();
+        model.validaDadosUpdate();
     }
 
     public void afterInsert(PersistenceEvent persistenceEvent) throws Exception {
         this.inicializaVariaveis(persistenceEvent);
-        this.model.criaRegistrosDerivados();
+
     }
 
     public void afterUpdate(PersistenceEvent persistenceEvent) throws Exception {
         this.inicializaVariaveis(persistenceEvent);
-        this.model.criaRegistrosDerivados();
+
     }
 
     public void beforeDelete(PersistenceEvent persistenceEvent) throws Exception {

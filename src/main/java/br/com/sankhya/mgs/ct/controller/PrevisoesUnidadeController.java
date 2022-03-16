@@ -3,6 +3,7 @@ package br.com.sankhya.mgs.ct.controller;
 import br.com.sankhya.jape.event.PersistenceEvent;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.mgs.ct.model.PrevisoesUnidadeModel;
+import br.com.sankhya.mgs.ct.model.VagasPrevisaoUnidadeModel;
 
 /**
  * Entidade: MGSCT_Previsoes_Unidade
@@ -15,9 +16,9 @@ public class PrevisoesUnidadeController {
 
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
+        model.validaDadosUpdade();
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
         model.recalculaCamposCalculados();
-        model.validaDadosUpdade();
     }
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {

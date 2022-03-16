@@ -38,12 +38,10 @@ public class ProcessamentoFilaFactory {
             case "CONTR_INS_CARGA_EVT_M_022":
                 return new PrcContrInsCargaEvtM022();
             case "CONTR_INS_LANC_CUSTO_UP":
-                System.out.println("ENTROU AQUI ProcessamentoFilaFactory CONTR_INS_LANC_CUSTO_UP ln 41");
                 return new PrcContrInsLancCustoUP();
             case "RtnContrInsLancCustoUPAnexo":
                 return new RtnContrInsLancCustoUPAnexo();
             case "CONTR_INS_LANC_CUSTO_UP_GESTOR":
-                System.out.println("ENTROU AQUI CONTR_INS_LANC_CUSTO_UP_GESTOR ln 46");
                 return new PrcContrInsLancCustoUPGestor();
             case "RtnContrInsLancCustoUPGestorAnexo":
                 return new RtnContrInsLancCustoUPGestorAnexo();

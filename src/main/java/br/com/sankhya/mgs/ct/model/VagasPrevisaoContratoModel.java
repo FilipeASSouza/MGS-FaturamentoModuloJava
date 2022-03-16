@@ -55,8 +55,17 @@ public class VagasPrevisaoContratoModel {
     }
 
     public BigDecimal quantidadeVagasAtivas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
-        Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato, codigoVaga);
-        int size = dynamicVOS.size();
+        //Collection<DynamicVO> dynamicVOS = dao.find("NUCONTRPREV = ? AND SUBSTR(CODVAGA,1,3) = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato, codigoVaga);
+
+        int size  = 0;
+        NativeSqlDecorator verificandoVagasLivresPrevisaoSQL = new NativeSqlDecorator("SELECT COUNT( NUCONTRVAGA ) QTD FROM MGSTCTCONTRATOVAGA WHERE NUCONTRPREV = :NUCONTRPREV AND DTFIM IS NULL AND SUBSTR( CODVAGA, 1, 3 ) = :CODVAGA ");
+        verificandoVagasLivresPrevisaoSQL.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato );
+        verificandoVagasLivresPrevisaoSQL.setParametro("CODVAGA", codigoVaga );
+
+        if( verificandoVagasLivresPrevisaoSQL.proximo() ){
+            size = verificandoVagasLivresPrevisaoSQL.getValorInt("QTD");
+        }
+
         return new BigDecimal(size);
     }
 
@@ -78,10 +87,10 @@ public class VagasPrevisaoContratoModel {
         }
 
         if( vo.asString("PREVUNID").equalsIgnoreCase(String.valueOf("S")) ){
-            ErroUtils.disparaErro("<b>Data Final</b> da previsão da vaga não pode ser alterada esta vinculada a uma unidade!");
+            ErroUtils.disparaErro("Datas da previsão da vaga não pode ser alterada esta vinculada a uma unidade!");
         }
 
-        subtrairVagaPrevisaoContrato = true;
+        //subtrairVagaPrevisaoContrato = true;
     }
 
     //descontinuado - Sugestão do Juliano para que se a data estiver diferente de nulo alerta
@@ -109,7 +118,6 @@ public class VagasPrevisaoContratoModel {
                 ErroUtils.disparaErro("Vaga ainda se encontra ativa na previsao da unidade, deve ser desabilitado primeiro!");
             }
 
-            subtrairVagaPrevisaoContrato = true;
         }
     }
 
@@ -132,18 +140,45 @@ public class VagasPrevisaoContratoModel {
     }
 
     public ArrayList<DynamicVO> getVagasLivres(BigDecimal numeroUnicoPrevisaoContrato) throws Exception {
-        ArrayList<DynamicVO> vagaVOs = (ArrayList<DynamicVO>) dao.find("NUCONTRPREV = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato);
+        NativeSqlDecorator verificandoVagasLivresSQL = new NativeSqlDecorator("SELECT\n" +
+                "NUCONTRVAGA\n" +
+                "FROM ( SELECT \n" +
+                "NUCONTRVAGA\n" +
+                ", (\n" +
+                "  CASE\n" +
+                "    WHEN EXISTS\n" +
+                "      (SELECT CODVAGA\n" +
+                "      FROM MGSTCTUNIDPREVVAGA\n" +
+                "      WHERE CODVAGA      = MGSTCTCONTRATOVAGA.CODVAGA\n" +
+                "      AND (TRUNC(DTFIM) >= TRUNC(SYSDATE)\n" +
+                "      OR DTFIM          IS NULL)\n" +
+                "      )\n" +
+                "    THEN 'S'\n" +
+                "    ELSE 'N'\n" +
+                "  END) PREVUNID\n" +
+                "FROM MGSTCTCONTRATOVAGA\n" +
+                "WHERE\n" +
+                "NUCONTRPREV = :NUCONTRPREV\n" +
+                "AND DTFIM IS NULL ) F\n" +
+                "WHERE\n" +
+                "F.PREVUNID = 'N'");
+        verificandoVagasLivresSQL.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato);
         ArrayList<DynamicVO> vagaLivresVOs = new ArrayList();
-        for (DynamicVO vagaVO:vagaVOs){
-            if ("N".equals(vagaVO.asString("PREVUNID"))){
-                vagaLivresVOs.add(vagaVO);
-            }
+        while(verificandoVagasLivresSQL.proximo()){
+            BigDecimal numeroUnicoVaga = verificandoVagasLivresSQL.getValorBigDecimal("NUCONTRVAGA");
+            JapeWrapper mgsct_vagas_previsao_contrato = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
+            DynamicVO vagaLivre = mgsct_vagas_previsao_contrato.findByPK(numeroUnicoVaga);
+            vagaLivresVOs.add(vagaLivre);
         }
         return  vagaLivresVOs;
     }
 
     public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
+
+        if( campos.containsKey("DTFIM") ){
+            subtrairVagaPrevisaoContrato = true;
+        }
 
         //todo melhorar a descricao do campo pegando do dicionario de dados
         if( campos.containsKey("CODVAGA") ){mensagemErro += "<b>Vaga</b> não pode ser alterada!";}

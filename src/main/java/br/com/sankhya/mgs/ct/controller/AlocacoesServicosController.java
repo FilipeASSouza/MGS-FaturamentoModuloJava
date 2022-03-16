@@ -14,13 +14,13 @@ public class AlocacoesServicosController {
 
     public void beforeInsert(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
-        //model.validaDadosInsert();
+        model.validaDadosInsert();
         model.preencheCamposCalculados();
     }
     public void beforeUpdate(PersistenceEvent persistenceEvent) throws Exception {
         inicializaVariaveis(persistenceEvent);
         model.validaCamposUpdate(persistenceEvent.getModifingFields());
-        //model.validaDadosUpdate(oldVO);
+        model.validaDadosUpdate();
         //model.recalculaCamposCalculados();
 
     }

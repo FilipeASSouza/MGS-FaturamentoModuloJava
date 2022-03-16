@@ -38,8 +38,15 @@ public class PagamentoFaturaModel {
 
     }
 
-    private void validaDadosInsert() throws Exception {
+    public void validaDadosInsert() throws Exception {
+        BigDecimal numeroUnicoFin = vo.asBigDecimalOrZero("NUFIN");
 
+        if( !numeroUnicoFin.equals(BigDecimal.ZERO) ){
+            DynamicVO financeiroVO = dao.findOne("NUFIN =?", new Object[]{numeroUnicoFin});
+            if(!financeiroVO.asBigDecimalOrZero("NUFIN").equals(BigDecimal.ZERO)){
+                ErroUtils.disparaErro("Baixa duplicada");
+            }
+        }
     }
 
     private void validaDadosUpdate() { }

@@ -67,7 +67,7 @@ public class DetalhamentoCustoModel {
         JapeWrapper daoRH = JapeFactory.dao("MGSCT_Empregado_RH");
 
         BigDecimal anoMes = TimeUtils.getYearMonth(vo.asTimestamp("DTLCCUSTO"));
-        BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU");
+        BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU").setScale(0,RoundingMode.UNNECESSARY);
 
         if( !anoMes.equals( compentenciaFaturamento ) ){
             ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
@@ -87,8 +87,15 @@ public class DetalhamentoCustoModel {
             }
         }
 
-        NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :codevento and ROWNUM < 2");
-        consultaCustoFaturaSQL.setParametro("codevento", vo.asBigDecimal("CODEVENTO"));
+        NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :CODEVENTO and ROWNUM < 2 " +
+                "AND NVL(\n" +
+                "  (SELECT MAX(MX.NUMCONTRATO)\n" +
+                "  FROM MGSTCTEVTCUS MX\n" +
+                "  WHERE MX.CODEVENTO = :CODEVENTO\n" +
+                "  AND MX.NUMCONTRATO = :NUMCONTRATO\n" +
+                "  ),9)               = NVL(MGSTCTEVTCUS.NUMCONTRATO,9)");
+        consultaCustoFaturaSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+        consultaCustoFaturaSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
         if(consultaCustoFaturaSQL.proximo()){
             vo.setProperty("CODCUSTO", consultaCustoFaturaSQL.getValorBigDecimal("CODCUSTO"));
             vo.setProperty("CODTIPOFATURA", consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA"));
@@ -122,8 +129,15 @@ public class DetalhamentoCustoModel {
             ErroUtils.disparaErro("Competencia do faturamento diferente da data do lançamento!");
         }
 
-        NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :codevento and ROWNUM < 2");
-        consultaCustoFaturaSQL.setParametro("codevento", vo.asBigDecimal("CODEVENTO"));
+        NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :CODEVENTO and ROWNUM < 2 " +
+                "AND NVL(\n" +
+                "  (SELECT MAX(MX.NUMCONTRATO)\n" +
+                "  FROM MGSTCTEVTCUS MX\n" +
+                "  WHERE MX.CODEVENTO = :CODEVENTO\n" +
+                "  AND MX.NUMCONTRATO = :NUMCONTRATO\n" +
+                "  ),9)               = NVL(MGSTCTEVTCUS.NUMCONTRATO,9)");
+        consultaCustoFaturaSQL.setParametro("CODEVENTO", vo.asBigDecimal("CODEVENTO"));
+        consultaCustoFaturaSQL.setParametro("NUMCONTRATO", vo.asBigDecimal("NUMCONTRATO"));
         if(consultaCustoFaturaSQL.proximo()){
             vo.setProperty("CODCUSTO", consultaCustoFaturaSQL.getValorBigDecimal("CODCUSTO"));
             vo.setProperty("CODTIPOFATURA", consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA"));
@@ -149,6 +163,7 @@ public class DetalhamentoCustoModel {
         if( vo.asString("TIPLANCEVENTO") == null
         || vo.asString("TIPLANCEVENTO").equalsIgnoreCase(String.valueOf("A"))){
             vo.setProperty("TIPLANCEVENTO", "M");
+            vo.setProperty("CODINTEGRACAODC", null);
         }
     }
     //inutilizado
@@ -179,7 +194,7 @@ public class DetalhamentoCustoModel {
             calcularValorPosto();
             calcularValorServico();
         }
-        vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
+        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTINIEVENTO")));
     }
 
     private BigDecimal getPrecoEvento() throws Exception {
@@ -271,7 +286,7 @@ public class DetalhamentoCustoModel {
         calcularValorPostoAtualizacao();
         calcularValorServicoAtualizacao();
 
-        vo.setProperty("COMPEVENTO", vo.asBigDecimal("COMPLANC"));
+        vo.setProperty("COMPEVENTO", TimeUtils.getYearMonth(vo.asTimestamp("DTINIEVENTO")));
     }
 
     public void calcularValorPosto() throws Exception{
@@ -439,11 +454,17 @@ public class DetalhamentoCustoModel {
     }
 
     public void opcaoCalculaTaxa() throws Exception{
-        NativeSqlDecorator calculandoTaxaSQL = new NativeSqlDecorator("select Mgstctcontratotaxa.Ativo calcula, Mgstctcontratotaxa.Vlrtaxa , Mgstctlocaltipofat.Nulocaltipofat\n" +
+        NativeSqlDecorator calculandoTaxaSQL = new NativeSqlDecorator("select NVL( Mgstctcontratotaxa.Ativo, 'N' ) calcula, Mgstctcontratotaxa.Vlrtaxa , Mgstctlocaltipofat.Nulocaltipofat\n" +
                 "from mgstctcontrcent\n" +
                 "inner join mgstctlocalcont on mgstctlocalcont.nulocalcont = mgstctcontrcent.nulocalcont\n" +
                 "inner join mgstctlocaltipofat on mgstctlocalcont.nulocalcont = Mgstctlocaltipofat.Nulocalcont\n" +
                 "inner join mgstctevtcus on mgstctevtcus.codtipofatura = mgstctlocaltipofat.codtipofatura\n" +
+                "AND NVL(\n" +
+                "  (SELECT MAX(MX.NUMCONTRATO)\n" +
+                "  FROM MGSTCTEVTCUS MX\n" +
+                "  WHERE MX.CODEVENTO = :codevento\n" +
+                "  AND MX.NUMCONTRATO = :contrato\n" +
+                "  ),9)               = NVL(MGSTCTEVTCUS.NUMCONTRATO,9)\n" +
                 "left join mgstctcontratotaxa on Mgstctcontratotaxa.Nulocaltipofat = Mgstctlocaltipofat.Nulocaltipofat\n" +
                 "where mgstctcontrcent.Numcontrato = :contrato\n" +
                 "and mgstctcontrcent.Codsite = :codsite\n" +

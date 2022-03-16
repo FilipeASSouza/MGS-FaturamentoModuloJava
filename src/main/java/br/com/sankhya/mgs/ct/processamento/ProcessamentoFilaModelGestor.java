@@ -52,8 +52,6 @@ public class ProcessamentoFilaModelGestor implements Runnable{
                 quantidadeExecucaoParalela = new BigDecimal(20);
             }
 
-            System.out.println("executando ContratoCorporativoFilaProcessamentoGestor ln 55");
-
             NativeSqlDecorator consultaFila = null;
             try {
 
@@ -94,15 +92,11 @@ public class ProcessamentoFilaModelGestor implements Runnable{
                     processamentoFilaParaleloModel.setProcessamento(processamento);
                     processamentoFilaParaleloModel.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
 
-                    System.out.println("processamento fila = " + processamentoFilaParaleloModel.toString());
                     Thread threadProcessamento = new Thread(processamentoFilaParaleloModel);
                     threadProcessamento.setName("ContratoCorporativoProcessamentoGestor");
-                    System.out.println("THREAD ID " + threadProcessamento.getId() + " STATE " + threadProcessamento.getState());
-                    System.out.println("inicidando processamento");
                     threadProcessamento.start();
 
                     while (quantidadeExecucaoParalela.compareTo(new BigDecimal(ProcessamentoFilaParaleloModel.getQuantidadeThreads())) <= 0){
-                        System.out.println("ENTROU NO SLEEP");
                         Thread.sleep(8000);
                     }
                 }

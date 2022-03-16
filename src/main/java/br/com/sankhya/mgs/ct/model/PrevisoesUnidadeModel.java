@@ -10,6 +10,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoContrato;
 import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -281,7 +282,7 @@ public class PrevisoesUnidadeModel {
         BigDecimal valorContratadaUnidadesTotal;
 
         NativeSqlDecorator validarValorContratoOutrasUnidadesSQL = new NativeSqlDecorator("SELECT " +
-                " ( SUM(QTDCONTRATADA) * SUM(VLRUNITARIO) ) VLROUTRASUNIDADES " +
+                " SUM( (QTDCONTRATADA) * (VLRUNITARIO) ) VLROUTRASUNIDADES " +
                 " FROM MGSTCTUNIDADEPREV " +
                 " WHERE NUMCONTRATO = :NUMCONTRATO " +
                 " AND CODEVENTO = :CODEVENTO " +
@@ -370,10 +371,17 @@ public class PrevisoesUnidadeModel {
                 vagaVOs.add((DynamicVO) JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findOne("CODVAGA = ? ", codigoVaga));
 
             }else {
-                ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV"));
+                BigDecimal numeroUnicoPrevisaoContrato = previsoesContratoVO.asBigDecimalOrZero("NUCONTRPREV");
+                ArrayList<DynamicVO> vagaLivresVOs = new VagasPrevisaoContratoModel().getVagasLivres(numeroUnicoPrevisaoContrato);
 
                 int quantidadeContratadaInt = new Integer(vo.asBigDecimalOrZero("QTDCONTRATADA").toString()).intValue();
-                BigDecimal quantidadeContratada = vo.asBigDecimalOrZero("QTDCONTRATADA");
+
+                NativeSqlDecorator consultaQuantidadeContratadaSQL = new NativeSqlDecorator("SELECT QTDCONTRATADA FROM MGSTCTUNIDADEPREV WHERE NUUNIDPREV = :NUUNIDPREV");
+                consultaQuantidadeContratadaSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
+                BigDecimal quantidadeContratada = null;
+                if(consultaQuantidadeContratadaSQL.proximo()){
+                    quantidadeContratada = consultaQuantidadeContratadaSQL.getValorBigDecimal("QTDCONTRATADA");
+                }
 
                 BigDecimal quantidadeVagasAtribuidasAtivas = new VagasPrevisaoUnidadeModel().quantidadeVagasAtivas(numeroUnicoPrevisaoUnidade);
 
@@ -384,7 +392,7 @@ public class PrevisoesUnidadeModel {
                 BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
 
                 if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
-                    ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsa da unidade");
+                    ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsao da unidade");
                 }
 
                 for (BigDecimal i = BigDecimal.ZERO; i.compareTo(quantidadeCriarNovasVagas) < 0; i = i.add(BigDecimal.ONE)) {
@@ -392,6 +400,7 @@ public class PrevisoesUnidadeModel {
                 }
             }
             criaPrevisaoVagas(vagaVOs);
+            new VagasPrevisaoUnidadeModel().alteraDadosDerivados();
         }
     }
 
@@ -425,6 +434,7 @@ public class PrevisoesUnidadeModel {
         BigDecimal valorUnitario = vo.asBigDecimalOrZero("VLRUNITARIO");
         BigDecimal quantidade = vo.asBigDecimalOrZero("QTDCONTRATADA");
         vo.setProperty("VLRCONTRATADA", valorUnitario.multiply(quantidade));
+        vo.setProperty("VLRUNITARIO", vo.asBigDecimalOrZero("VLRUNITARIO").setScale(15,BigDecimal.ROUND_DOWN));
     }
 
     public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {

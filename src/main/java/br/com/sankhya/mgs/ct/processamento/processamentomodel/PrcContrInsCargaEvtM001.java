@@ -21,6 +21,7 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
 
             Map<String, String> parametrosExecutacao = this.getParametrosExecutacao();
 
+
             boolean integracaoSalva = geraIntegracao(parametrosExecutacao);
 
             if (!integracaoSalva) {
@@ -67,7 +68,7 @@ public class PrcContrInsCargaEvtM001 extends ProcessarSuper implements Processar
         caller.addInputParameter(numeroUnicoIntegracao);//COD_INTEG        IN NUMBER,
         caller.addInputParameter(getLogin());//LOGIN            IN VARCHAR2,
         caller.addInputParameter(parametrosExecutacao.get("UP"));//UP_INI           IN NUMBER,
-        caller.addInputParameter(parametrosExecutacao.get("UP"));//UP_FIM           IN NUMBER,
+        caller.addInputParameter(parametrosExecutacao.get("P_PARAM"));//UP_FIM           IN NUMBER,
         caller.addOutputParameter(1, "LOG");//LOG_ERRO_SQL     OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO");//V_SUCESSO        OUT NUMBER
         caller.execute(jdbc.getConnection());

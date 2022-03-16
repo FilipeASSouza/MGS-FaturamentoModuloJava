@@ -9,6 +9,7 @@ import br.com.sankhya.jape.wrapper.JapeWrapper;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -56,21 +57,54 @@ public class AlocacoesServicosModel {
 
     public void validaDadosInsert() throws Exception {
 
-        DynamicVO unidadePrevisaoVO = unidadePrevisaoDAO.findByPK(vo.asBigDecimal("NUUNIDPREV"));
-        String dataInicioVigencia = sdf.format( unidadePrevisaoVO.asTimestamp("DTINICIO"));
-        String dataFimVigencia = sdf.format(unidadePrevisaoVO.asTimestamp("DTFIM"));
-        String dataFimAlocacao = sdf.format(vo.asTimestamp("DTFIM"));
-        String dataInicioAlocacao = sdf.format(vo.asTimestamp("DTINICIO"));
+        validaRegistrosEmAberto();
+        validaDataFimVingencia();
+        validaDataFinalMenorDataInicio();
+    }
 
-        if( dataInicioAlocacao.compareTo(dataInicioVigencia) != 0 ){
-            ErroUtils.disparaErro("Data menor que a data de vingencia da alocacao, fineza verificar!");
-        }else if( dataFimAlocacao.compareTo(dataFimVigencia) != 0 ){
-            ErroUtils.disparaErro("Data maior que a data de vingencia da alocacao, fineza verificar!");
+    public void validaDadosUpdate() throws Exception {
+
+        validaDataFimVingencia();
+        validaDataFinalMenorDataInicio();
+
+    }
+
+    public void validaRegistrosEmAberto() throws Exception {
+
+        Collection<DynamicVO> taxasVO = dao.find("NUUNIDPREV = ? AND NUALOCASERV <> ? AND DTFIM IS NULL"
+                , new Object[]{ vo.asBigDecimal("NUUNIDPREV"), vo.asBigDecimalOrZero("NUALOCASERV") });
+        for(DynamicVO taxaVO : taxasVO ){
+            Boolean status = taxaVO.asBigDecimal("NUALOCASERV") != null;
+            if(status){
+                ErroUtils.disparaErro("Já existe um registro Nro.Ùnico: "+taxaVO.asBigDecimalOrZero("NUALOCASERV")+" em aberto!");
+            }
         }
     }
 
-    private void validaDadosUpdate() throws Exception {
+    public void validaDataFimVingencia() throws Exception {
+        Collection <DynamicVO> tributosVO = dao.find("NUUNIDPREV = ? AND NUALOCASERV <> ?"
+                , new Object[]{vo.asBigDecimalOrZero("NUUNIDPREV"), vo.asBigDecimal("NUALOCASERV")});
+        for( DynamicVO tributoVO : tributosVO ){
+            if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
+                ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" não pode ser menor que a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do registro Nro.Único: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
+            }else if( vo.asTimestamp("DTINICIO").equals( tributoVO.asTimestamp("DTFIM") ) ){
+                ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" não pode ser igual a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do registro Nro.Único: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
+            }
+        }
+    }
 
+    public void validaDataFinalMenorDataInicio() throws Exception {
+        Boolean dataFim = vo.asTimestamp("DTFIM") != null;
+        if(dataFim){
+            if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
+                ErroUtils.disparaErro("Data Fim Vigência: "+sdf.format(vo.asTimestamp("DTFIM"))
+                        +" não pode ser menor que a Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTFIM"))+"!");
+            }
+        }
     }
 
     public void preencheCamposCalculados() throws Exception {

@@ -56,13 +56,28 @@ import java.util.Collection;
     }
 
     public void validaDadosUpdate() throws Exception {
-        if( vo.asString("ATIVO") == null || !vo.asString("ATIVO").equalsIgnoreCase("N") ){
+        if( vo.asString("ATIVO") == null
+            || !vo.asString("ATIVO").equalsIgnoreCase("N") ){
             if ( vo.asTimestamp("DTFIM") != null ){
                 vo.setProperty("ATIVO", "N");
             }
         }
         validaDataFinalMenorDataInicio();
-        validaDataFimVingencia();
+        validaRegistrosAtivos();
+    }
+
+    private void validaRegistrosAtivos() throws Exception {
+        String ativo = vo.asString("ATIVO");
+        if(ativo.equals(String.valueOf("S"))){
+            Collection <DynamicVO> tributosVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRATOTRIB <> ?"
+                , new Object[]{vo.asBigDecimalOrZero("NULOCALTIPOFAT"), vo.asBigDecimal("NUCONTRATOTRIB")});
+            for( DynamicVO tributoVO : tributosVO ) {
+                if( tributoVO.asString("ATIVO").equals("S")){
+                    ErroUtils.disparaErro("Ja existe um tributo ativo, gentileza verificar!");
+
+                }
+            }
+        }
     }
 
     public void validaDataFinalMenorDataInicio() throws Exception {
@@ -90,7 +105,11 @@ import java.util.Collection;
         Collection <DynamicVO> tributosVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRATOTRIB <> ?"
                 , new Object[]{vo.asBigDecimalOrZero("NULOCALTIPOFAT"), vo.asBigDecimal("NUCONTRATOTRIB")});
         for( DynamicVO tributoVO : tributosVO ){
-            if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
+            Boolean dataFimRegistroCorrente = tributoVO.asTimestamp("DTFIM") == null;
+
+            if( dataFimRegistroCorrente ) {
+                ErroUtils.disparaErro("Existe tributo com Data Fim Vigencia em aberto, gentileza verificar!");
+            } else if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
                 ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
                         +" não pode ser menor que a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
                         +" do Nro. Único: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
@@ -98,6 +117,7 @@ import java.util.Collection;
                 ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
                         +" não pode ser igual a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
                         +" do Nro. Único: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
+
             }
         }
     }

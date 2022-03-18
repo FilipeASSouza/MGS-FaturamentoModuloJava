@@ -7,6 +7,7 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.jape.wrapper.fluid.FluidCreateVO;
+import br.com.sankhya.mgs.ct.processamento.controleintegracao.IntegracaoDetalhaCustoModel;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import br.com.sankhya.modelcore.util.Report;
 import br.com.sankhya.modelcore.util.ReportManager;
@@ -19,13 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Processar {
-    public RtnContrInsLancCustoUPAnexo() {
+    IntegracaoDetalhaCustoModel model;
+    NativeSqlDecorator nativeSqlDecorator;
+
+    public RtnContrInsLancCustoUPAnexo() throws Exception {
         super();
+
     }
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        model = new IntegracaoDetalhaCustoModel(jdbc);
+        nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql", jdbc);
+        boolean executado = false;//todo refatorar pra super
         int numeroPaginasGerado;
         try {
             super.executar();
@@ -98,7 +105,8 @@ public class RtnContrInsLancCustoUPAnexo extends ProcessarSuper implements Proce
                     public void doWithTx() throws Exception {
                         DynamicVO save = relatorioAnexoFCVO.save();
 
-                        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "RtnContrInsLancCustoUPAnexoUpdateLancCusto.sql");
+
+                        nativeSqlDecorator.cleanParameters();
                         nativeSqlDecorator.setParametro("NURLTANEXO", save.asBigDecimal("NURLTANEXO"));
                         nativeSqlDecorator.setParametro("NUMCONTRATO", new BigDecimal(parametrosExecutacao.get("NUMCONTRATO")));
                         nativeSqlDecorator.setParametro("CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));

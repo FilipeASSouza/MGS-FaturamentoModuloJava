@@ -26,6 +26,11 @@ public class FilaDAO {
     private DynamicVO vo;
     private BigDecimal codigoUsuario;
     private Boolean comControleTransacao = false;
+    NativeSqlDecorator filaEnvioConsulta;
+
+    public FilaDAO(JdbcWrapper jdbcWrapper) throws Exception {
+        filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql", jdbcWrapper);
+    }
 
     public void setCodigoUsuario(BigDecimal codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
@@ -94,7 +99,7 @@ public class FilaDAO {
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
         jdbc.openSession();
 
-        try{
+        try {
             hnd.execWithTX(new JapeSession.TXBlock() {
                 public void doWithTx() throws Exception {
                     salva(registroFila);
@@ -106,8 +111,8 @@ public class FilaDAO {
             e.printStackTrace();
         }finally {
             System.out.println("FINALIZANDO O doWithTx");
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
+            JapeSession.close(hnd);
+            JdbcWrapper.closeSession(jdbc);
         }
     }
 
@@ -125,9 +130,8 @@ public class FilaDAO {
             ErroUtils.disparaErro("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
         }
 
-        BigDecimal numeroUnicoTipoProcessamento = tipoProcessamentoVO.asBigDecimal("NUTIPOPROC");
 
-        registroFila.NUTIPOPROC = numeroUnicoTipoProcessamento;
+        registroFila.NUTIPOPROC = tipoProcessamentoVO.asBigDecimal("NUTIPOPROC");
         registroFila.CHAVE = chave;
         registroFila.STATUS = "I";
         registroFila.DHINC = TimeUtils.getNow();
@@ -151,7 +155,7 @@ public class FilaDAO {
     private void atualizaFila(BigDecimal numeroUnico, String log, String status) throws Exception {
         try {
 
-            NativeSqlDecorator filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql");
+            filaEnvioConsulta.cleanParameters();
             filaEnvioConsulta.setParametro("NUFILAPROC", numeroUnico);
             filaEnvioConsulta.setParametro("LOGEXEC", log);
             filaEnvioConsulta.setParametro("STATUS", status);

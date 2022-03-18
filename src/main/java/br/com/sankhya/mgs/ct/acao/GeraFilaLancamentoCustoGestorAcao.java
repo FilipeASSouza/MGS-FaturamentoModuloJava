@@ -3,9 +3,11 @@ package br.com.sankhya.mgs.ct.acao;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.GeraFilaLancamentoCustoGestorModel;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -28,9 +30,9 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
                 codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
                 Collection <DynamicVO> sitesVO = JapeFactory.dao("Site").find("CODSITE BETWEEN ? AND ?"
                         , new Object[]{codigoUnidadeFaturamento, codigoUnidadeFaturamentoFinal});
-                for(DynamicVO siteVO : sitesVO){
-                    if (siteVO != null){
-                        if (siteVO.asString("ANALITICO") == "S"){
+                for (DynamicVO siteVO : sitesVO) {
+                    if (siteVO != null) {
+                        if (siteVO.asString("ANALITICO") == "S") {
                             codigoUnidadeFaturamento = siteVO.asBigDecimal("CODSITEPAI");
                         }
                     }
@@ -38,13 +40,14 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
             }
 
             System.out.println("INICIANDO FILA GESTOR BOTAO DE ACAO");
-
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+            GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel(jdbcWrapper);
             for (Registro linha : linhas) {
-                GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel();
-                geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
-                geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
-                geraFilaLancamentoCustoGestorModel.setDataCusto( dataCusto );
-                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento( codigoUnidadeFaturamento );
+
+                geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal) linha.getCampo("NUMCONTRATO"));
+                geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal) linha.getCampo("NUMODALIDADE"));
+                geraFilaLancamentoCustoGestorModel.setDataCusto(dataCusto);
+                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento(codigoUnidadeFaturamento);
                 geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
 
                 geraFilaLancamentoCustoGestorModel.gerarFila();

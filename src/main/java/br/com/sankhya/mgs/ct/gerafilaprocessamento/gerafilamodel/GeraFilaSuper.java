@@ -1,5 +1,7 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.lugh.performance.PerformanceMonitor;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import com.sankhya.util.TimeUtils;
@@ -9,22 +11,25 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class GeraFilaSuper implements GeraFila {
-/*    protected BigDecimal numeroUnicoMetrica;
-    protected BigDecimal numeroUnidadeFaturamento;
+public abstract class GeraFilaSuper implements GeraFila {
 
-    protected Timestamp dataReferencia;
-    protected String nomeProcessamento;
-    protected BigDecimal numeroContrato;*/
     protected Map<String, Object> parametrosMetrica;
-    protected Map<String, Object> parametrosExecucao = new HashMap<String, Object>();
+    protected Map<String, Object> parametrosExecucao = new HashMap<>();
+    protected JdbcWrapper jdbcWrapper;
 
-    @Override
-    public boolean executar() throws Exception {
-        getParametrosMetricas();
-        return false;
+    public GeraFilaSuper(JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
     }
 
+    public boolean executar() throws Exception {
+        return PerformanceMonitor.INSTANCE.measureReturnJava("GeraFilaSuper" + getClass().getName(), null, () -> {
+            getParametrosMetricas();
+            return executarFilho();
+        });
+    }
+
+
+    public abstract boolean executarFilho() throws Exception;
 
 
     @Override
@@ -34,50 +39,23 @@ public class GeraFilaSuper implements GeraFila {
 
     @Override
     public void setParametroExecucao(String nome, Object parametro) {
-        if (nome == "dataReferencia") {
+        if ("dataReferencia".equals(nome)) {
             Timestamp dataReferencia = (Timestamp) parametro;
             int ajustar = dataReferencia.getDate() - 1;
-            Timestamp timestamp = new Timestamp(TimeUtils.add(dataReferencia.getTime(), -ajustar, Calendar.DATE));
-            dataReferencia = timestamp;
+            dataReferencia = new Timestamp(TimeUtils.add(dataReferencia.getTime(), -ajustar, Calendar.DATE));
             parametrosExecucao.put(nome, dataReferencia);
         } else {
             parametrosExecucao.put(nome, parametro);
         }
     }
 
-/*    @Override
-    public void setNumeroUnicoMetrica(BigDecimal numeroUnicoMetrica) {
-        this.numeroUnicoMetrica = numeroUnicoMetrica;
-    }*/
-
-/*    @Override
-    public void setNumeroUnidadeFaturamento(BigDecimal numeroUnidadeFaturamento) {
-        this.numeroUnidadeFaturamento = numeroUnidadeFaturamento;
-    }*/
-
-/*    @Override
-    public void setDataReferencia(Timestamp dataReferencia) {
-        int ajustar = dataReferencia.getDate()-1;
-        Timestamp timestamp = new Timestamp(TimeUtils.add(dataReferencia.getTime(), -ajustar, Calendar.DATE));
-        this.dataReferencia = timestamp;
-    }*/
-
-/*    @Override
-    public void setNomeProcessamento(String nomeProcessamento) {
-        this.nomeProcessamento = nomeProcessamento;
-    }*/
-
-/*    @Override
-    public void setNumeroContrato(BigDecimal numeroContrato) {
-        this.numeroContrato = numeroContrato;
-    }*/
 
     protected void getParametrosMetricas() throws Exception {
         BigDecimal numeroUnicoMetrica = getParametroBigDecimal("numeroUnicoMetrica");
         if (numeroUnicoMetrica != null) {
             Collection<DynamicVO> parametroMetricaVOS = JapeFactory.dao("MGSCT_Parametro_Metrica").find("NUCONTRMETRICA = ?", numeroUnicoMetrica);
 
-            parametrosMetrica = new HashMap<String, Object>();
+            parametrosMetrica = new HashMap<>();
 
             for (DynamicVO parametroMetricaVO : parametroMetricaVOS) {
                 String tipo = parametroMetricaVO.asString("MGSCT_Apoio_Parametro_Metrica.TIPO");
@@ -89,8 +67,8 @@ public class GeraFilaSuper implements GeraFila {
         }
     }
 
-    private Object converteParametro(String valor, String tipo){
-        switch(tipo){
+    private Object converteParametro(String valor, String tipo) {
+        switch (tipo) {
             case "D"://Data
                 return null;
 
@@ -118,15 +96,15 @@ public class GeraFilaSuper implements GeraFila {
         return StringUtils.join(listaParametros, ";");
     }
 
-    protected BigDecimal getParametroBigDecimal(String nome){
-        return (BigDecimal)parametrosExecucao.get(nome);
+    protected BigDecimal getParametroBigDecimal(String nome) {
+        return (BigDecimal) parametrosExecucao.get(nome);
     }
 
-    protected Timestamp getParametroTimestamp(String nome){
-        return (Timestamp)parametrosExecucao.get(nome);
+    protected Timestamp getParametroTimestamp(String nome) {
+        return (Timestamp) parametrosExecucao.get(nome);
     }
 
-    protected String getParametroString(String nome){
-        return (String)parametrosExecucao.get(nome);
+    protected String getParametroString(String nome) {
+        return (String) parametrosExecucao.get(nome);
     }
 }

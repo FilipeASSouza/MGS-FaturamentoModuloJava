@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Processar {
-    public PrcContrInsLancFaturaPortal() {
-        super();
-    }
+    IntegracaoDetalhaCustoModel model;
+
 
     @Override
     public boolean executar() throws Exception {
-        Boolean executado = false;//todo refatorar pra super
+        model = new IntegracaoDetalhaCustoModel(jdbc);
+        boolean executado = false;//todo refatorar pra super
         try {
             super.executar();
 
@@ -34,11 +34,11 @@ public class PrcContrInsLancFaturaPortal extends ProcessarSuper implements Proce
             if (BigDecimal.ONE.equals(sucesso)) {
                 executado = true;
                 mensagem = "OK";
-                IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
+                model.atualizaComplemento(numeroUnicoIntegracao, "S");//sucesso
             } else {
                 executado = false;
-                mensagem = "Erro PrcContrInsLancFaturaPortal: [" +sucesso.toString() +"]"+ log;
-                IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
+                mensagem = "Erro PrcContrInsLancFaturaPortal: [" + sucesso.toString() + "]" + log;
+                model.atualizaComplemento(numeroUnicoIntegracao, "E");//erro
             }
         } catch (Exception e) {
             throw new Exception("Erro ao executar procedure PrcContrInsLancFaturaPortal: " + e);

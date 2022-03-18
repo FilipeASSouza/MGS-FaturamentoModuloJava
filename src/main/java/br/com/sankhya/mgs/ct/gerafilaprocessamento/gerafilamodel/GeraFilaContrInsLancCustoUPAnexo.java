@@ -1,5 +1,6 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
 import com.sankhya.util.TimeUtils;
 
@@ -7,9 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeraFilaContrInsLancCustoUPAnexo extends GeraFilaSuper implements GeraFila {
-    public boolean executar() throws Exception {
-        super.executar();
-        setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPAnexo");
+    public GeraFilaContrInsLancCustoUPAnexo(JdbcWrapper jdbcWrapper) {
+        super(jdbcWrapper);
+    }
+
+    public boolean executarFilho() throws Exception {
+
+        setParametroExecucao("nomeProcessamento", "RtnContrInsLancCustoUPAnexo");
 
         Map<String, String> mapParametrosChave = new HashMap<String, String>();
         mapParametrosChave.put("NUMCONTRATO", getParametroBigDecimal("numeroContrato").toString());
@@ -20,7 +25,7 @@ public class GeraFilaContrInsLancCustoUPAnexo extends GeraFilaSuper implements G
 
         String chave = geraChave(mapParametrosChave);
 
-        FilaDAO filaDAO = new FilaDAO();
+        FilaDAO filaDAO = new FilaDAO(this.jdbcWrapper);
         filaDAO.setComControleTransacao(true);
         filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
         filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));

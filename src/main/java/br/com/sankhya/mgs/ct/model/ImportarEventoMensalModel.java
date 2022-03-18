@@ -90,7 +90,7 @@ public class ImportarEventoMensalModel {
                 numeroUnicoModalidade);
 
         if (modalidadeContratoVO == null) {
-            disparaErro("Modalidade por contrato n√£o localizado!");
+            disparaErro("Modalidade por contrato n„o localizado!");
         }
 
         numeroUnicoModalidadeContrato = modalidadeContratoVO.asBigDecimal("NUMODALIDADE");
@@ -103,13 +103,13 @@ public class ImportarEventoMensalModel {
             for (Map.Entry<Integer, Integer> erros : qtdErrosByFlag.entrySet()) {
                 switch (erros.getKey()) {
                     case 7:
-                        mensagem += " ,N√£o houve vincula√ß√£o do evento com o c√≥digo custo e fatura! (" + erros.getValue() + ")";
+                        mensagem += " ,N„o houve vinculaÁ„o do evento com o cÛdigo custo e fatura! (" + erros.getValue() + ")";
                         break;
                     case 2: // CODUNIDADEFATUR
-                        mensagem += " ,N√£o existe unidade de faturamento neste contrato! (" + erros.getValue() + ")";
+                        mensagem += " ,N„o existe unidade de faturamento neste contrato! (" + erros.getValue() + ")";
                         break;
                     case 99:
-                        mensagem += " ,J√° existe planilha para essa unidade nesse periodo!(" + erros.getValue() + ")";
+                        mensagem += " ,J· existe planilha para essa unidade nesse periodo!(" + erros.getValue() + ")";
                         break;
                     case 1:
                         mensagem += "";
@@ -202,9 +202,9 @@ public class ImportarEventoMensalModel {
                 detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
                 detalhamentoCustoFCVO.set("TIPLANCEVENTO", "M");
                 detalhamentoCustoFCVO.set("CODCARGA", numeroUnico);
-                detalhamentoCustoFCVO.set("MTVCARGA", motivoCarga);//pedir para o usu√°rio digitar o motivo
+                detalhamentoCustoFCVO.set("MTVCARGA", motivoCarga);//pedir para o usu·rio digitar o motivo
                 detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
-                detalhamentoCustoFCVO.set("USUINS", daoUser.findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usu√°rio que inseriu
+                detalhamentoCustoFCVO.set("USUINS", daoUser.findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usu·rio que inseriu
                 detalhamentoCustoFCVO.set("CODUNIDADEFATUR", getBigDecimalScale(planilha.getValorBigDecimal("CODUNIDADEFATUR"), 0));
                 detalhamentoCustoFCVO.set("CODVAGA", planilha.getValorString("CODVAGA"));
                 detalhamentoCustoFCVO.set("CODSERVMATERIAL", getBigDecimalScale(planilha.getValorBigDecimal("CODSERVMATERIAL"), 0));
@@ -258,7 +258,7 @@ public class ImportarEventoMensalModel {
         consultaFaturaSQL.setParametro("codtipofatura", codTipoFatura);
 
         if (consultaFaturaSQL.proximo()) {
-            logger.warning("J√° existe planilha" + planilha.getValorBigDecimal("CODUNIDADEFATUR"));
+            logger.warning("J· existe planilha" + planilha.getValorBigDecimal("CODUNIDADEFATUR"));
             novoErro(99);
             return true;
         }
@@ -278,7 +278,7 @@ public class ImportarEventoMensalModel {
             consultaUnidadeFaturSQL.setParametro("numcontrato", vo.asBigDecimal("NUMCONTRATO"));
             consultaUnidadeFaturSQL.setParametro("codsite", planilha.getValorBigDecimal("CODUNIDADEFATUR"));
             if (!consultaUnidadeFaturSQL.proximo()) {
-                logger.warning("N√£o encontrado consultaUnidadeFaturSQL: " + planilha.getValorBigDecimal("CODUNIDADEFATUR"));
+                logger.warning("N„o encontrado consultaUnidadeFaturSQL: " + planilha.getValorBigDecimal("CODUNIDADEFATUR"));
                 novoErro(2);
                 return true;
             }
@@ -293,7 +293,7 @@ public class ImportarEventoMensalModel {
             codCusto = consultaCustoFaturaSQL.getValorBigDecimal("CODCUSTO");
             codTipoFatura = consultaCustoFaturaSQL.getValorBigDecimal("CODTIPOFATURA");
         } else {
-            logger.warning("N√£o encontrado consultaCustoFaturaSQL" + planilha.getValorBigDecimal("CODEVENTO"));
+            logger.warning("N„o encontrado consultaCustoFaturaSQL" + planilha.getValorBigDecimal("CODEVENTO"));
             novoErro(7);
             return true;
         }

@@ -50,10 +50,10 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
 
                 HashMap<String, Object> parametrosRelatorio = new HashMap<String, Object>();
 
-                String pastaDeModelosParaImpress√£o = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
+                String pastaDeModelosParaImpress„o = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
 
                 parametrosRelatorio.put("P_NUFATURA", new BigDecimal(parametrosExecutacao.get("NUFATURA")));
-                parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpress√£o);
+                parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpress„o);
 
                 jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
 
@@ -73,7 +73,7 @@ public class RtnContrFaturaAnexo extends ProcessarSuper implements Processar {
                 NativeSqlDecorator verificarAnexo = new NativeSqlDecorator("SELECT NUFATURA FROM MGSTCTFTRANEXO WHERE NUFATURA = :NUFATURA", jdbc);
                 verificarAnexo.setParametro("NUFATURA", parametrosExecutacao.get("NUFATURA"));
                 if(verificarAnexo.proximo()){
-                    ErroUtils.disparaErro("Fatura j√° enviada para o site!");
+                    ErroUtils.disparaErro("Fatura j· enviada para o site!");
                 }
 
                 final FluidCreateVO relatorioAnexoFCVO = dao.create();

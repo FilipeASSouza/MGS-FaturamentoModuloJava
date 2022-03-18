@@ -23,7 +23,7 @@ public class RemanejarVagaAcao implements AcaoRotinaJava {
             BigDecimal codigoUnidadeDestino = new BigDecimal(contextoAcao.getParam("CODSITE").toString());
             DynamicVO siteVO = JapeFactory.dao("Site").findByPK(codigoUnidadeDestino);
             if (siteVO == null){
-                disparaErro("Unidade de faturamento n√£o encontrada");
+                disparaErro("Unidade de faturamento n„o encontrada");
             }
 
 

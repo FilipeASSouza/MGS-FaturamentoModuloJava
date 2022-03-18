@@ -28,7 +28,7 @@ public class PrcContrInsCargaEvtM006 extends ProcessarSuper implements Processar
             if (!integracaoSalva) {
                 model.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
-                mensagem = "Processado IntegraÃ§ao: " + numeroUnicoIntegracao;
+                mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
 
                 String log = "";

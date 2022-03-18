@@ -71,7 +71,7 @@ public class UnidadesModel {
     private void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
         if (campos.containsKey("#CAMPO#")) {
-            mensagemErro = mensagemErro + "Campo Evento n√£o pode ser modificado. ";
+            mensagemErro = mensagemErro + "Campo Evento n„o pode ser modificado. ";
         }
 
         if (mensagemErro != "") {

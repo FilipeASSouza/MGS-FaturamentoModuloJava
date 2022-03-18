@@ -24,7 +24,7 @@ public class EdicaoSituacaoModel extends EdicaoDetalhamentoModelSuper {
 
     public void executar() throws Exception {
         super.inicializarExecutar();
-        nativeSqlDecorator.setParametro("V_SIT", BigDecimal.valueOf(Long.parseLong(parametros.get("SITLANC").toString())));//0 Ã© ativo, 1 Ã© inativo
+        nativeSqlDecorator.setParametro("V_SIT", BigDecimal.valueOf(Long.parseLong(parametros.get("SITLANC").toString())));//0 é ativo, 1 é inativo
         super.finalizaExecutar();
     }
 
@@ -58,7 +58,7 @@ public class EdicaoSituacaoModel extends EdicaoDetalhamentoModelSuper {
         if(quantidadeRegistro < 2000 ){
             atualizaRegistros(sitlanc, codusu, arrays);
         }else{
-            // verificando se a quantidade Ã© menor que 10 mil registros
+            // verificando se a quantidade é menor que 10 mil registros
             if( quantidadeRegistro < 10000 ){
                 // processando a lista
                 for(int i = 1; i <= 4; i++){

@@ -38,7 +38,7 @@ public class RemanejarVagaUnidadeModel {
         unidadesDestinoVO = unidadesDAO.findOne("NUMCONTRATO = ? AND CODSITE = ? ", unidadesOrigemVO.asBigDecimal("NUMCONTRATO"), codigoUnidadeDestino);
 
         if (unidadesDestinoVO == null){
-            disparaErro("Unidade de destino n√£o localizada para esse contrato!!!");
+            disparaErro("Unidade de destino n„o localizada para esse contrato!!!");
         }
 
         NativeSqlDecorator validaVagaAlocada = new NativeSqlDecorator(this, "RemanejarVagaUnidadaValidaVagaAlocada.sql");
@@ -55,7 +55,7 @@ public class RemanejarVagaUnidadeModel {
         Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
 
         if (!vagaLivre) {
-            ErroUtils.disparaErro("Vaga vinculada a uma contratacao e n√£o pode ser alocada!");
+            ErroUtils.disparaErro("Vaga vinculada a uma contratacao e n„o pode ser alocada!");
         }
 
         NativeSqlDecorator buscaPrevisaoUnidadeDestinoNSQL = new NativeSqlDecorator(this, "RemanejarVagaUnidadeBuscaPrevisaoUnidadeDestino.sql");

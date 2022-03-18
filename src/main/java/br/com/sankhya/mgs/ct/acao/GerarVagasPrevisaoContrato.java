@@ -22,11 +22,11 @@ public class GerarVagasPrevisaoContrato implements AcaoRotinaJava {
         Registro[] linhas = contextoAcao.getLinhas();
 
         if (linhas.length == 0){
-            contextoAcao.setMensagemRetorno("Favor seleciona pelo menos uma linha na previs√£o do contrato");
+            contextoAcao.setMensagemRetorno("Favor seleciona pelo menos uma linha na previs„o do contrato");
         } else {
             /*
-            Objetivo: Utilizar na tela de previs√£o do contrato ao selecionar
-            varias previs√µes para cria√ß√£o de vagas em caso de um contrato muito grande
+            Objetivo: Utilizar na tela de previs„o do contrato ao selecionar
+            varias previsıes para criaÁ„o de vagas em caso de um contrato muito grande
              */
 
             for( Registro linha : linhas ){
@@ -54,7 +54,7 @@ public class GerarVagasPrevisaoContrato implements AcaoRotinaJava {
         BigDecimal quantidadeVagasAtivas = new VagasPrevisaoContratoModel().quantidadeVagasAtivas(numeroUnicoPreviesoContrato, sigla);
 
         if (quantidadeContratada.compareTo(quantidadeVagasAtivas) < 0) {
-            ErroUtils.disparaErro("A quantidade de vagas n√£o pode ser diminuida!");
+            ErroUtils.disparaErro("A quantidade de vagas n„o pode ser diminuida!");
         }
 
         BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtivas);

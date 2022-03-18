@@ -22,7 +22,7 @@ public class PrevisaoValidator {
 
         String regraValidacao = getRegraValidacao();
         if ("".equals(regraValidacao)) {
-            ErroUtils.disparaErro("Evento sem Tipo de Evento configurando n√£o pode ser usado");
+            ErroUtils.disparaErro("Evento sem Tipo de Evento configurando n„o pode ser usado");
         }
         String erro = "";
         switch (regraValidacao) {
@@ -30,61 +30,61 @@ public class PrevisaoValidator {
                 if (!postoPreechido)
                     erro += "Posto deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Servi√ßo/Material n√£o pode ser preenchido. ";
+                    erro += "ServiÁo/Material n„o pode ser preenchido. ";
                 if (!quantidadePreenchido)
                     erro += "Quantidade deve ser preenchida. ";
                 if (valorPreechido)
-                    erro += "Valor n√£o pode ser preenchido. ";
+                    erro += "Valor n„o pode ser preenchido. ";
                 break;
             case "C"://contrato
                 if (postoPreechido)
-                    erro += "Posto n√£o deve ser preenchido. ";
+                    erro += "Posto n„o deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Servi√ßo/Material n√£o pode ser preenchido. ";
+                    erro += "ServiÁo/Material n„o pode ser preenchido. ";
                 if (quantidadePreenchido)
-                    erro += "Quantidade n√£o pode ser preenchida. ";
+                    erro += "Quantidade n„o pode ser preenchida. ";
                 if (!valorPreechido)
                     erro += "Valor deve ser preenchido. ";
                 break;
             case "R"://rescisao
                 if (postoPreechido)
-                    erro += "Posto n√£o deve ser preenchido. ";
+                    erro += "Posto n„o deve ser preenchido. ";
                 if (servicoMaterialPreechido)
-                    erro += "Servi√ßo/Material n√£o pode ser preenchido. ";
+                    erro += "ServiÁo/Material n„o pode ser preenchido. ";
                 if (quantidadePreenchido)
-                    erro += "Quantidade n√£o pode ser preenchida. ";
+                    erro += "Quantidade n„o pode ser preenchida. ";
                 if (valorPreechido)
-                    erro += "Valor n√£o pode ser preenchido. ";
+                    erro += "Valor n„o pode ser preenchido. ";
                 break;
             case "S1"://serviceo/material controle 1
             case "S2"://serviceo/material controle 2
                 if (postoPreechido)
-                    erro += "Posto n√£o deve ser preenchido. ";
+                    erro += "Posto n„o deve ser preenchido. ";
                 if (!servicoMaterialPreechido)
-                    erro += "Servi√ßo/Material deve ser preenchido. ";
+                    erro += "ServiÁo/Material deve ser preenchido. ";
                 if (!valorPreechido)
                     erro += "Valor deve ser preenchido. ";
                 break;
             case "S3"://serviceo/material controle 3
             case "S4"://serviceo/material controle 4
                 if (postoPreechido)
-                    erro += "Posto n√£o deve ser preenchido. ";
+                    erro += "Posto n„o deve ser preenchido. ";
                 if (!servicoMaterialPreechido)
-                    erro += "Servi√ßo/Material deve ser preenchido. ";
+                    erro += "ServiÁo/Material deve ser preenchido. ";
                 if (!quantidadePreenchido)
                     erro += "Quantidade deve ser preenchida. ";
                 if (valorPreechido)
                     erro += "Valor nao pode ser preenchido. ";
                 break;
             default:
-                erro = "Regra n√£o definida para Tipo de Evento: " + regraValidacao;
+                erro = "Regra n„o definida para Tipo de Evento: " + regraValidacao;
         }
         if (!"".equals(erro)) {
             ErroUtils.disparaErro(erro);
         }
 
         if (postoPreechido && servicoMaterialPreechido) {
-            ErroUtils.disparaErro("Campos Tipos do Posto e Servi√ßo/Material n√£o podem ser preenchidos no mesmo lan√ßamento!");
+            ErroUtils.disparaErro("Campos Tipos do Posto e ServiÁo/Material n„o podem ser preenchidos no mesmo lanÁamento!");
         }
     }
 

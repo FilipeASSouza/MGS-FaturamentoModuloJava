@@ -25,7 +25,7 @@ public class GeraFilaContrInsLancFatura extends GeraFilaSuper implements GeraFil
         mapParametrosChave.put("V_DTLCCUSTO", TimeUtils.formataYYYYMMDD(getParametroTimestamp("dataCusto")));        //         IN DATE, DD/MM/YYYY
         mapParametrosChave.put("V_CODTIPOFATURA", getParametroBigDecimal("codigoTipoFatura").toString());    //      IN NUMBER,
         mapParametrosChave.put("V_CODUNIDADEFATURA", getParametroBigDecimal("codigoUnidadeFaturamento").toString()); //  IN NUMBER,
-        mapParametrosChave.put("V_APROVADAS", getParametroString("aprovadas"));        //       IN VARCHAR2, OBRIGATóRIO (“T” TODAS, “S” Só AS APROVADAS)
+        mapParametrosChave.put("V_APROVADAS", getParametroString("aprovadas"));        //       IN VARCHAR2, OBRIGAT�RIO (?T? TODAS, ?S? S� AS APROVADAS)
 
         String chave = geraChave(mapParametrosChave);
 

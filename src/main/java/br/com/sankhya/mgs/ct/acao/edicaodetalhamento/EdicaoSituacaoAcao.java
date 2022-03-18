@@ -1,13 +1,11 @@
 package br.com.sankhya.mgs.ct.acao.edicaodetalhamento;
 
-import br.com.sankhya.bh.utils.NativeSqlDecoratorNovo;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
-import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoSituacaoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;

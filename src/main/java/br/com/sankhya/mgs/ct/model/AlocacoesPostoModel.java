@@ -76,7 +76,7 @@ public class AlocacoesPostoModel {
 
         /*
             Data: 05/11/2021
-            Inserindo a valida√ß√£o do percentual informado na previs√£o sej√° o mesmo cadastrado no arterh
+            Inserindo a validaÁ„o do percentual informado na previs„o sej· o mesmo cadastrado no arterh
          */
 
         if( mestrevo.asBigDecimal("CODEVENTO").equals(BigDecimal.valueOf(-3L))
@@ -91,7 +91,7 @@ public class AlocacoesPostoModel {
             if( validarPercentualSQL.proximo() ){
 
                 if(!validarPercentualSQL.getValorBigDecimal("PERC").equals(mestrevo.asBigDecimalOrZero("PERCINSALUBRIDADE"))){
-                    ErroUtils.disparaErro("O percentual de insalubridade do empregado √© diferente do percentual que consta no posto de servi√ßo!");
+                    ErroUtils.disparaErro("O percentual de insalubridade do empregado È diferente do percentual que consta no posto de serviÁo!");
                 }
             }
         }
@@ -138,7 +138,7 @@ public class AlocacoesPostoModel {
         Boolean dataFimPreenchido = vo.asTimestamp("DTFIM") != null;
         if (dataFimPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data final n√£o pode ser menor que a data incial!");
+                ErroUtils.disparaErro("Data final n„o pode ser menor que a data incial!");
             }
         }
     }
@@ -151,7 +151,7 @@ public class AlocacoesPostoModel {
         validaContratoAtivo.setParametro("numcontrato", numeroContrato);
         if(validaContratoAtivo.proximo()){
             if (!validaContratoAtivo.getValorBigDecimal("codtipsituacao").equals(BigDecimal.ONE)){
-                ErroUtils.disparaErro("Contrato n√£o est√° ativo, fineza verificar!");
+                ErroUtils.disparaErro("Contrato n„o est· ativo, fineza verificar!");
             }
         }
 
@@ -200,7 +200,7 @@ public class AlocacoesPostoModel {
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Registro n√£o pode excluido!");
+        ErroUtils.disparaErro("Registro n„o pode excluido!");
     }
 
     public void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
@@ -208,34 +208,34 @@ public class AlocacoesPostoModel {
 
         //todo melhorar a descricao do campo pegando do dicionario de dados
         if (campos.containsKey("NUALOCAPS")) {
-            mensagemErro += "Campo Nro. √önico n√£o pode ser modificado. ";
+            mensagemErro += "Campo Nro. ⁄nico n„o pode ser modificado. ";
         }
         if (campos.containsKey("NUMCONTRATO")) {
-            mensagemErro += "Campo Num. Contrato n√£o pode ser modificado. ";
+            mensagemErro += "Campo Num. Contrato n„o pode ser modificado. ";
         }
         if (campos.containsKey("CODTIPOPOSTO")) {
-            mensagemErro += "Campo Tipo do Posto n√£o pode ser modificado. ";
+            mensagemErro += "Campo Tipo do Posto n„o pode ser modificado. ";
         }
         if (campos.containsKey("CODCARGO")) {
-            mensagemErro += "Campo Cargo n√£o pode ser modificado. ";
+            mensagemErro += "Campo Cargo n„o pode ser modificado. ";
         }
         if (campos.containsKey("CODEVENTO")) {
-            mensagemErro += "Campo Evento n√£o pode ser modificado. ";
+            mensagemErro += "Campo Evento n„o pode ser modificado. ";
         }
         if (campos.containsKey("NUUNIDPREV")) {
-            mensagemErro += "Campo Unid. Previs√£o n√£o pode ser modificado. ";
+            mensagemErro += "Campo Unid. Previs„o n„o pode ser modificado. ";
         }
         if (campos.containsKey("NUUNIDPREVVAGA")) {
-            mensagemErro += "Campo Unid. Previs√£o Vaga n√£o pode ser modificado. ";
+            mensagemErro += "Campo Unid. Previs„o Vaga n„o pode ser modificado. ";
         }
         if (campos.containsKey("MATRICULA")) {
-            mensagemErro += "Campo Matr√≠cula do Emrpegado n√£o pode ser modificado. ";
+            mensagemErro += "Campo MatrÌcula do Emrpegado n„o pode ser modificado. ";
         }
         if (campos.containsKey("DTINS")) {
-            mensagemErro += "Campo Dt. Inser√ß√£o n√£o pode ser modificado. ";
+            mensagemErro += "Campo Dt. InserÁ„o n„o pode ser modificado. ";
         }
         if (campos.containsKey("CODVAGA")) {
-            mensagemErro += "Campo C√≥d. Vaga n√£o pode ser modificado. ";
+            mensagemErro += "Campo CÛd. Vaga n„o pode ser modificado. ";
         }
 
         if (mensagemErro != "") {
@@ -264,7 +264,7 @@ public class AlocacoesPostoModel {
 
 
         if (nativeSqlDecorator.getValorInt("QTD") > 0) {
-            ErroUtils.disparaErro("Existe conflito de periodo para essa vaga em outra aloca√ß√£o, favor corrigir periodo!");
+            ErroUtils.disparaErro("Existe conflito de periodo para essa vaga em outra alocaÁ„o, favor corrigir periodo!");
         }
 
     }
@@ -292,7 +292,7 @@ public class AlocacoesPostoModel {
 
 
         if (nativeSqlDecorator.getValorInt("QTD") > 0) {
-            ErroUtils.disparaErro("Existe conflito de periodo para essa matricula em outra aloca√ß√£o, favor corrigir periodo!");
+            ErroUtils.disparaErro("Existe conflito de periodo para essa matricula em outra alocaÁ„o, favor corrigir periodo!");
         }
 
     }
@@ -318,7 +318,7 @@ public class AlocacoesPostoModel {
             if (nativeSqlDecorator.proximo()) {
                 vo.setProperty("NUALOCAPSPRINC", nativeSqlDecorator.getValorBigDecimal("NUALOCAPS"));
             } else {
-                ErroUtils.disparaErro("N√£o √© poss√≠vel alocar! Necess√°rio vincula√ß√£o de um posto de servi√ßo para esse empregado. Favor verificar!");
+                ErroUtils.disparaErro("N„o È possÌvel alocar! Necess·rio vinculaÁ„o de um posto de serviÁo para esse empregado. Favor verificar!");
             }
         }
     }
@@ -334,7 +334,7 @@ public class AlocacoesPostoModel {
         Boolean vagaLivre = nativeSqlDecorator.getValorBigDecimal("QTD").equals(BigDecimal.ZERO);
 
         if (!vagaLivre) {
-            ErroUtils.disparaErro("Vaga vinculada a uma contratacao e n√£o pode ser alocada!");
+            ErroUtils.disparaErro("Vaga vinculada a uma contratacao e n„o pode ser alocada!");
         }
 
     }

@@ -76,7 +76,7 @@ public class AlocacoesServicosModel {
         for(DynamicVO taxaVO : taxasVO ){
             Boolean status = taxaVO.asBigDecimal("NUALOCASERV") != null;
             if(status){
-                ErroUtils.disparaErro("J√° existe um registro Nro.√ônico: "+taxaVO.asBigDecimalOrZero("NUALOCASERV")+" em aberto!");
+                ErroUtils.disparaErro("J· existe um registro Nro.Ÿnico: "+taxaVO.asBigDecimalOrZero("NUALOCASERV")+" em aberto!");
             }
         }
     }
@@ -86,13 +86,13 @@ public class AlocacoesServicosModel {
                 , new Object[]{vo.asBigDecimalOrZero("NUUNIDPREV"), vo.asBigDecimal("NUALOCASERV")});
         for( DynamicVO tributoVO : tributosVO ){
             if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
-                ErroUtils.disparaErro("Data Inicio Vig√™ncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
-                        +" n√£o pode ser menor que a Data Fim Vig√™ncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
-                        +" do registro Nro.√önico: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
+                ErroUtils.disparaErro("Data Inicio VigÍncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" n„o pode ser menor que a Data Fim VigÍncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do registro Nro.⁄nico: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
             }else if( vo.asTimestamp("DTINICIO").equals( tributoVO.asTimestamp("DTFIM") ) ){
-                ErroUtils.disparaErro("Data Inicio Vig√™ncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
-                        +" n√£o pode ser igual a Data Fim Vig√™ncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
-                        +" do registro Nro.√önico: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
+                ErroUtils.disparaErro("Data Inicio VigÍncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" n„o pode ser igual a Data Fim VigÍncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do registro Nro.⁄nico: "+tributoVO.asBigDecimalOrZero("NUALOCASERV")+"!");
             }
         }
     }
@@ -101,8 +101,8 @@ public class AlocacoesServicosModel {
         Boolean dataFim = vo.asTimestamp("DTFIM") != null;
         if(dataFim){
             if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data Fim Vig√™ncia: "+sdf.format(vo.asTimestamp("DTFIM"))
-                        +" n√£o pode ser menor que a Data Inicio Vig√™ncia: "+sdf.format(vo.asTimestamp("DTFIM"))+"!");
+                ErroUtils.disparaErro("Data Fim VigÍncia: "+sdf.format(vo.asTimestamp("DTFIM"))
+                        +" n„o pode ser menor que a Data Inicio VigÍncia: "+sdf.format(vo.asTimestamp("DTFIM"))+"!");
             }
         }
     }
@@ -149,9 +149,9 @@ public class AlocacoesServicosModel {
         qtdTotalAlocacao = qtdTotalAlocacao.add(qtdalocacaoUnidade);
 
         if ( vo.asBigDecimal("QTDEALOCACAO").compareTo(qtdContratada) > 0 ){
-             ErroUtils.disparaErro("Qtde Alocada n√£o pode ser maior que a Qtde. Contratada !");
+             ErroUtils.disparaErro("Qtde Alocada n„o pode ser maior que a Qtde. Contratada !");
         }else if(qtdTotalAlocacao.compareTo(qtdContratada) > 0){
-            ErroUtils.disparaErro("Quantidade total alocada n√£o pode ser maior que a quantidade Contratada !");
+            ErroUtils.disparaErro("Quantidade total alocada n„o pode ser maior que a quantidade Contratada !");
         }
 
         switch (getRegraValidacaoServico()) {
@@ -168,7 +168,7 @@ public class AlocacoesServicosModel {
             case "S4"://serviceo/material controle 4
                 valorUnitario = getPrecoServico();
                 if (BigDecimal.ZERO.equals(valorUnitario)) {
-                    ErroUtils.disparaErro("Pre√ßo de Material/Servi√ßo localizado n√£o pode ser zero, favor verificar dados lancados!");
+                    ErroUtils.disparaErro("PreÁo de Material/ServiÁo localizado n„o pode ser zero, favor verificar dados lancados!");
                 }
                 break;
             default:
@@ -221,12 +221,12 @@ public class AlocacoesServicosModel {
         }
 
         if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
         if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL").setScale(4,BigDecimal.ROUND_DOWN);
@@ -239,7 +239,7 @@ public class AlocacoesServicosModel {
 
     public void validaDelete() throws Exception {
         if(vo.asBigDecimal("NUALOCASERV") != null){
-            ErroUtils.disparaErro("Registro n√£o pode excluido!");
+            ErroUtils.disparaErro("Registro n„o pode excluido!");
         }
     }
 
@@ -247,13 +247,13 @@ public class AlocacoesServicosModel {
         String mensagemErro = "";
 
         //todo melhorar a descricao do campo pegando do dicionario de dados
-        if (campos.containsKey("NUALOCASERV")) {mensagemErro += "Campo Nro. √önico n√£o pode ser modificado. ";}
-        if (campos.containsKey("NUMCONTRATO")) {mensagemErro += "Campo Num. Contrato n√£o pode ser modificado. ";}
-        if (campos.containsKey("NUUNIDPREV")) {mensagemErro += "Campo Unid. Previs√£o n√£o pode ser modificado. ";}
-        if (campos.containsKey("QTDEALOCACAO")) {mensagemErro += "Campo Qtde Alocada n√£o pode ser modificado. ";}
-        if (campos.containsKey("VLRUNITARIO")) {mensagemErro += "Campo Valor Unit√°rio n√£o pode ser modificado. ";}
-        if (campos.containsKey("VLRTOTAL")) {mensagemErro += "Campo Valor Total n√£o pode ser modificado. ";}
-        if (campos.containsKey("DTINS")) {mensagemErro += "Campo Dt. Inser√ß√£o n√£o pode ser modificado. ";}
+        if (campos.containsKey("NUALOCASERV")) {mensagemErro += "Campo Nro. ⁄nico n„o pode ser modificado. ";}
+        if (campos.containsKey("NUMCONTRATO")) {mensagemErro += "Campo Num. Contrato n„o pode ser modificado. ";}
+        if (campos.containsKey("NUUNIDPREV")) {mensagemErro += "Campo Unid. Previs„o n„o pode ser modificado. ";}
+        if (campos.containsKey("QTDEALOCACAO")) {mensagemErro += "Campo Qtde Alocada n„o pode ser modificado. ";}
+        if (campos.containsKey("VLRUNITARIO")) {mensagemErro += "Campo Valor Unit·rio n„o pode ser modificado. ";}
+        if (campos.containsKey("VLRTOTAL")) {mensagemErro += "Campo Valor Total n„o pode ser modificado. ";}
+        if (campos.containsKey("DTINS")) {mensagemErro += "Campo Dt. InserÁ„o n„o pode ser modificado. ";}
 
         BigDecimal qtdAlocacao = vo.asBigDecimal("QTDEALOCACAO");
 
@@ -267,7 +267,7 @@ public class AlocacoesServicosModel {
         }
 
         if ( qtdAlocacao.compareTo(qtdContratada) > 0 ){
-            mensagemErro += "Qtde Alocada n√£o pode ser maior que a Qtde. Contratada !";
+            mensagemErro += "Qtde Alocada n„o pode ser maior que a Qtde. Contratada !";
         }
 
         if (mensagemErro != "") {

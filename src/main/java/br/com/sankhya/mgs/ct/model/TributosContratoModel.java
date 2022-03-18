@@ -69,8 +69,8 @@ import java.util.Collection;
         Boolean dataFim = vo.asTimestamp("DTFIM") != null;
         if(dataFim){
             if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data Fim VigÃªncia: "+sdf.format(vo.asTimestamp("DTFIM"))
-                        +" nÃ£o pode ser menor que a Data Inicio VigÃªncia: "+sdf.format(vo.asTimestamp("DTINICIO"))+"!");
+                ErroUtils.disparaErro("Data Fim Vigência: "+sdf.format(vo.asTimestamp("DTFIM"))
+                        +" não pode ser menor que a Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))+"!");
             }
         }
     }
@@ -81,7 +81,7 @@ import java.util.Collection;
         for(DynamicVO tributoVO : tributosVO ){
             Boolean status = tributoVO.asBigDecimal("NUCONTRATOTRIB") != null;
             if(status){
-                ErroUtils.disparaErro("JÃ¡ existe o registro Nro. Ãšnico: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+" em aberto!");
+                ErroUtils.disparaErro("Já existe o registro Nro. Único: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+" em aberto!");
             }
         }
     }
@@ -91,13 +91,13 @@ import java.util.Collection;
                 , new Object[]{vo.asBigDecimalOrZero("NULOCALTIPOFAT"), vo.asBigDecimal("NUCONTRATOTRIB")});
         for( DynamicVO tributoVO : tributosVO ){
             if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
-                ErroUtils.disparaErro("Data Inicio VigÃªncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
-                        +" nÃ£o pode ser menor que a Data Fim VigÃªncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
-                        +" do Nro. Ãšnico: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
+                ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" não pode ser menor que a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do Nro. Único: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
             }else if( vo.asTimestamp("DTINICIO").equals( tributoVO.asTimestamp("DTFIM") ) ){
-                ErroUtils.disparaErro("Data Inicio VigÃªncia: "+sdf.format(vo.asTimestamp("DTINICIO"))
-                        +" nÃ£o pode ser igual a Data Fim VigÃªncia: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
-                        +" do Nro. Ãšnico: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
+                ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))
+                        +" não pode ser igual a Data Fim Vigência: "+sdf.format(tributoVO.asTimestamp("DTFIM"))
+                        +" do Nro. Único: "+tributoVO.asBigDecimalOrZero("NUCONTRATOTRIB")+"!");
             }
         }
     }
@@ -111,7 +111,7 @@ import java.util.Collection;
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Registro nÃ£o pode excluido!");
+        ErroUtils.disparaErro("Registro não pode excluido!");
     }
 
     public Collection<DynamicVO> buscarRegistraPorNumeroUnicolocaltipofatura(BigDecimal numeroUnico) throws Exception {

@@ -52,7 +52,7 @@ public class DetalhamentoCustoModel {
 
     public void validaDadosInsert() throws Exception {
 
-        //Corre√ß√£o para n√£o ter problema ao duplicar os registros
+        //CorreÁ„o para n„o ter problema ao duplicar os registros
         vo.setProperty("CODINTEGRACAOLC", null);
         vo.setProperty("NULCTCUSTO", null);
         vo.setProperty("DHUPD", null);
@@ -70,12 +70,17 @@ public class DetalhamentoCustoModel {
         BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU").setScale(0,RoundingMode.UNNECESSARY);
 
         if( !anoMes.equals( compentenciaFaturamento ) ){
-            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lan√ßamento!");
+            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lanÁamento!");
         }
 
         if( vo.asBigDecimal("CODTIPOPOSTO") == null
             && vo.asBigDecimal("CODSERVMATERIAL") == null ){
-            ErroUtils.disparaErro("Necess√°rio preencher o posto ou o servi√ßo, fineza verificar!");
+            ErroUtils.disparaErro("Necess·rio preencher o posto ou o serviÁo, fineza verificar!");
+        }
+
+        if( vo.asBigDecimal("CODTIPOPOSTO") != null
+            && vo.asBigDecimal("CODSERVMATERIAL") != null ){
+            ErroUtils.disparaErro("Fineza verificar o posto e o serviÁo n„o podem estar preenchidos no mesmo lanÁamento!");
         }
 
         if( vo.asBigDecimalOrZero("CODCARGA") == null ) {
@@ -118,7 +123,7 @@ public class DetalhamentoCustoModel {
 
     public void validaDadosUpdate() throws Exception {
 
-        //Corre√ß√£o para n√£o ter problema ao duplicar os registros
+        //CorreÁ„o para n„o ter problema ao duplicar os registros
         vo.setProperty("CODINTEGRACAOLC", null);
         vo.setProperty("NULCTCUSTO", null);
 
@@ -126,7 +131,7 @@ public class DetalhamentoCustoModel {
         BigDecimal compentenciaFaturamento = vo.asBigDecimal("COMPFATU");
 
         if( !anoMes.equals( compentenciaFaturamento ) ){
-            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lan√ßamento!");
+            ErroUtils.disparaErro("Competencia do faturamento diferente da data do lanÁamento!");
         }
 
         NativeSqlDecorator consultaCustoFaturaSQL = new NativeSqlDecorator("select codcusto, codtipofatura from mgstctevtcus where codevento = :CODEVENTO and ROWNUM < 2 " +
@@ -150,7 +155,7 @@ public class DetalhamentoCustoModel {
 
         if( vo.asBigDecimal("CODTIPOPOSTO") == null
                 && vo.asBigDecimal("CODSERVMATERIAL") == null ){
-            ErroUtils.disparaErro("Necess√°rio preencher o posto ou o servi√ßo, fineza verificar!");
+            ErroUtils.disparaErro("Necess·rio preencher o posto ou o serviÁo, fineza verificar!");
         }
 
         if( vo.asBigDecimal("CODPRONTUARIO") != null ){
@@ -170,7 +175,7 @@ public class DetalhamentoCustoModel {
     public void validaDadosModificados(ModifingFields persistenceEvent) throws Exception {
 
         if( vo.asBigDecimal("CODINTEGRACAOLC") != null ){
-            ErroUtils.disparaErro("Altera√ß√£o n√£o permitida, registro j√° vinculado a uma planilha!");
+            ErroUtils.disparaErro("AlteraÁ„o n„o permitida, registro j· vinculado a uma planilha!");
         }
     }
 
@@ -225,12 +230,12 @@ public class DetalhamentoCustoModel {
             }
         }
         if (BigDecimal.ZERO.equals(numeroUnicoValoresEventos)) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         DynamicVO mgsct_valores_eventosVO = mgsct_valores_eventosDAO.findByPK(numeroUnicoValoresEventos);
         if (mgsct_valores_eventosVO == null) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         valorUnitario = mgsct_valores_eventosVO.asBigDecimal("VLRTOTAL");
@@ -266,12 +271,12 @@ public class DetalhamentoCustoModel {
         }
 
         if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
         if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL");
@@ -470,7 +475,8 @@ public class DetalhamentoCustoModel {
                 "and mgstctcontrcent.Codsite = :codsite\n" +
                 "and mgstctevtcus.codevento = :codevento\n" +
                 "AND NVL(MGSTCTCONTRATOtaxa.DTFIM,sysdate)                                       >= sysdate\n" +
-                "AND NVL(MGSTCTCONTRCENT.DTfim,sysdate)                                          >= SYSDATE");
+                "AND NVL(MGSTCTCONTRCENT.DTfim,sysdate)                                          >= SYSDATE\n" +
+                "AND NVL( Mgstctcontratotaxa.Ativo, 'N' ) = 'N' "); //quando o status for N = N„o calcula na conta, S = Sim calcula na planilha
         calculandoTaxaSQL.setParametro("contrato", vo.asBigDecimal("NUMCONTRATO"));
         calculandoTaxaSQL.setParametro("codsite", vo.asBigDecimal("CODUNIDADEFATUR"));
         calculandoTaxaSQL.setParametro("codevento", vo.asBigDecimal("CODEVENTO"));
@@ -488,19 +494,19 @@ public class DetalhamentoCustoModel {
 
     public void validaDelete() throws Exception {
         if( vo.asBigDecimal("NUEVTMENSAL") != null ){
-            ErroUtils.disparaErro("Registro n√£o pode ser excluido, fineza verificar!");
+            ErroUtils.disparaErro("Registro n„o pode ser excluido, fineza verificar!");
         }
     }
 
     /*  consulta para pegar campo que nao pode ser alterado com uma descricao correta
-select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' n√£o pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem
+select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' n„o pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem
     */
 
     private void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
 
         if (campos.containsKey("#CAMPO#")) {
-            mensagemErro += "Campo Evento n√£o pode ser modificado. ";
+            mensagemErro += "Campo Evento n„o pode ser modificado. ";
         }
 
         if (mensagemErro != "") {
@@ -513,6 +519,7 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
         BigDecimal valortotal = null;
         BigDecimal taxa = null;
 
+
         JapeWrapper eventoCustoDAO = JapeFactory.dao("MGSCT_Eventos_Custos");
         DynamicVO eventoCustoVO = eventoCustoDAO.findOne("CODEVENTO = ? ", new Object[]{vo.asBigDecimal("CODEVENTO")});
 
@@ -522,10 +529,11 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
         nativeSqlDecorator.setParametro("VALOR_DIGITADO",valorTotalEvento);
 
         if( nativeSqlDecorator.proximo() ){
-            valortotal = nativeSqlDecorator.getValorBigDecimal("VALOR");
-            taxa = nativeSqlDecorator.getValorBigDecimal("TAXA");
+            valortotal = nativeSqlDecorator.getValorBigDecimal("VALOR_GERAL");
+            taxa = nativeSqlDecorator.getValorBigDecimal("TAXA_ADM");
+            valorUnitario = nativeSqlDecorator.getValorBigDecimal("VALOR");
         }
-
+        valorUnitarioTemporario = valorUnitario;
         valorUnitario = valorUnitario.multiply(taxa);
         valorUnitario = valorUnitarioTemporario.add(valorUnitario);
 
@@ -544,7 +552,7 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
         validarInsercao.setParametro("dtlanccusto", dataLancamentoCusto);
 
         if( validarInsercao.proximo() ){
-            ErroUtils.disparaErro("J√° existe planilha de fiscal para esse conjunto de informa√ß√µes. Verifique com o faturamento!");
+            ErroUtils.disparaErro("J· existe planilha de fiscal para esse conjunto de informaÁıes. Verifique com o faturamento!");
         }
     }
 }

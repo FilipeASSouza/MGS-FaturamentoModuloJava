@@ -76,7 +76,7 @@ public class PrevisoesContratoModel {
                 vo.asBigDecimal("CODCONTROLE"));
 
         if(registroJaCadastrados != null){
-            ErroUtils.disparaErro("Registro ja cadastrado! Combina√ß√£o posto, evento, controle ja existe cadastrado em numero unico "+registroJaCadastrados.asBigDecimal("NUMODALIDADE"));
+            ErroUtils.disparaErro("Registro ja cadastrado! CombinaÁ„o posto, evento, controle ja existe cadastrado em numero unico "+registroJaCadastrados.asBigDecimal("NUMODALIDADE"));
         }
     }
 
@@ -119,7 +119,7 @@ public class PrevisoesContratoModel {
             case "P"://posto
                 valorUnitario = getPrecoPosto();
                 if (BigDecimal.ZERO.equals(valorUnitario)) {
-                    ErroUtils.disparaErro("Pre√ßo de posto localizado n√£o pode ser zero, favor verificar dados lancados!");
+                    ErroUtils.disparaErro("PreÁo de posto localizado n„o pode ser zero, favor verificar dados lancados!");
                 }
                 break;
             case "C"://contrato
@@ -134,7 +134,7 @@ public class PrevisoesContratoModel {
             case "S4"://serviceo/material controle 4
                 valorUnitario = getPrecoServicoMaterial();
                 if (BigDecimal.ZERO.equals(valorUnitario)) {
-                    ErroUtils.disparaErro("Pre√ßo de Material/Servi√ßo localizado n√£o pode ser zero, favor verificar dados lancados!");
+                    ErroUtils.disparaErro("PreÁo de Material/ServiÁo localizado n„o pode ser zero, favor verificar dados lancados!");
                 }
                 break;
             default:
@@ -164,12 +164,12 @@ public class PrevisoesContratoModel {
             }
         }
         if (BigDecimal.ZERO.equals(numeroUnicoValoresEventos)) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         DynamicVO mgsct_valores_eventosVO = mgsct_valores_eventosDAO.findByPK(numeroUnicoValoresEventos);
         if (mgsct_valores_eventosVO == null) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         valorUnitario = mgsct_valores_eventosVO.asBigDecimal("VLRTOTAL");
@@ -195,12 +195,12 @@ public class PrevisoesContratoModel {
         }
 
         if (BigDecimal.ZERO.equals(numeroUnicoValoresProdutos)) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         DynamicVO mgsct_valores_produtosVO = mgsct_valores_produtosDAO.findByPK(numeroUnicoValoresProdutos);
         if (mgsct_valores_produtosVO == null) {
-            ErroUtils.disparaErro("Pre√ßo n√£o localizado, favor verificar dados lancados!");
+            ErroUtils.disparaErro("PreÁo n„o localizado, favor verificar dados lancados!");
         }
 
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL");
@@ -227,7 +227,7 @@ public class PrevisoesContratoModel {
         BigDecimal quantidadeVagasAtivas = new VagasPrevisaoContratoModel().quantidadeVagasAtivas(numeroUnicoPreviesoContrato, sigla);
 
             if (quantidadeContratada.compareTo(quantidadeVagasAtivas) < 0) {
-                ErroUtils.disparaErro("A quantidade de vagas n√£o pode ser diminuida!");
+                ErroUtils.disparaErro("A quantidade de vagas n„o pode ser diminuida!");
             }
 
             BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtivas);
@@ -267,7 +267,7 @@ public class PrevisoesContratoModel {
                 vo.asBigDecimalOrZero("CODSERVMATERIAL")
         );
         if (dynamicVOS.size() > 0) {
-            ErroUtils.disparaErro("Previs√£o do Contrato j√° possui Previs√£o na Unidade e n√£o pode ser deletado!");
+            ErroUtils.disparaErro("Previs„o do Contrato j· possui Previs„o na Unidade e n„o pode ser deletado!");
         }
 
     }
@@ -276,23 +276,23 @@ public class PrevisoesContratoModel {
         String mensagemErro = "";
         if (vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(3)) || vo.asBigDecimalOrZero("CODCONTROLE").equals(new BigDecimal(4)))
             if (campos.containsKey("VLRUNITARIO")) {
-                mensagemErro += "Campo Vlr. Unit√°rio n√£o pode ser modificado. ";
+                mensagemErro += "Campo Vlr. Unit·rio n„o pode ser modificado. ";
             }
 
         if (campos.containsKey("CODEVENTO")) {
-            mensagemErro += "Campo Evento n√£o pode ser modificado. ";
+            mensagemErro += "Campo Evento n„o pode ser modificado. ";
         }
 
         if (campos.containsKey("CODSERVMATERIAL")) {
-            mensagemErro += "Campo Servi√ßo ou Material n√£o pode ser modificado. ";
+            mensagemErro += "Campo ServiÁo ou Material n„o pode ser modificado. ";
         }
 
         if (campos.containsKey("CODCONTROLE")) {
-            mensagemErro += "Campo Controle n√£o pode ser modificado. ";
+            mensagemErro += "Campo Controle n„o pode ser modificado. ";
         }
 
         if (campos.containsKey("CODTIPOPOSTO")) {
-            mensagemErro += "Campo Tipo do Posto n√£o pode ser modificado. ";
+            mensagemErro += "Campo Tipo do Posto n„o pode ser modificado. ";
         }
 
         if (mensagemErro != "") {

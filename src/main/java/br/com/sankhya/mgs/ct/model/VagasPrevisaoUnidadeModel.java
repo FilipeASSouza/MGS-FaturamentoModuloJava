@@ -63,7 +63,7 @@ public class VagasPrevisaoUnidadeModel {
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data final n√£o pode ser menor que a data incial!");
+                ErroUtils.disparaErro("Data final n„o pode ser menor que a data incial!");
             }
         }
 
@@ -75,17 +75,17 @@ public class VagasPrevisaoUnidadeModel {
         }
 
         if( vagaAlocada != null ){
-            ErroUtils.disparaErro("Vaga com aloca√ß√£o, fineza verificar!");
+            ErroUtils.disparaErro("Vaga com alocaÁ„o, fineza verificar!");
         }
 
         if (dataFimAntigoPreenchido && !dataFimNovoPreenchido){
-            ErroUtils.disparaErro("Vaga n√£o pode ser reativada!");
+            ErroUtils.disparaErro("Vaga n„o pode ser reativada!");
         }
 
         if (!dataFimAntigoPreenchido && dataFimNovoPreenchido) {
             Timestamp dtfim = vo.asTimestamp("DTFIM");
             if (dtfim.compareTo(TimeUtils.getNow())>0){
-                ErroUtils.disparaErro("Data de finaliza√ß√£o da vaga n√£o pode ser maior que hoje!");
+                ErroUtils.disparaErro("Data de finalizaÁ„o da vaga n„o pode ser maior que hoje!");
             }
 
             //todo implementar
@@ -106,7 +106,7 @@ public class VagasPrevisaoUnidadeModel {
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Vaga n√£o pode ser deletada!");
+        ErroUtils.disparaErro("Vaga n„o pode ser deletada!");
     }
 
     public DynamicVO criar(BigDecimal numeroUnicoPrevisaoUnidade, String codigoVaga, Timestamp dataInicio) throws Exception {

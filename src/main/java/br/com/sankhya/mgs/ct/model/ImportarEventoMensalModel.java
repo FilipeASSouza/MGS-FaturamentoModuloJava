@@ -67,7 +67,7 @@ public class ImportarEventoMensalModel {
                         numeroUnicoModalidade);
 
         if (modalidadeContratoVO == null){
-            disparaErro("Modalidade por contrato n√£o localizado!");
+            disparaErro("Modalidade por contrato n„o localizado!");
         }
 
         numeroUnicoModalidadeContrato = modalidadeContratoVO.asBigDecimal("NUMODALIDADE");
@@ -79,13 +79,13 @@ public class ImportarEventoMensalModel {
 
             switch(flagErro){
                 case 7:
-                    mensagem += " ,N√£o houve vincula√ß√£o do evento com o c√≥digo custo e fatura!";
+                    mensagem += " ,N„o houve vinculaÁ„o do evento com o cÛdigo custo e fatura!";
                     break;
                 case 2: // CODUNIDADEFATUR
-                    mensagem += " ,N√£o existe unidade de faturamento neste contrato!";
+                    mensagem += " ,N„o existe unidade de faturamento neste contrato!";
                     break;
                 case 99:
-                    mensagem += " ,J√° existe planilha para essa unidade nesse periodo!";
+                    mensagem += " ,J· existe planilha para essa unidade nesse periodo!";
                     break;
                 case 1:
                     mensagem += "";
@@ -195,9 +195,9 @@ public class ImportarEventoMensalModel {
             detalhamentoCustoFCVO.set("CODSITLANC", BigDecimal.ZERO);
             detalhamentoCustoFCVO.set("TIPLANCEVENTO","M");
             detalhamentoCustoFCVO.set("CODCARGA",numeroUnico);
-            detalhamentoCustoFCVO.set("MTVCARGA",motivoCarga);//pedir para o usu√°rio digitar o motivo
+            detalhamentoCustoFCVO.set("MTVCARGA",motivoCarga);//pedir para o usu·rio digitar o motivo
             detalhamentoCustoFCVO.set("DHINS", TimeUtils.getNow());//data de quem inseriu
-            detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usu√°rio que inseriu
+            detalhamentoCustoFCVO.set("USUINS", JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID()).asString("NOMEUSU"));//usu·rio que inseriu
             detalhamentoCustoFCVO.set("CODUNIDADEFATUR",planilha.getValorBigDecimal("CODUNIDADEFATUR"));
             detalhamentoCustoFCVO.set("CODVAGA", planilha.getValorString("CODVAGA"));
             detalhamentoCustoFCVO.set("CODSERVMATERIAL",planilha.getValorBigDecimal("CODSERVMATERIAL"));

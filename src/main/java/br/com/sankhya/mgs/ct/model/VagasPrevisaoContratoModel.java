@@ -52,7 +52,7 @@ public class VagasPrevisaoContratoModel {
     }
 
     public void validaDelete() throws Exception {
-        ErroUtils.disparaErro("Vagas n√£o podem ser excluidas!");
+        ErroUtils.disparaErro("Vagas n„o podem ser excluidas!");
     }
 
     public BigDecimal quantidadeVagasAtivas(BigDecimal numeroUnicoPrevisaoContrato, String codigoVaga) throws Exception {
@@ -75,8 +75,8 @@ public class VagasPrevisaoContratoModel {
         /*BigDecimal usuario = AuthenticationInfo.getCurrent().getUserID();
 
         if(usuario != BigDecimal.ZERO){
-            ErroUtils.disparaErro("As vagas n√£o podem ser inseridas pelo <b>Usu√°rio</b>" +
-                    "<br>Somente a rotina ir√° <b>cadastrar</b> as Vagas!");
+            ErroUtils.disparaErro("As vagas n„o podem ser inseridas pelo <b>Usu·rio</b>" +
+                    "<br>Somente a rotina ir· <b>cadastrar</b> as Vagas!");
         }*/
     }
 
@@ -84,35 +84,35 @@ public class VagasPrevisaoContratoModel {
 
         DynamicVO vagaPrev = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato").findByPK(vo.asBigDecimal("NUCONTRVAGA"));
         if(vagaPrev.asTimestamp("DTFIM") != null){
-            ErroUtils.disparaErro("<b>Data Final</b> da previs√£o da vaga n√£o pode ser alterada!");
+            ErroUtils.disparaErro("<b>Data Final</b> da previs„o da vaga n„o pode ser alterada!");
         }
 
         if( vo.asString("PREVUNID").equalsIgnoreCase(String.valueOf("S")) ){
-            ErroUtils.disparaErro("Datas da previs√£o da vaga n√£o pode ser alterada esta vinculada a uma unidade!");
+            ErroUtils.disparaErro("Datas da previs„o da vaga n„o pode ser alterada esta vinculada a uma unidade!");
         }
 
         //subtrairVagaPrevisaoContrato = true;
     }
 
-    //descontinuado - Sugest√£o do Juliano para que se a data estiver diferente de nulo alerta
+    //descontinuado - Sugest„o do Juliano para que se a data estiver diferente de nulo alerta
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
        Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
        Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
-                ErroUtils.disparaErro("Data final n√£o pode ser menor que a data inicial!");
+                ErroUtils.disparaErro("Data final n„o pode ser menor que a data inicial!");
             }
         }
 
        if (dataFimAntigoPreenchido && !dataFimNovoPreenchido){
-           ErroUtils.disparaErro("Vaga n√£o pode ser reativada!");
+           ErroUtils.disparaErro("Vaga n„o pode ser reativada!");
        }
 
         if (!dataFimAntigoPreenchido && dataFimNovoPreenchido) {
             Timestamp dtfim = vo.asTimestamp("DTFIM");
             if (dtfim.compareTo(TimeUtils.getNow())>0){
-                ErroUtils.disparaErro("Data de finaliza√ß√£o da vaga n√£o pode ser maior que hoje!");
+                ErroUtils.disparaErro("Data de finalizaÁ„o da vaga n„o pode ser maior que hoje!");
             }
 
             if (vagaAtivaPrevisaoUnidade()){
@@ -182,7 +182,7 @@ public class VagasPrevisaoContratoModel {
         }
 
         //todo melhorar a descricao do campo pegando do dicionario de dados
-        if( campos.containsKey("CODVAGA") ){mensagemErro += "<b>Vaga</b> n√£o pode ser alterada!";}
+        if( campos.containsKey("CODVAGA") ){mensagemErro += "<b>Vaga</b> n„o pode ser alterada!";}
 
         if (mensagemErro != "") {
             ErroUtils.disparaErro(mensagemErro);

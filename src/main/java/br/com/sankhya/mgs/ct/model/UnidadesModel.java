@@ -70,11 +70,11 @@ public class UnidadesModel {
          */
         if(vo.asTimestamp("DTINICIO").compareTo(contratoVO.asTimestamp("DTINICIO")) < 0 ){
             ErroUtils.disparaErro("Data Inicio da Unidade: "+ sdf.format(dataInicioUnidade)
-                    + " n√£o pode ser inferior a Data Inicio do Contrato: "+ sdf.format(dataInicioContrato) +" !" );
+                    + " n„o pode ser inferior a Data Inicio do Contrato: "+ sdf.format(dataInicioContrato) +" !" );
         }else if( dataFimUnidade != null ){
             if(vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
                 ErroUtils.disparaErro("Data Final: "+ sdf.format(dataFimUnidade)
-                        + " n√£o pode ser inferior a Data Inicio: "+ sdf.format(dataInicioUnidade) +" !" );
+                        + " n„o pode ser inferior a Data Inicio: "+ sdf.format(dataInicioUnidade) +" !" );
             }
         }
     }
@@ -99,11 +99,11 @@ public class UnidadesModel {
                 + " com a mesma data Inicio, gentileza verificar!");
             }else if(dataInicioUnidade.compareTo(dataFimOutraUnidade) < 0){
                 ErroUtils.disparaErro("Data Inicio: "+sdf.format(dataInicioUnidade)
-                        +" n√£o pode ser menor que Data Fim: "+ sdf.format(dataFimOutraUnidade) +
+                        +" n„o pode ser menor que Data Fim: "+ sdf.format(dataFimOutraUnidade) +
                         " do mesmo contrato: "+ numeroContrato +" da mesma unidade, gentileza verificar!");
             }else if(dataInicioUnidade.equals(dataFimOutraUnidade)){
                 ErroUtils.disparaErro("Data Inicio: "+sdf.format(dataInicioUnidade)
-                + " n√£o pode ser igual a Data Fim: "+sdf.format(dataFimOutraUnidade)
+                + " n„o pode ser igual a Data Fim: "+sdf.format(dataFimOutraUnidade)
                 + " do mesmo contrato: "+ numeroContrato + " da mesma unidade, gentileza verificar!");
             }
 
@@ -141,7 +141,7 @@ public class UnidadesModel {
     private void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
         if (campos.containsKey("#CAMPO#")) {
-            mensagemErro = mensagemErro + "Campo Evento n√£o pode ser modificado. ";
+            mensagemErro = mensagemErro + "Campo Evento n„o pode ser modificado. ";
         }
 
         if (mensagemErro != "") {

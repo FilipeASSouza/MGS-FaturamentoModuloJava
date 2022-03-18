@@ -94,7 +94,7 @@ public class ImportarValoresModel {
             ).size();
 
             if (valoresProdutosNumeroRegstrosIguais > 0){
-                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao ser√° importada!");
+                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao ser· importada!");
             }
 
             FluidCreateVO valoresProdutosFCVO = valoresProdutosDAO.create();
@@ -141,7 +141,7 @@ public class ImportarValoresModel {
             ).size();
 
             if (valoresEventosNumeroRegstrosIguais > 0){
-                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao ser√° importada!");
+                br.com.sankhya.bh.utils.ErroUtils.disparaErro("Ja existem dados equivalente ao dao planilha. Planilha nao ser· importada!");
             }
 
             FluidCreateVO valoresEventosFCVO = valoresEventosDAO.create();

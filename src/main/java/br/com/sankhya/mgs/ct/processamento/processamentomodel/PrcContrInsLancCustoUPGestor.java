@@ -27,7 +27,7 @@ public class PrcContrInsLancCustoUPGestor extends ProcessarSuper implements Proc
             if (!integracaoSalva) {
                 IntegracaoLancamentoCustoGestorModel.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
-                mensagem = "Processado IntegraÃ§ao: " + numeroUnicoIntegracao;
+                mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
                 String log = "";
                 BigDecimal sucesso = null;

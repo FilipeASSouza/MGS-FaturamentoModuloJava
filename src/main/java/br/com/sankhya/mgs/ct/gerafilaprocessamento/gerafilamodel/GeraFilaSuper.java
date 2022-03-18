@@ -94,11 +94,11 @@ public class GeraFilaSuper implements GeraFila {
             case "D"://Data
                 return null;
 
-            case "F"://NÃºmero Decimal
+            case "F"://Número Decimal
                 return new BigDecimal(valor);
             case "H"://Data e Hora
                 return null;
-            case "I"://NÃºmero Inteiro
+            case "I"://Número Inteiro
                 return new BigDecimal(valor);
             case "S"://Texto
                 return valor;

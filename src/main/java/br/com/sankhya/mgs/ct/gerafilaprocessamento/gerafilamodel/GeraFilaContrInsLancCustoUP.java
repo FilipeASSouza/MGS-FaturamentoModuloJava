@@ -45,7 +45,7 @@ public class GeraFilaContrInsLancCustoUP extends GeraFilaSuper implements GeraFi
 
         /*
         MGSTCTINTEGRADC
-        Motivo: Retirado para quando houver somente lanÃ§amentos manuais no detalhamento, ir para planilha de fiscal.
+        Motivo: Retirado para quando houver somente lançamentos manuais no detalhamento, ir para planilha de fiscal.
         29/07/2021
 
         JapeWrapper integrDetalhaCustoDAO = JapeFactory.dao("MGSCT_Integr_Detalha_Custo");

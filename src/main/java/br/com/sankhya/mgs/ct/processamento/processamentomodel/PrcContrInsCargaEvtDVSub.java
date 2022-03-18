@@ -30,7 +30,7 @@ public class PrcContrInsCargaEvtDVSub extends ProcessarSuper implements Processa
             if (!integracaoSalva) {
                 IntegracaoDetalhaCustoModel.atualizaComplemento(numeroUnicoIntegracao, "S");
                 executado = true;
-                mensagem = "Processado IntegraÃ§ao: " + numeroUnicoIntegracao;
+                mensagem = "Processado Integraçao: " + numeroUnicoIntegracao;
             } else {
 
                 String log = "";

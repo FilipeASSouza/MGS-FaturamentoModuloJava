@@ -68,14 +68,14 @@ public class PagamentoFaturaModel {
     }
 
     /*  consulta para pegar campo que nao pode ser alterado com uma descricao correta
-select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' n√£o pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem 
+select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' n„o pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem 
     */
 
     private void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
         String mensagemErro = "";
 
 
-        if (campos.containsKey("#CAMPO#")) { mensagemErro += "Campo Evento n√£o pode ser modificado. "; }
+        if (campos.containsKey("#CAMPO#")) { mensagemErro += "Campo Evento n„o pode ser modificado. "; }
 
         if (mensagemErro != "") {
             ErroUtils.disparaErro(mensagemErro);

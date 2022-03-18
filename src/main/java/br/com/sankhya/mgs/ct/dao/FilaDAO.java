@@ -96,7 +96,7 @@ public class FilaDAO {
                 }
             });
         }catch(Exception e){
-            System.out.println("Erro de execuÃ§Ã£o no controle de transaÃ§Ã£o ");
+            System.out.println("Erro de execução no controle de transação ");
             e.printStackTrace();
         }finally {
                 JapeSession.close(hnd);
@@ -146,7 +146,7 @@ public class FilaDAO {
 
             filaEnvioConsulta.atualizar();
         } catch (Exception e) {
-            System.out.println("AtualizaÃ§Ã£o Fila Erro: " + e);
+            System.out.println("Atualização Fila Erro: " + e);
             e.printStackTrace();
         }
     }

@@ -56,7 +56,7 @@ public class ProcessamentoFilaModelGestor implements Runnable{
             try {
 
                 consultaFila = new NativeSqlDecorator(this, "buscaFilaProcessamentoGestor.sql");
-                consultaFila.setParametro("QTDEXECFILA", 10); // ajustado para testar o processamento da fila pois o agendamento n√£o fica ativado no ambiente de teste
+                consultaFila.setParametro("QTDEXECFILA", 10); // ajustado para testar o processamento da fila pois o agendamento n„o fica ativado no ambiente de teste
 
             } catch (Exception e) {
                 throw new Exception("Erro ao executar consulta busca fila processamento Gestor: " + e);

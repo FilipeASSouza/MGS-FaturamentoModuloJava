@@ -48,7 +48,7 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
 
             HashMap<String, Object> parametrosRelatorio = new HashMap<String, Object>();
 
-            String pastaDeModelosParaImpress√£o = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
+            String pastaDeModelosParaImpress„o = JapeFactory.dao("ParametroSistema").findOne("CHAVE = 'SERVDIRMOD' AND CODUSU = 0").asString("TEXTO");
 
             parametrosRelatorio.put("P_DTLANCUSTOINI", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
             parametrosRelatorio.put("P_DTLANCUSTOFIN", TimeUtils.toTimestamp(parametrosExecutacao.get("DTLANCCUSTO"),"yyyyMMdd"));
@@ -56,7 +56,7 @@ public class RtnContrInsLancCustoUPGestorAnexo extends ProcessarSuper implements
             parametrosRelatorio.put("P_CODUNIDADEFATUR", new BigDecimal(parametrosExecutacao.get("CODUNIDADEFATUR")));
             parametrosRelatorio.put("P_CODTIPOFATURA", new BigDecimal(parametrosExecutacao.get("CODTIPOFATURA")));
             parametrosRelatorio.put("P_FISCGEST", "G");
-            parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpress√£o);
+            parametrosRelatorio.put("PDIR_MODELO", pastaDeModelosParaImpress„o);
 
             jasperPrint = modeloImpressao.buildJasperPrint(parametrosRelatorio, jdbc.getConnection());
 

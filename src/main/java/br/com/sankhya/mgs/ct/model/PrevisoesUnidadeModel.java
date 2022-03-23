@@ -156,9 +156,20 @@ public class PrevisoesUnidadeModel {
             vo.setProperty("CODCONTROLE", previsoesContratoVO.asBigDecimal("CODCONTROLE"));
         }
 
-        if( ( vo.asTimestamp("DTFIM") != null && vo.asTimestamp("DTINICIO") != null )
-                && vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0 ){
-            ErroUtils.disparaErro("Data Final deve ser maior que a data Inicial! Fineza verificar!");
+        if( vo.asTimestamp("DTFIM") != null && vo.asTimestamp("DTINICIO") != null ) {
+            if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0) {
+                ErroUtils.disparaErro("Data Final deve ser maior que a data Inicial! Fineza verificar!");
+            }
+        }
+
+
+        if( vo.asTimestamp("DTINICIO").compareTo(mestrevo.asTimestamp("DTINICIO")) < 0 ) {
+            ErroUtils.disparaErro("Data inicio deve ser maior que a Data Inicio da Unidade, gentileza verificar!");
+        }
+
+
+        if( vo.asTimestamp("DTFIM") != null ){
+            verificarExistenciaVagaAtiva();
         }
 
         previsaoValidator.validaDadosInsert();
@@ -210,6 +221,19 @@ public class PrevisoesUnidadeModel {
                 }
                 break;
             default:
+        }
+    }
+
+    public void verificarExistenciaVagaAtiva() throws Exception{
+        NativeSqlDecorator consultandoVagaAtiva = new NativeSqlDecorator("select NUUNIDPREV from mgstctunidadeprev\n" +
+            "where exists (select 1 from mgstctunidprevvaga \n" +
+            "                  inner join mgstctalocacaops on mgstctalocacaops.codvaga = mgstctunidprevvaga.codvaga\n" +
+            "                  where (TRUNC(mgstctalocacaops.DTFIM) >= TRUNC(SYSDATE)  OR mgstctalocacaops.DTFIM  IS NULL)" +
+            " AND mgstctunidprevvaga.NUUNIDPREV = mgstctunidadeprev.NUUNIDPREV ) \n" +
+            "and mgstctunidadeprev.nuunidprev = :nuunidprev");
+        consultandoVagaAtiva.setParametro("nuunidprev",vo.asBigDecimalOrZero("NUUNIDPREV"));
+        if(consultandoVagaAtiva.proximo()){
+            ErroUtils.disparaErro("Unidade possui vaga alocada e nao pode ser fechada, gentileza verificar!");
         }
     }
 
@@ -479,6 +503,22 @@ public class PrevisoesUnidadeModel {
     }
 
     public void validaDadosUpdade() throws Exception {
+
+        if( vo.asTimestamp("DTFIM") != null ){
+            verificarExistenciaVagaAtiva();
+        }
+
+        if( vo.asTimestamp("DTFIM") != null ) {
+            if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0) {
+                ErroUtils.disparaErro("Data Final deve ser maior que a data Inicial! Fineza verificar!");
+            }
+        }
+
+
+        if( vo.asTimestamp("DTINICIO").compareTo(mestrevo.asTimestamp("DTINICIO")) < 0 ) {
+            ErroUtils.disparaErro("Data inicio deve ser maior que a Data Inicio da Unidade, gentileza verificar!");
+        }
+
 
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto

@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.gerafilaprocessamento;
 
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.gerafilaprocessamento.gerafilamodel.GeraFila;

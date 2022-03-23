@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
+import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -22,7 +23,7 @@ public class VagasPrevisaoContratoModel {
     private JapeWrapper dao = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
     private DynamicVO vo;
     private BigDecimal quantidadeVagasDisponiveis;
-    private Boolean subtrairVagaPrevisaoContrato = false;
+    private boolean subtrairVagaPrevisaoContrato = false;
 
     public VagasPrevisaoContratoModel() {
     }
@@ -94,8 +95,8 @@ public class VagasPrevisaoContratoModel {
 
     //descontinuado - Sugestão do Juliano para que se a data estiver diferente de nulo alerta
     public void validaDadosUpdate(DynamicVO oldvo) throws Exception {
-       Boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
-       Boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
+       boolean dataFimNovoPreenchido = vo.asTimestamp("DTFIM") != null;
+       boolean dataFimAntigoPreenchido = oldvo.asTimestamp("DTFIM") != null;
 
         if (dataFimNovoPreenchido){
             if (vo.asTimestamp("DTFIM").compareTo(vo.asTimestamp("DTINICIO")) < 0){
@@ -163,10 +164,11 @@ public class VagasPrevisaoContratoModel {
                 "F.PREVUNID = 'N'");
         verificandoVagasLivresSQL.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato);
         ArrayList<DynamicVO> vagaLivresVOs = new ArrayList();
-        for (DynamicVO vagaVO:vagaVOs){
-            if ("N".equals(vagaVO.asString("PREVUNID"))){
-                vagaLivresVOs.add(vagaVO);
-            }
+        while(verificandoVagasLivresSQL.proximo()){
+            BigDecimal numeroUnicoVaga = verificandoVagasLivresSQL.getValorBigDecimal("NUCONTRVAGA");
+            JapeWrapper mgsct_vagas_previsao_contrato = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
+            DynamicVO vagaLivre = mgsct_vagas_previsao_contrato.findByPK(numeroUnicoVaga);
+            vagaLivresVOs.add(vagaLivre);
         }
         return  vagaLivresVOs;
     }

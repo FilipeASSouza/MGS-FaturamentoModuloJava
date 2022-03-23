@@ -17,15 +17,20 @@ import java.sql.Timestamp;
 public class IntegracaoLancamentoCustoModel {
     static private JapeWrapper integracaoLancamentoCustoDAO = JapeFactory.dao("MGSCT_Integr_Lanc_Custo");
     private BigDecimal numeroUnicoIntegracao = BigDecimal.ZERO;
+    NativeSqlDecorator nativeSqlDecorator;
+    NativeSqlDecorator nativeSqlInsereLancamentoCusto;
+    private JdbcWrapper jdbcWrapper;
 
-    public IntegracaoLancamentoCustoModel() {
-
+    public IntegracaoLancamentoCustoModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRALC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRALC = :NUINTEGRALC", jdbcWrapper);
+        nativeSqlInsereLancamentoCusto = new NativeSqlDecorator(this, "InsereLancamentoCusto.sql", this.jdbcWrapper);
     }
 
-    static public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRALC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRALC = :NUINTEGRALC");
-        nativeSqlDecorator.setParametro("NUINTEGRALC",numeroUnicoIntegracao);
-        nativeSqlDecorator.setParametro("COMPLEMENTO",complemento);
+    public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
+        nativeSqlDecorator.cleanParameters();
+        nativeSqlDecorator.setParametro("NUINTEGRALC", numeroUnicoIntegracao);
+        nativeSqlDecorator.setParametro("COMPLEMENTO", complemento);
         nativeSqlDecorator.atualizar();
     }
 
@@ -76,20 +81,19 @@ public class IntegracaoLancamentoCustoModel {
                     caller.execute(jdbc.getConnection());
                     this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
 
-                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereLancamentoCusto.sql");
 
-                    nativeSqlDecorator.setParametro("NUINTEGRALC", this.numeroUnicoIntegracao);
-                    nativeSqlDecorator.setParametro("NUMCONTRATO", i.getNumeroContrato());
-                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", i.getCodigoUnidadeFaturamento());
-                    nativeSqlDecorator.setParametro("INTPERIODO", i.getCodigoPeriodo());
-                    nativeSqlDecorator.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
-                    nativeSqlDecorator.setParametro("NUMODALIDADE", i.getNumeroUnicoModalidade());
-                    nativeSqlDecorator.setParametro("CODTIPOFATURA", i.codigoTipoFatura);
-                    nativeSqlDecorator.setParametro("DTLANCCUSTO", i.getDataCusto());
-                    nativeSqlDecorator.setParametro("TIPGESTOR", "F");
-                    nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
-                    nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
-                    nativeSqlDecorator.atualizar();
+                    nativeSqlInsereLancamentoCusto.setParametro("NUINTEGRALC", this.numeroUnicoIntegracao);
+                    nativeSqlInsereLancamentoCusto.setParametro("NUMCONTRATO", i.getNumeroContrato());
+                    nativeSqlInsereLancamentoCusto.setParametro("CODUNIDADEFATUR", i.getCodigoUnidadeFaturamento());
+                    nativeSqlInsereLancamentoCusto.setParametro("INTPERIODO", i.getCodigoPeriodo());
+                    nativeSqlInsereLancamentoCusto.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
+                    nativeSqlInsereLancamentoCusto.setParametro("NUMODALIDADE", i.getNumeroUnicoModalidade());
+                    nativeSqlInsereLancamentoCusto.setParametro("CODTIPOFATURA", i.codigoTipoFatura);
+                    nativeSqlInsereLancamentoCusto.setParametro("DTLANCCUSTO", i.getDataCusto());
+                    nativeSqlInsereLancamentoCusto.setParametro("TIPGESTOR", "F");
+                    nativeSqlInsereLancamentoCusto.setParametro("DHINS", TimeUtils.getNow());
+                    nativeSqlInsereLancamentoCusto.setParametro("USUINS", i.getCodigoUsuarioInsercao());
+                    nativeSqlInsereLancamentoCusto.atualizar();
                 }
             } finally {
                 JapeSession.close(hnd);

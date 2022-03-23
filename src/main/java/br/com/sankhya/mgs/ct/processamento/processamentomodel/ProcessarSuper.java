@@ -19,27 +19,33 @@ public class ProcessarSuper implements Processar {
     protected JapeSession.SessionHandle hnd = null;
     protected JdbcWrapper jdbc = null;
     protected String mensagem;
+    final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
+    Map<String, String> mapParametros = new HashMap<String, String>();
+
     protected ProcessarSuper() {
 
     }
 
     @Override
-    public boolean executar() throws Exception {
+    public boolean execute() throws Exception {
         try {
-            this.registroFila = new FilaDAO().getRegistroFila(numeroUnicoFilaProcessamento);
-
-            hnd = JapeSession.open();
-            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-            jdbc = dwfFacade.getJdbcWrapper();
-            jdbc.openSession();
-
+            return executar();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Exception("Falha ao executar fila Parametros" + mapParametros);
         }
+    }
+
+    @Override
+    public boolean executar() throws Exception {
+        hnd = JapeSession.open();
+        jdbc = dwfFacade.getJdbcWrapper();
+        jdbc.openSession();
+        this.registroFila = new FilaDAO(jdbc).getRegistroFila(numeroUnicoFilaProcessamento);
         return false;
     }
 
-    public void finalizar(){
+    public void finalizar() {
         JapeSession.close(hnd);
         JdbcWrapper.closeSession(jdbc);
     }
@@ -62,6 +68,7 @@ public class ProcessarSuper implements Processar {
             String[] chaveValor = parametro.split("=");
             mapParametros.put(chaveValor[0], chaveValor[1]);
         }
+        this.mapParametros = mapParametros;
         return mapParametros;
 
     }

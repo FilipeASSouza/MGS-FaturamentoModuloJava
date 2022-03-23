@@ -3,18 +3,14 @@ package br.com.sankhya.mgs.ct.acao.edicaodetalhamento;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
-import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
-import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.TimeUtils;
 
 import java.math.BigDecimal;
 
 public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJava {
-
-    private static JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
 
     @Override
     public void doAction(ContextoAcao contextoAcao) throws Exception {
@@ -40,22 +36,21 @@ public class EdicaoSituacaoAcao extends EdicaoAcaoSuper implements AcaoRotinaJav
                         linha.save();
                     }
 
-                    //Descontinuado devido ao erro no cursor
+                    /*Descontinuado devido ao erro no cursor
 
-                /*if( linha.getCampo("INTEGRACAO_LANC") == null ) {
-                    NativeSqlDecoratorNovo atualizarDetalhamentoSQL = new NativeSqlDecoratorNovo("UPDATE MGSTCTEVTMENSAL SET TIPLANCEVENTO = 'M', CODINTEGRACAODC = NULL, CODSITLANC = :V_SIT, DTALTERLANC = SYSDATE, USUUPD = :V_LOGIN WHERE NUEVTMENSAL = :V_NUEVTMENSAL "
-                            , jdbcWrapper);
+                    NativeSqlDecorator atualizarDetalhamentoSQL = new NativeSqlDecorator("UPDATE MGSTCTEVTMENSAL SET TIPLANCEVENTO = 'M', CODSITLANC = :V_SIT, DTALTERLANC = SYSDATE, CODUSUALTERLANC = :LOGIN WHERE NUEVTMENSAL = :V_NUEVTMENSAL ");
                     atualizarDetalhamentoSQL.setParametro("V_SIT", sitlanc);
+                    atualizarDetalhamentoSQL.setParametro("LOGIN", codusu);
                     atualizarDetalhamentoSQL.setParametro("V_NUEVTMENSAL", linha.getCampo("NUEVTMENSAL"));
-                    atualizarDetalhamentoSQL.setParametro("V_LOGIN", codusu);
                     atualizarDetalhamentoSQL.atualizar();
 
-                    /*EdicaoSituacaoModel edicaoSituacaoModel = new EdicaoSituacaoModel();
-                    edicaoSituacaoModel.setParametro("SITLANC", sitlanc);
-                    edicaoSituacaoModel.setParametro("LOGIN", codusu );
-                    edicaoSituacaoModel.setParametro("NUEVTMENSAL", linha.getCampo("NUEVTMENSAL"));
+                    EdicaoSituacaoModel edicaoSituacaoModel = new EdicaoSituacaoModel();
+                    edicaoSituacaoModel.setParametro("SITLANC",sitlanc);
+                    edicaoSituacaoModel.setParametro("LOGIN",codusu);
+                    edicaoSituacaoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
                     edicaoSituacaoModel.executar();
-                }*/
+                    */
+
             }
         }
     }

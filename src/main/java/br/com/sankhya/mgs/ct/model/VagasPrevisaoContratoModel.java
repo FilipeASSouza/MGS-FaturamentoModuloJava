@@ -1,7 +1,6 @@
 package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
-import br.com.sankhya.bh.utils.NativeSqlDecorator;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -11,7 +10,6 @@ import com.sankhya.util.TimeUtils;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -165,11 +163,10 @@ public class VagasPrevisaoContratoModel {
                 "F.PREVUNID = 'N'");
         verificandoVagasLivresSQL.setParametro("NUCONTRPREV", numeroUnicoPrevisaoContrato);
         ArrayList<DynamicVO> vagaLivresVOs = new ArrayList();
-        while(verificandoVagasLivresSQL.proximo()){
-            BigDecimal numeroUnicoVaga = verificandoVagasLivresSQL.getValorBigDecimal("NUCONTRVAGA");
-            JapeWrapper mgsct_vagas_previsao_contrato = JapeFactory.dao("MGSCT_Vagas_Previsao_Contrato");
-            DynamicVO vagaLivre = mgsct_vagas_previsao_contrato.findByPK(numeroUnicoVaga);
-            vagaLivresVOs.add(vagaLivre);
+        for (DynamicVO vagaVO:vagaVOs){
+            if ("N".equals(vagaVO.asString("PREVUNID"))){
+                vagaLivresVOs.add(vagaVO);
+            }
         }
         return  vagaLivresVOs;
     }

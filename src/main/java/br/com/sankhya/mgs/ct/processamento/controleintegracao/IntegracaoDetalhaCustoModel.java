@@ -16,15 +16,18 @@ import java.math.BigDecimal;
 public class IntegracaoDetalhaCustoModel {
     static private JapeWrapper integracaoDetalhaCustoDAO = JapeFactory.dao("MGSCT_Integr_Detalha_Custo");
     private BigDecimal numeroUnicoIntegracao = BigDecimal.ZERO;
+    private final NativeSqlDecorator nativeSqlDecorator;
+    private final NativeSqlDecorator insereDetalhamento;
 
-    public IntegracaoDetalhaCustoModel() {
-
+    public IntegracaoDetalhaCustoModel(JdbcWrapper jdbcWrapper) throws Exception {
+        nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRADC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRADC = :NUINTEGRADC", jdbcWrapper);
+        insereDetalhamento = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql", jdbcWrapper);
     }
 
-    static public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
-        NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator("UPDATE MGSTCTINTEGRADC SET COMPLEMENTO = :COMPLEMENTO WHERE NUINTEGRADC = :NUINTEGRADC");
-        nativeSqlDecorator.setParametro("NUINTEGRADC",numeroUnicoIntegracao);
-        nativeSqlDecorator.setParametro("COMPLEMENTO",complemento);
+    public void atualizaComplemento(BigDecimal numeroUnicoIntegracao, String complemento) throws Exception {
+        nativeSqlDecorator.cleanParameters();
+        nativeSqlDecorator.setParametro("NUINTEGRADC", numeroUnicoIntegracao);
+        nativeSqlDecorator.setParametro("COMPLEMENTO", complemento);
         nativeSqlDecorator.atualizar();
     }
 
@@ -73,17 +76,15 @@ public class IntegracaoDetalhaCustoModel {
                     caller.execute(jdbc.getConnection());
                     this.numeroUnicoIntegracao = caller.resultAsBigDecimal("P_ULTCOD");
 
-                    NativeSqlDecorator nativeSqlDecorator = new NativeSqlDecorator(this, "InsereDetalhamentoCusto.sql");
-
-                    nativeSqlDecorator.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
-                    nativeSqlDecorator.setParametro("NUMCONTRATO", i.getNumeroContrato());
-                    nativeSqlDecorator.setParametro("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
-                    nativeSqlDecorator.setParametro("INTPERIODO", i.getCodigoPeriodo());
-                    nativeSqlDecorator.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
-                    nativeSqlDecorator.setParametro("CODORIGEM", i.getCodigoOrigem());
-                    nativeSqlDecorator.setParametro("DHINS", TimeUtils.getNow());
-                    nativeSqlDecorator.setParametro("USUINS", i.getCodigoUsuarioInsercao());
-                    nativeSqlDecorator.atualizar();
+                    insereDetalhamento.setParametro("NUINTEGRADC", this.numeroUnicoIntegracao);
+                    insereDetalhamento.setParametro("NUMCONTRATO", i.getNumeroContrato());
+                    insereDetalhamento.setParametro("CODUNIDADEFATUR", i.getCodigpUnidadeFaturamento());
+                    insereDetalhamento.setParametro("INTPERIODO", i.getCodigoPeriodo());
+                    insereDetalhamento.setParametro("INTCOMPETENCIA", i.getCodigoCompetencia());
+                    insereDetalhamento.setParametro("CODORIGEM", i.getCodigoOrigem());
+                    insereDetalhamento.setParametro("DHINS", TimeUtils.getNow());
+                    insereDetalhamento.setParametro("USUINS", i.getCodigoUsuarioInsercao());
+                    insereDetalhamento.atualizar();
                 }
             } finally {
                 JapeSession.close(hnd);

@@ -28,21 +28,23 @@ public class GeraFilaLancamentoCustoGestorAcao implements AcaoRotinaJava {
                 codigoUnidadeFaturamentoFinal = new BigDecimal(contextoAcao.getParam("CODSITEF").toString());
                 Collection <DynamicVO> sitesVO = JapeFactory.dao("Site").find("CODSITE BETWEEN ? AND ?"
                         , new Object[]{codigoUnidadeFaturamento, codigoUnidadeFaturamentoFinal});
-                for(DynamicVO siteVO : sitesVO){
-                    if (siteVO != null){
-                        if (siteVO.asString("ANALITICO") == "S"){
+                for (DynamicVO siteVO : sitesVO) {
+                    if (siteVO != null) {
+                        if (siteVO.asString("ANALITICO") == "S") {
                             codigoUnidadeFaturamento = siteVO.asBigDecimal("CODSITEPAI");
                         }
                     }
                 }
             }
 
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+            GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel(jdbcWrapper);
             for (Registro linha : linhas) {
-                GeraFilaLancamentoCustoGestorModel geraFilaLancamentoCustoGestorModel = new GeraFilaLancamentoCustoGestorModel();
-                geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal)linha.getCampo("NUMCONTRATO"));
-                geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal)linha.getCampo("NUMODALIDADE"));
-                geraFilaLancamentoCustoGestorModel.setDataCusto( dataCusto );
-                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento( codigoUnidadeFaturamento );
+
+                geraFilaLancamentoCustoGestorModel.setNumeroContrato((BigDecimal) linha.getCampo("NUMCONTRATO"));
+                geraFilaLancamentoCustoGestorModel.setNumeroUnicoModalidade((BigDecimal) linha.getCampo("NUMODALIDADE"));
+                geraFilaLancamentoCustoGestorModel.setDataCusto(dataCusto);
+                geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamento(codigoUnidadeFaturamento);
                 geraFilaLancamentoCustoGestorModel.setCodigoUnidadeFaturamentoFinal(codigoUnidadeFaturamentoFinal);
 
                 geraFilaLancamentoCustoGestorModel.gerarFila();

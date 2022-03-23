@@ -26,6 +26,11 @@ public class FilaDAO {
     private DynamicVO vo;
     private BigDecimal codigoUsuario;
     private Boolean comControleTransacao = false;
+    NativeSqlDecorator filaEnvioConsulta;
+
+    public FilaDAO(JdbcWrapper jdbcWrapper) throws Exception {
+        filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql", jdbcWrapper);
+    }
 
     public void setCodigoUsuario(BigDecimal codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
@@ -54,6 +59,8 @@ public class FilaDAO {
 
     public RegistroFila getRegistroFila(BigDecimal numeroUnicoFilaProcessamento) throws Exception {
 
+        System.out.println(" BUSCA REGISTRO FILA getRegistroFila numeroUnicoFilaProcessamento = " + numeroUnicoFilaProcessamento.toString() );
+
         buscaRegistroFilaProcessamento(numeroUnicoFilaProcessamento);
         RegistroFila registroFila = new RegistroFila();
         registroFila.NUFILAPROC = vo.asBigDecimal("NUFILAPROC");
@@ -70,6 +77,7 @@ public class FilaDAO {
 
     public void salva(RegistroFila registroFila) throws Exception {
 
+        System.out.println("TENTANDO SALVA FILA " + registroFila.toString() );
         FluidCreateVO fluidCreateVO = dao.create();
         fluidCreateVO.set("NUTIPOPROC", registroFila.NUTIPOPROC);
         fluidCreateVO.set("CHAVE", registroFila.CHAVE);
@@ -84,23 +92,25 @@ public class FilaDAO {
 
     public void salvaComControleTransacao(final RegistroFila registroFila) throws Exception {
 
+
         JapeSession.SessionHandle hnd = JapeSession.open();
         final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
         JdbcWrapper jdbc = dwfFacade.getJdbcWrapper();
         jdbc.openSession();
 
-        try{
+        try {
             hnd.execWithTX(new JapeSession.TXBlock() {
                 public void doWithTx() throws Exception {
                     salva(registroFila);
                 }
             });
         }catch(Exception e){
-            System.out.println("Erro de execução no controle de transação ");
+            System.out.println("Erro de execuÃ§Ã£o no controle de transaÃ§Ã£o ");
             e.printStackTrace();
         }finally {
-                JapeSession.close(hnd);
-                JdbcWrapper.closeSession(jdbc);
+            System.out.println("FINALIZANDO O doWithTx");
+            JapeSession.close(hnd);
+            JdbcWrapper.closeSession(jdbc);
         }
     }
 
@@ -115,9 +125,8 @@ public class FilaDAO {
             ErroUtils.disparaErro("Erro ao localizar tipo de processamento " + nomeProcessamento + ", favor entrar em contato com o setor de T.I.!");
         }
 
-        BigDecimal numeroUnicoTipoProcessamento = tipoProcessamentoVO.asBigDecimal("NUTIPOPROC");
 
-        registroFila.NUTIPOPROC = numeroUnicoTipoProcessamento;
+        registroFila.NUTIPOPROC = tipoProcessamentoVO.asBigDecimal("NUTIPOPROC");
         registroFila.CHAVE = chave;
         registroFila.STATUS = "I";
         registroFila.DHINC = TimeUtils.getNow();
@@ -139,15 +148,14 @@ public class FilaDAO {
     private void atualizaFila(BigDecimal numeroUnico, String log, String status) throws Exception {
         try {
 
-            NativeSqlDecorator filaEnvioConsulta = new NativeSqlDecorator(this, "atualizaFilaProcessamento.sql");
+            filaEnvioConsulta.cleanParameters();
             filaEnvioConsulta.setParametro("NUFILAPROC", numeroUnico);
             filaEnvioConsulta.setParametro("LOGEXEC", log);
             filaEnvioConsulta.setParametro("STATUS", status);
 
             filaEnvioConsulta.atualizar();
         } catch (Exception e) {
-            System.out.println("Atualização Fila Erro: " + e);
-            e.printStackTrace();
+            System.out.println("AtualizaÃ§Ã£o Fila Erro: " + e);
         }
     }
 

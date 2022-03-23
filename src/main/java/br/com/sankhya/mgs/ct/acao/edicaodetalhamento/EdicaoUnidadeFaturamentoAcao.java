@@ -3,10 +3,12 @@ package br.com.sankhya.mgs.ct.acao.edicaodetalhamento;
 import br.com.sankhya.extensions.actionbutton.AcaoRotinaJava;
 import br.com.sankhya.extensions.actionbutton.ContextoAcao;
 import br.com.sankhya.extensions.actionbutton.Registro;
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.mgs.ct.model.edicaodetalhamento.EdicaoUnidadeFaturamentoModel;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
 public class EdicaoUnidadeFaturamentoAcao extends EdicaoAcaoSuper implements AcaoRotinaJava {
     @Override
@@ -20,13 +22,13 @@ public class EdicaoUnidadeFaturamentoAcao extends EdicaoAcaoSuper implements Aca
 
             DynamicVO usuario = JapeFactory.dao("Usuario").findByPK(AuthenticationInfo.getCurrent().getUserID());
             String nomeusu = usuario.asString("NOMEUSU");
-
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
             for (Registro linha : linhas) {
-                if( linha.getCampo("INTEGRACAO_LANC") == null ){
-                    EdicaoUnidadeFaturamentoModel edicaoUnidadeFaturamentoModel = new EdicaoUnidadeFaturamentoModel();
-                    edicaoUnidadeFaturamentoModel.setParametro("CODUNIDADEFATUR",codunidadefatur);
-                    edicaoUnidadeFaturamentoModel.setParametro("LOGIN",nomeusu);
-                    edicaoUnidadeFaturamentoModel.setParametro("NUEVTMENSAL",linha.getCampo("NUEVTMENSAL"));
+                if (linha.getCampo("INTEGRACAO_LANC") == null) {
+                    EdicaoUnidadeFaturamentoModel edicaoUnidadeFaturamentoModel = new EdicaoUnidadeFaturamentoModel(jdbcWrapper);
+                    edicaoUnidadeFaturamentoModel.setParametro("CODUNIDADEFATUR", codunidadefatur);
+                    edicaoUnidadeFaturamentoModel.setParametro("LOGIN", nomeusu);
+                    edicaoUnidadeFaturamentoModel.setParametro("NUEVTMENSAL", linha.getCampo("NUEVTMENSAL"));
                     edicaoUnidadeFaturamentoModel.executar();
                 }
             }

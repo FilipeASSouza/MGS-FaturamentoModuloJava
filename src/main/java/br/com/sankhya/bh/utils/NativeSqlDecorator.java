@@ -1,5 +1,6 @@
 package br.com.sankhya.bh.utils;
 
+import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.jape.sql.NativeSql;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 
@@ -8,32 +9,65 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 /*
-* Desenvolvido por Fernando Lopes Sankhya Unidade BH
-* Versao 1.5
-* */
+ * Desenvolvido por Fernando Lopes Sankhya Unidade BH
+ * Versao 1.5
+ * */
 public class NativeSqlDecorator {
     private NativeSql nativeSql;
     private String sql;
     private boolean aberto = false;
     ResultSet resultSet;
-
+    JdbcWrapper jdbcWrapper;
 
 
     private NativeSqlDecorator() {
 
     }
 
-    public NativeSqlDecorator(String sql){
+    public NativeSqlDecorator(String sql) {
+        this.jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
         iniciar();
         nativeSql.appendSql(sql);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
+    }
+
+    public NativeSqlDecorator(String sql, JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
+        iniciar();
+        nativeSql.appendSql(sql);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
+    }
+
+    //    public NativeSqlDecorator(String sql){
+//        EntityFacadeFactory.getDWFFacade().getJdbcWrapper()
+//        iniciar();
+//        nativeSql.appendSql(sql);
+//    }
+    public NativeSqlDecorator(Object objetobase, String arquivo) throws Exception {
+        this.jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+        iniciar();
+
+        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
+        nativeSql.loadSql(objetobase.getClass(), arquivo);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
+    }
+
+    public NativeSqlDecorator(Object objetobase, String arquivo, JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        iniciar();
+
+        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
+        nativeSql.loadSql(objetobase.getClass(), arquivo);
+        System.out.println("Inicializado " + this + "jdbc=" + this.jdbcWrapper.toString());
     }
 
 
     public boolean proximo() throws Exception {
-        if (!aberto){
+        if (!aberto) {
             executar();
             aberto = true;
         }
@@ -45,14 +79,16 @@ public class NativeSqlDecorator {
     }
 
 
-    public NativeSqlDecorator(Object objetobase, String arquivo) throws Exception {
-        iniciar();
-
-        //nativeSql.appendSql(getSqlResource(objetobase, arquivo));
-        nativeSql.loadSql(objetobase.getClass(), arquivo);
+    public void cleanParameters() throws SQLException {
+        if (resultSet != null) {
+            resultSet.close();
+            aberto = false;
+        }
+        nativeSql.cleanParameters();
     }
 
-    public NativeSqlDecorator setParametro(String nome, Object valor){
+    public NativeSqlDecorator setParametro(String nome, Object valor) {
+
         nativeSql.setNamedParameter(nome, valor);
         return this;
     }
@@ -82,20 +118,30 @@ public class NativeSqlDecorator {
     }
 
 
-    private void iniciar(){
-        nativeSql = new NativeSql(EntityFacadeFactory.getDWFFacade().getJdbcWrapper());
+    private void iniciar() {
+        nativeSql = new NativeSql(jdbcWrapper);
+        nativeSql.setReuseStatements(true);
     }
 
     public void executar() throws Exception {
         resultSet = nativeSql.executeQuery();
-        if (resultSet != null ){
+        if (resultSet != null) {
             aberto = true;
         }
     }
 
     public void atualizar() throws Exception {
         nativeSql.executeUpdate();
+    }
 
+    public void close() throws Exception {
+        if (resultSet != null) {
+            resultSet.close();
+        }
+        if (nativeSql != null) {
+            NativeSql.releaseResources(nativeSql);
+        }
+        System.out.println("finalizado " + this + "jdbc=" + this.jdbcWrapper.toString());
     }
 
 
@@ -105,7 +151,7 @@ public class NativeSqlDecorator {
         StringBuffer buf = new StringBuffer(512);
         String line = null;
 
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             buf.append(line);
             buf.append('\n');
         }

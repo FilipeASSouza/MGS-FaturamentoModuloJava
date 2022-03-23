@@ -64,11 +64,11 @@ public class PagamentoFaturaModel {
     }
 
     private void validaDelete() throws Exception {
-        
+
     }
 
     /*  consulta para pegar campo que nao pode ser alterado com uma descricao correta
-select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' não pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem 
+select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DESCRCAMPO||' não pode ser modificado. ";}' from tddcam where nometab = 'TABELA'  and nomecampo NOT IN ('CAMPO1','CAMPO2') order by ordem
     */
 
     private void validaCamposUpdate(HashMap<String, Object[]> campos) throws Exception {
@@ -76,6 +76,9 @@ select 'if (campos.containsKey("'||NOMECAMPO||'")) {mensagemErro += "Campo '||DE
 
 
         if (campos.containsKey("#CAMPO#")) { mensagemErro += "Campo Evento não pode ser modificado. "; }
+        if (campos.containsKey("#CAMPO#")) {
+            mensagemErro += "Campo Evento não pode ser modificado. ";
+        }
 
         if (mensagemErro != "") {
             ErroUtils.disparaErro(mensagemErro);

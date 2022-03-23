@@ -18,9 +18,16 @@ public class GeraFilaLancamentoCustoGestorModel {
     private BigDecimal numeroUnicoModalidade;
     private BigDecimal codigoUnidadeFaturamento;
     private BigDecimal codigoUnidadeFaturamentoFinal;
-    private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
-
+    private GeraFilaFactory geraFilaFactory;
+    private JdbcWrapper jdbcWrapper;
     //Verificar a Fila de Processamento
+    NativeSqlDecorator consultaListaCodigoSites;
+
+    public GeraFilaLancamentoCustoGestorModel(JdbcWrapper jdbc) throws Exception {
+        this.jdbcWrapper = jdbc;
+        geraFilaFactory = new GeraFilaFactory(jdbcWrapper);
+        consultaListaCodigoSites = new NativeSqlDecorator(this, "GeraFilaLancamentoCustoGestorConsulta.sql", this.jdbcWrapper);
+    }
 
     private BigDecimal numeroContratoVerificacao;
     private BigDecimal dataContratoVerificacao;
@@ -51,8 +58,10 @@ public class GeraFilaLancamentoCustoGestorModel {
 
         gerarTabelaTemporaria(); // anexocad
 
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"GeraFilaLancamentoCustoGestorConsulta.sql");
-        consultaListaCodigoSites.setParametro("CODUNIDADEFATUR",this.codigoUnidadeFaturamento);
+        System.out.println("INSERINDO NA ANEXOCAD");
+
+        consultaListaCodigoSites.cleanParameters();
+        consultaListaCodigoSites.setParametro("CODUNIDADEFATUR", this.codigoUnidadeFaturamento);
         consultaListaCodigoSites.setParametro("CODUNIDADEFATURFIN", this.codigoUnidadeFaturamentoFinal);
 
         while (consultaListaCodigoSites.proximo()) {
@@ -93,6 +102,7 @@ public class GeraFilaLancamentoCustoGestorModel {
                 geraFila.executar();
             }
         }
+
     }
 
     private void aprovaRelatorioFiscal() throws Exception {//RELATORIO_ANEXOS_APROVA(V_MESFATURAMENTO, V_CONTRATO);
@@ -129,7 +139,7 @@ public class GeraFilaLancamentoCustoGestorModel {
         caller.addInputParameter( BigDecimal.ZERO );
         caller.addOutputParameter(1, "LOG" );//LOG_ERRO_SQL          OUT VARCHAR2,
         caller.addOutputParameter(2, "SUCESSO" );//V_SUCESSO             OUT NUMBER
-        
+
         caller.execute(jdbc.getConnection());
 
         String log = "";

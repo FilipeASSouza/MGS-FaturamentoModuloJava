@@ -15,7 +15,13 @@ public class GeraFilaContaCorrenteModel {
     private BigDecimal unidadeFaturamentoFinal;
     private BigDecimal tipoDeProcessamento;
     private BigDecimal numeroContrato;
-    private GeraFilaFactory geraFilaFactory = new GeraFilaFactory();
+    private JdbcWrapper jdbcWrapper;
+    private GeraFilaFactory geraFilaFactory;
+
+    public GeraFilaContaCorrenteModel(JdbcWrapper jdbc) {
+        this.jdbcWrapper = jdbc;
+        geraFilaFactory = new GeraFilaFactory(this.jdbcWrapper);
+    }
 
     public void setDataReferencia(Timestamp dataReferencia) {
         this.dataReferencia = dataReferencia;
@@ -51,10 +57,10 @@ public class GeraFilaContaCorrenteModel {
 
     public void gerarFila() throws Exception {
 
-        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this,"BuscaListaUnidadeFaturamentoParaDetalhamento.sql");
-        consultaListaCodigoSites.setParametro("CODSITEI",unidadeFaturamentoInicial);
-        consultaListaCodigoSites.setParametro("CODSITEF",unidadeFaturamentoFinal);
-        consultaListaCodigoSites.setParametro("NUMCONTRATO",numeroContrato);
+        NativeSqlDecorator consultaListaCodigoSites = new NativeSqlDecorator(this, "BuscaListaUnidadeFaturamentoParaDetalhamento.sql", this.jdbcWrapper);
+        consultaListaCodigoSites.setParametro("CODSITEI", unidadeFaturamentoInicial);
+        consultaListaCodigoSites.setParametro("CODSITEF", unidadeFaturamentoFinal);
+        consultaListaCodigoSites.setParametro("NUMCONTRATO", numeroContrato);
 
         while(consultaListaCodigoSites.proximo()){
             BigDecimal codigoUnidadeFaturamento = consultaListaCodigoSites.getValorBigDecimal("CODSITE");

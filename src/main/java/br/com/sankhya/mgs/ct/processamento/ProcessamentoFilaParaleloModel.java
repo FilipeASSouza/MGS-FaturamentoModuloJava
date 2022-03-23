@@ -1,6 +1,7 @@
 package br.com.sankhya.mgs.ct.processamento;
 
-import br.com.sankhya.jape.EntityFacade;
+import br.com.lugh.performance.ExtensaoLogger;
+import br.com.lugh.performance.PerformanceMonitor;
 import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.dao.JdbcWrapper;
 import br.com.sankhya.mgs.ct.dao.FilaDAO;
@@ -12,8 +13,8 @@ import java.math.BigDecimal;
 public class ProcessamentoFilaParaleloModel implements Runnable {
     private Processar processamento = null;
     private BigDecimal numeroUnicoFilaProcessamento = null;
-    private static int quantidadeThreads = 0;
-
+    private String nomeFila;
+    private String tipoFila;
 
     public void setProcessamento(Processar processamento) {
         this.processamento = processamento;
@@ -23,54 +24,74 @@ public class ProcessamentoFilaParaleloModel implements Runnable {
         this.numeroUnicoFilaProcessamento = numeroUnicoFilaProcessamento;
     }
 
-    public static void setQuantidadeThreads(int quantidadeThreads) {
-        ProcessamentoFilaParaleloModel.quantidadeThreads = quantidadeThreads;
-    }
-
-    public static int getQuantidadeThreads() {
-        return quantidadeThreads;
-    }
 
     @Override
     public void run() {
         JapeSession.SessionHandle hnd = null;
-        JdbcWrapper jdbc = null;
-
-        quantidadeThreads++;
-        FilaDAO filaDAO = new FilaDAO();
         try {
             hnd = JapeSession.open();
-            final EntityFacade dwfFacade = EntityFacadeFactory.getDWFFacade();
-            jdbc = dwfFacade.getJdbcWrapper();
-            jdbc.openSession();
+            final JapeSession.SessionHandle hndFinal = hnd;
+            JdbcWrapper jdbcWrapper = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
+            FilaDAO filaDAO = new FilaDAO(jdbcWrapper);
+            PerformanceMonitor.INSTANCE.measureJava(nomeFila + ":" + tipoFila, () -> {
+                ExtensaoLogger logger = ExtensaoLogger.getLogger();
+                try {
 
 
-            processamento.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
+                    hndFinal.execWithTX(() -> {
+                        processamento.setNumeroUnicoFilaProcessamento(numeroUnicoFilaProcessamento);
 
-            boolean executado = processamento.executar();
+                        boolean executado = processamento.execute();
 
-            if (executado) {
-                filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
-                        "OK. " + processamento.getMensagem());
-            } else {
-                filaDAO.atualizaFilaErro(
-                        numeroUnicoFilaProcessamento,
-                        "Erro ao executar processamento: " + processamento.getMensagem());
-            }
+                        if (executado) {
+                            filaDAO.atualizaFilaProcessado(numeroUnicoFilaProcessamento,
+                                "OK. " + processamento.getMensagem());
+                        } else {
+                            filaDAO.atualizaFilaErro(
+                                numeroUnicoFilaProcessamento,
+                                "Erro ao executar processamento: " + processamento.getMensagem());
+                        }
 
+                    });
+
+
+                } catch (Exception e) {
+                    logger.severe("Erro ao executar planilha" + e.getMessage(), e);
+                    try {
+                        hndFinal.execWithTX(() -> {
+                            filaDAO.atualizaFilaErro(
+                                numeroUnicoFilaProcessamento,
+                                "Erro ao executar processamento: " + e);
+                        });
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
         } catch (Exception e) {
-            try {
-                filaDAO.atualizaFilaErro(
-                        numeroUnicoFilaProcessamento,
-                        "Erro ao executar processamento: " + e);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
             e.printStackTrace();
         } finally {
-            quantidadeThreads--;
             JapeSession.close(hnd);
-            JdbcWrapper.closeSession(jdbc);
         }
+    }
+
+    public BigDecimal getNumeroUnicoFilaProcessamento() {
+        return numeroUnicoFilaProcessamento;
+    }
+
+    public String getNomeFila() {
+        return nomeFila;
+    }
+
+    public void setNomeFila(String nomeFila) {
+        this.nomeFila = nomeFila;
+    }
+
+    public String getTipoFila() {
+        return tipoFila;
+    }
+
+    public void setTipoFila(String tipoFila) {
+        this.tipoFila = tipoFila;
     }
 }

@@ -91,7 +91,7 @@ public class ProcessamentoFilaModel {
         ProcessamentoFilaFactory processamentoFilaFactory = new ProcessamentoFilaFactory();
 
 
-        //PerformanceMonitor.INSTANCE.measureJava("Carrega Fila " + nomeFila, () -> {
+        PerformanceMonitor.INSTANCE.measureJava("Carrega Fila " + nomeFila, () -> {
             NativeSqlDecorator consultaFila = null;
             try {
                 System.out.println("Executando o run ProcessamentoFilaModel" + nomeFila);
@@ -106,15 +106,16 @@ public class ProcessamentoFilaModel {
                     fila.add(new FilaPojo(consultaFila.getValorBigDecimal("NUFILAPROC"), consultaFila.getValorBigDecimal("NUTIPOPROC"), consultaFila.getValorString("CHAVE"), nomeFila));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new Exception("Erro ao executar consulta busca fila processamento: " + e);
             } finally {
                 if (consultaFila != null)
                     consultaFila.close();
             }
-        //});
+        });
         atualizarFilaeAguardarcommit();
         try {
-            //PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
+            PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
                 FilaUtils filaUtils = new FilaUtils(jdbcWrapper);
                 for (FilaPojo filaCod : fila) {
 
@@ -130,11 +131,12 @@ public class ProcessamentoFilaModel {
                     tp.execute(processamentoFilaParaleloModel);
 
                 }
-            //});
+            });
             if (tp.getQueue().isEmpty()) {
                 System.out.println("Finalizado");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Erro ao percorrer consulta busca fila processamento: " + e);
         }
     }

@@ -103,7 +103,7 @@ public class ProcessamentoFilaModel {
                 consultaFila = new NativeSqlDecorator(this, nomeConsulta, this.jdbcWrapper);
                 consultaFila.setParametro("QTDEXECFILA", quantidadeExecucaoFila);
                 while (consultaFila.proximo()) {
-                    fila.add(new FilaPojo(consultaFila.getValorBigDecimal("NUFILAPROC"), consultaFila.getValorBigDecimal("NUTIPOPROC"), consultaFila.getValorString("CHAVE"), nomeFila));
+                    fila.add(new FilaPojo(consultaFila.getValorBigDecimal("NUFILAPROC"), consultaFila.getValorBigDecimal("NUTIPOPROC"), consultaFila.getValorString("CHAVE"), consultaFila.getValorString("NOME")));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -119,7 +119,7 @@ public class ProcessamentoFilaModel {
                 FilaUtils filaUtils = new FilaUtils(jdbcWrapper);
                 for (FilaPojo filaCod : fila) {
 
-                    Processar processamento = processamentoFilaFactory.getProcessamento(filaCod.NOME);
+                    Processar processamento = processamentoFilaFactory.getProcessamento(filaCod.getNOME());
 
 
                     ProcessamentoFilaParaleloModel processamentoFilaParaleloModel = new ProcessamentoFilaParaleloModel();
@@ -145,20 +145,19 @@ public class ProcessamentoFilaModel {
         FinalWrapper<Exception> exc = new FinalWrapper<>();
         Thread t = new Thread(() -> {
             try {
-                //PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
+                PerformanceMonitor.INSTANCE.measureJava("adicionar Processamento " + nomeFila, () -> {
                     JdbcWrapper jdbc = EntityFacadeFactory.getDWFFacade().getJdbcWrapper();
                     FilaUtils filaUtils = new FilaUtils(jdbc);
                     for (FilaPojo filaCod : fila) {
                         filaUtils.atualizarStatusFila(filaCod.getNUFILAPROC(), "A");
                     }
-                //});
+                });
                 if (tp.getQueue().isEmpty()) {
                     System.out.println("Finalizado");
                 }
             } catch (Exception e) {
                 exc.setWrapperReference(new Exception("Erro ao percorrer consulta busca fila processamento: " + e));
             }
-        //});
 });
         t.start();
         t.join();

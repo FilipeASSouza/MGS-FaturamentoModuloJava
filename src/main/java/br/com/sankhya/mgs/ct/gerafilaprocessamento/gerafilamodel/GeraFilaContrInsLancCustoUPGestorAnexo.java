@@ -6,27 +6,25 @@ import com.sankhya.util.TimeUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GeraFilaContrInsLancCustoUPGestorAnexo implements GeraFila {
+public class GeraFilaContrInsLancCustoUPGestorAnexo extends GeraFilaSuper implements GeraFila {
     public boolean executar() throws Exception {
         try{
 
-            GeraFilaSuper geraFilaSuper = new GeraFilaSuper();
-            geraFilaSuper.executar();
             setParametroExecucao("nomeProcessamento","RtnContrInsLancCustoUPGestorAnexo");
 
             Map<String, String> mapParametrosChave = new HashMap<String, String>();
-            mapParametrosChave.put("NUMCONTRATO", geraFilaSuper.getParametroBigDecimal("numeroContrato").toString());
-            mapParametrosChave.put("CODUNIDADEFATUR", geraFilaSuper.getParametroBigDecimal("numeroUnidadeFaturamento").toString());
-            mapParametrosChave.put("DTLANCCUSTO", TimeUtils.formataYYYYMMDD(geraFilaSuper.getParametroTimestamp("dataCusto")));
-            mapParametrosChave.put("CODTIPOFATURA", geraFilaSuper.getParametroBigDecimal("codigoTipoFatura").toString());
+            mapParametrosChave.put("NUMCONTRATO", getParametroBigDecimal("numeroContrato").toString());
+            mapParametrosChave.put("CODUNIDADEFATUR", getParametroBigDecimal("numeroUnidadeFaturamento").toString());
+            mapParametrosChave.put("DTLANCCUSTO", TimeUtils.formataYYYYMMDD(getParametroTimestamp("dataCusto")));
+            mapParametrosChave.put("CODTIPOFATURA", getParametroBigDecimal("codigoTipoFatura").toString());
 
 
-            String chave = geraFilaSuper.geraChave(mapParametrosChave);
+            String chave = geraChave(mapParametrosChave);
 
             FilaDAO filaDAO = new FilaDAO();
             filaDAO.setComControleTransacao(true);
-            filaDAO.setCodigoUsuario(geraFilaSuper.getParametroBigDecimal("codigoUsuario"));
-            filaDAO.incializaFila(chave, geraFilaSuper.getParametroString("nomeProcessamento"));
+            filaDAO.setCodigoUsuario(getParametroBigDecimal("codigoUsuario"));
+            filaDAO.incializaFila(chave, getParametroString("nomeProcessamento"));
 
         }catch(Exception e){
             System.out.println("ERRO AO INICIA A FILA GeraFilaContrInsLancCustoUPGestorAnexo" + e);

@@ -21,8 +21,6 @@ public class AplicarPercGlosaAcao implements AcaoRotinaJava {
         BigDecimal valorTotalEvento = null;
         BigDecimal numeroReferenciaGlosa = null;
 
-
-
         BigDecimal codigoTipoPosto = null;
         if (contextoAcao.getParam("CODTIPOPOSTO") != null) {
             codigoTipoPosto = new BigDecimal(contextoAcao.getParam("CODTIPOPOSTO").toString());

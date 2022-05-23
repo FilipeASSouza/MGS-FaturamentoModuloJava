@@ -1,6 +1,7 @@
 SELECT MGSTCTCONTRCENT.CODSITE FROM MGSTCTCONTRCENT
 inner join mgstctlocalcont on mgstctlocalcont.nulocalcont = mgstctcontrcent.nulocalcont
-WHERE MGSTCTCONTRCENT.NUMCONTRATO = :NUMCONTRATO
+WHERE nvl(Mgstctcontrcent.Dtfim,sysdate) >= sysdate
+and MGSTCTCONTRCENT.NUMCONTRATO = :NUMCONTRATO
 /*
 and mgstctlocalcont.numodalidade = :NUMODALIDADE
 Motivo: ALTERADO DEVIDO AO GERAR O DETALHAMENTO PARA TODAS AS MODALIDADES

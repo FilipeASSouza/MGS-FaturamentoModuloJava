@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 public class PrevisaoContrato {
 
+    //Nenhuma alteração realizada na classe PrevisãoContrato
     private DynamicVO vo;
     private String regraVadalicao = "";
 

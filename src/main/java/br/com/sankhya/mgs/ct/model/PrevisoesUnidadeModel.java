@@ -182,8 +182,6 @@ public class PrevisoesUnidadeModel {
             ErroUtils.disparaErro("Não foi encontrado uma provisão do contrado com os mesmos dados da previsão unidade lancada!");
         }
 
-        ErroUtils.disparaErro(previsaoValidator.getRegraValidacao());
-
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto
             case "S3"://serviceo/material controle 3

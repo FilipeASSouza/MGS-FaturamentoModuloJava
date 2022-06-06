@@ -120,7 +120,7 @@ public class PrevisoesUnidadeModel {
         BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
 
-        ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
+       // ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
 
         NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
                 " sum(qtdcontratada) QTDCONTRATADA " +
@@ -181,6 +181,8 @@ public class PrevisoesUnidadeModel {
         if (previsoesContratoVO == null) {
             ErroUtils.disparaErro("Não foi encontrado uma provisão do contrado com os mesmos dados da previsão unidade lancada!");
         }
+
+        ErroUtils.disparaErro(previsaoValidator.getRegraValidacao());
 
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto

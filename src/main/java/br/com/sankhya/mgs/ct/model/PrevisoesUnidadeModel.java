@@ -120,6 +120,8 @@ public class PrevisoesUnidadeModel {
         BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
 
+        ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
+
         NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
                 " sum(qtdcontratada) QTDCONTRATADA " +
                 " FROM MGSTCTUNIDADEPREV " +

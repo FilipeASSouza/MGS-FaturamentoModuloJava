@@ -171,6 +171,8 @@ public class VagasPrevisaoContratoModel {
             DynamicVO vagaLivre = mgsct_vagas_previsao_contrato.findByPK(numeroUnicoVaga);
             vagaLivresVOs.add(vagaLivre);
         }
+
+        //ErroUtils.disparaErro(vagaLivresVOs.toString());
         return  vagaLivresVOs;
     }
 

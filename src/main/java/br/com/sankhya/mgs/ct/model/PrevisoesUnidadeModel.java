@@ -120,7 +120,7 @@ public class PrevisoesUnidadeModel {
         BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
 
-       // ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
+        //ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
 
         NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
                 " sum(qtdcontratada) QTDCONTRATADA " +
@@ -150,6 +150,7 @@ public class PrevisoesUnidadeModel {
             qtdTotalPrevisaoUnidade = BigDecimal.ZERO;
         }
 
+        //ErroUtils.disparaErro(qtdTotalPrevisaoUnidade.toString());
         return qtdTotalPrevisaoUnidade;
     }
 
@@ -284,6 +285,7 @@ public class PrevisoesUnidadeModel {
 
         Boolean validado = quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
 
+        //ErroUtils.disparaErro(quantidadeContratadaUnidadesTotal.toString()+" "+quantidadePrevisaoContrato);
         return validado;
     }
 
@@ -417,6 +419,8 @@ public class PrevisoesUnidadeModel {
 
                 BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
 
+                //ErroUtils.disparaErro("quant vagas novas "+quantidadeCriarNovasVagas+" vagas livre "+vagaLivresVOs.size());
+
                 if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
                     ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsao da unidade");
                 }
@@ -528,7 +532,8 @@ public class PrevisoesUnidadeModel {
             case "S4"://serviceo/material controle 4
                 //todo valida quantidade total da unidade com contrato
                 if (!validaQuantidadeTotalUnidadesPeloContrato()) {
-                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+
+                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato 3!");
                 }
                 break;
 

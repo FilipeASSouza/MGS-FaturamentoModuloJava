@@ -33,7 +33,7 @@ public class PrevisaoContrato {
             }
         }
 
-        ErroUtils.disparaErro(regraVadalicao);
+        //ErroUtils.disparaErro("Regra: "+regraVadalicao);
         return regraVadalicao;
     }
 }

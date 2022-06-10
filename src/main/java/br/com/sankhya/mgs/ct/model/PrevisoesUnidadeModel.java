@@ -407,6 +407,7 @@ public class PrevisoesUnidadeModel {
                 NativeSqlDecorator consultaQuantidadeContratadaSQL = new NativeSqlDecorator("SELECT QTDCONTRATADA FROM MGSTCTUNIDADEPREV WHERE NUUNIDPREV = :NUUNIDPREV");
                 consultaQuantidadeContratadaSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
                 BigDecimal quantidadeContratada = null;
+
                 if(consultaQuantidadeContratadaSQL.proximo()){
                     quantidadeContratada = consultaQuantidadeContratadaSQL.getValorBigDecimal("QTDCONTRATADA");
                 }
@@ -419,7 +420,7 @@ public class PrevisoesUnidadeModel {
 
                 BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
 
-                //ErroUtils.disparaErro("quant vagas novas "+quantidadeCriarNovasVagas+" vagas livre "+vagaLivresVOs.size());
+                //ErroUtils.disparaErro("quant contratada "+quantidadeContratada+" atribuidas ativas "+quantidadeVagasAtribuidasAtivas+" quant vagas novas"+quantidadeCriarNovasVagas+" vagas livre "+vagaLivresVOs.size());
 
                 if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
                     ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsao da unidade");

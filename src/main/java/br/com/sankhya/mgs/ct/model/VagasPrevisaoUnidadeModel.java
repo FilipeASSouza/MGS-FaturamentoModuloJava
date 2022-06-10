@@ -11,6 +11,7 @@ import com.sankhya.util.TimeUtils;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Entidade: MGSCT_Vagas_Previsao_Unidade

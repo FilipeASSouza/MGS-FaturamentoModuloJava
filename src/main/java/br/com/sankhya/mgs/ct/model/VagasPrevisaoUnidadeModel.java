@@ -2,6 +2,7 @@ package br.com.sankhya.mgs.ct.model;
 
 import br.com.sankhya.bh.utils.ErroUtils;
 import br.com.sankhya.bh.utils.NativeSqlDecorator;
+import br.com.sankhya.jape.core.JapeSession;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
@@ -128,6 +129,7 @@ public class VagasPrevisaoUnidadeModel {
     }
 
     public BigDecimal quantidadeVagasAtivas(BigDecimal numeroUnicoPrevisaoContrato) throws Exception {
+        JapeSession.getCurrentSession().getTopMostHandle().setFindersMaxRows(1000);
         Collection<DynamicVO> dynamicVOS = dao.find("NUUNIDPREV = ? AND DTFIM IS NULL", numeroUnicoPrevisaoContrato);
         int size = dynamicVOS.size();
         return new BigDecimal(size);

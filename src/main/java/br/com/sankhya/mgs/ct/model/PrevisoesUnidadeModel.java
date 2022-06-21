@@ -12,6 +12,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -521,11 +522,14 @@ public class PrevisoesUnidadeModel {
             }
         }
 
+        String dataInicioV = new SimpleDateFormat("dd/MM/yyyy").format(mestrevo.asTimestamp("DTINICIO"));
+        String dataInicioZ = new SimpleDateFormat("dd/MM/yyyy").format(vo.asTimestamp("DTINICIO"));
 
-        if( vo.asTimestamp("DTINICIO").compareTo(mestrevo.asTimestamp("DTINICIO")) < 0 ) {
+        //ErroUtils.disparaErro("Data inicio Z:"+dataInicioZ +" Data inicio V:"+dataInicioV);
+
+        if( dataInicioZ.compareTo(dataInicioV) < 0 ) {
             ErroUtils.disparaErro("Data inicio deve ser maior que a Data Inicio da Unidade, gentileza verificar!");
         }
-
 
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto

@@ -56,8 +56,8 @@ public class TaxaContratoModel {
 
     public void validaRegistrosEmAberto() throws Exception {
 
-        Collection<DynamicVO> taxasVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRTAXA <> ? AND DTFIM IS NULL"
-                , new Object[]{ vo.asBigDecimal("NULOCALTIPOFAT"), vo.asBigDecimalOrZero("NUCONTRTAXA") });
+        Collection<DynamicVO> taxasVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRTAXA <> ? AND DTFIM IS NULL AND CODTAXA = ?"
+                , new Object[]{ vo.asBigDecimal("NULOCALTIPOFAT"), vo.asBigDecimalOrZero("NUCONTRTAXA") , vo.asBigDecimal("CODTAXA") });
         for(DynamicVO taxaVO : taxasVO ){
             Boolean status = taxaVO.asBigDecimal("NUCONTRTAXA") != null;
             if(status){
@@ -67,8 +67,8 @@ public class TaxaContratoModel {
     }
 
     public void validaDataFimVingencia() throws Exception {
-        Collection <DynamicVO> tributosVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRTAXA <> ?"
-                , new Object[]{vo.asBigDecimalOrZero("NULOCALTIPOFAT"), vo.asBigDecimal("NUCONTRTAXA")});
+        Collection <DynamicVO> tributosVO = dao.find("NULOCALTIPOFAT = ? AND NUCONTRTAXA <> ? AND CODTAXA = ?"
+                , new Object[]{vo.asBigDecimalOrZero("NULOCALTIPOFAT"), vo.asBigDecimal("NUCONTRTAXA"), vo.asBigDecimal("CODTAXA")});
         for( DynamicVO tributoVO : tributosVO ){
             if( vo.asTimestamp("DTINICIO").compareTo( tributoVO.asTimestamp("DTFIM")) < 0 ){
                 ErroUtils.disparaErro("Data Inicio Vigência: "+sdf.format(vo.asTimestamp("DTINICIO"))

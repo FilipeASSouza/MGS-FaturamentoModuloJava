@@ -108,6 +108,7 @@ public class PrevisaoValidator {
             }
         }
 
+        //ErroUtils.disparaErro(regraVadalicao);
         return regraVadalicao;
     }
 }

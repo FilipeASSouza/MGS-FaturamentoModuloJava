@@ -12,6 +12,7 @@ import br.com.sankhya.mgs.ct.validator.PrevisaoValidator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -120,6 +121,8 @@ public class PrevisoesUnidadeModel {
         BigDecimal numeroUnicoPrevisaoUnidade = vo.asBigDecimal("NUUNIDPREV");
         Timestamp dataInicio = vo.asTimestamp("DTINICIO");
 
+        //ErroUtils.disparaErro(dataInicio.toString()+" "+contrato.toString()+" "+codTipoPosto.toString()+" "+codServicoMaterial.toString()+" "+codEvento.toString()+" "+numeroUnicoPrevisaoUnidade.toString());
+
         NativeSqlDecorator consultaQuantidadePrevisaoUnidade = new NativeSqlDecorator(" SELECT " +
                 " sum(qtdcontratada) QTDCONTRATADA " +
                 " FROM MGSTCTUNIDADEPREV " +
@@ -148,6 +151,7 @@ public class PrevisoesUnidadeModel {
             qtdTotalPrevisaoUnidade = BigDecimal.ZERO;
         }
 
+        //ErroUtils.disparaErro(qtdTotalPrevisaoUnidade.toString());
         return qtdTotalPrevisaoUnidade;
     }
 
@@ -282,6 +286,7 @@ public class PrevisoesUnidadeModel {
 
         Boolean validado = quantidadeContratadaUnidadesTotal.compareTo(quantidadePrevisaoContrato) <= 0;
 
+        //ErroUtils.disparaErro(quantidadeContratadaUnidadesTotal.toString()+" "+quantidadePrevisaoContrato);
         return validado;
     }
 
@@ -403,6 +408,7 @@ public class PrevisoesUnidadeModel {
                 NativeSqlDecorator consultaQuantidadeContratadaSQL = new NativeSqlDecorator("SELECT QTDCONTRATADA FROM MGSTCTUNIDADEPREV WHERE NUUNIDPREV = :NUUNIDPREV");
                 consultaQuantidadeContratadaSQL.setParametro("NUUNIDPREV", vo.asBigDecimal("NUUNIDPREV"));
                 BigDecimal quantidadeContratada = null;
+
                 if(consultaQuantidadeContratadaSQL.proximo()){
                     quantidadeContratada = consultaQuantidadeContratadaSQL.getValorBigDecimal("QTDCONTRATADA");
                 }
@@ -414,6 +420,8 @@ public class PrevisoesUnidadeModel {
                 }
 
                 BigDecimal quantidadeCriarNovasVagas = quantidadeContratada.subtract(quantidadeVagasAtribuidasAtivas);
+
+                //ErroUtils.disparaErro("quant contratada "+quantidadeContratada+" atribuidas ativas "+quantidadeVagasAtribuidasAtivas+" quant vagas novas"+quantidadeCriarNovasVagas+" vagas livre "+vagaLivresVOs.size());
 
                 if (new BigDecimal(vagaLivresVOs.size()).compareTo(quantidadeCriarNovasVagas) < 0) {
                     ErroUtils.disparaErro("Quantidade de vagas livres menor que a solicitada na previsao da unidade");
@@ -514,11 +522,14 @@ public class PrevisoesUnidadeModel {
             }
         }
 
+        String dataInicioV = new SimpleDateFormat("dd/MM/yyyy").format(mestrevo.asTimestamp("DTINICIO"));
+        String dataInicioZ = new SimpleDateFormat("dd/MM/yyyy").format(vo.asTimestamp("DTINICIO"));
 
-        if( vo.asTimestamp("DTINICIO").compareTo(mestrevo.asTimestamp("DTINICIO")) < 0 ) {
+        //ErroUtils.disparaErro("Data inicio Z:"+dataInicioZ +" Data inicio V:"+dataInicioV);
+
+        if( dataInicioZ.compareTo(dataInicioV) < 0 ) {
             ErroUtils.disparaErro("Data inicio deve ser maior que a Data Inicio da Unidade, gentileza verificar!");
         }
-
 
         switch (previsaoValidator.getRegraValidacao()) {
             case "P"://posto
@@ -526,7 +537,8 @@ public class PrevisoesUnidadeModel {
             case "S4"://serviceo/material controle 4
                 //todo valida quantidade total da unidade com contrato
                 if (!validaQuantidadeTotalUnidadesPeloContrato()) {
-                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato!");
+
+                    ErroUtils.disparaErro("Quantidade total das unidades ultrapassou o permitido no contrato 3!");
                 }
                 break;
 

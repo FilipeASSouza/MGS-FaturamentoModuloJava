@@ -160,8 +160,10 @@ public class AlocacoesPostoModel {
         NativeSqlDecorator validaEncerramentoContrato = new NativeSqlDecorator("select " +
                 " dtfim " +
                 " from mgstctcontrcent\n" +
-                " where codsite = :codsite");
+                " where codsite = :codsite and numcontrato = :numcontrato");
         validaEncerramentoContrato.setParametro("codsite", unidade );
+        validaEncerramentoContrato.setParametro("numcontrato", numeroContrato);
+
         if(validaEncerramentoContrato.proximo()){
             dataFimContrato = validaEncerramentoContrato.getValorTimestamp("dtfim");
         }

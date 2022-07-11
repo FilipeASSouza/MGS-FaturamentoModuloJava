@@ -279,6 +279,8 @@ public class DetalhamentoCustoModel {
             ErroUtils.disparaErro("Preço não localizado, favor verificar dados lancados!");
         }
 
+        //ErroUtils.disparaErro(mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL").toString());
+
         valorUnitario = mgsct_valores_produtosVO.asBigDecimal("VLRTOTAL");
         return valorUnitario;
     }
